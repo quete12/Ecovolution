@@ -15,7 +15,10 @@ import org.json.JSONObject;
  */
 public class CompoundProperties extends ElementProperties{
     private static final Map<String, CompoundProperties> BY_CODE = new HashMap<>();
-    private static final Map<String, CompoundProperties> BY_NAME = new HashMap<>();
+
+    public static CompoundProperties getPropertiesFromCode(String code) {
+        return BY_CODE.get(code);
+    }
 
     private Map<ElementProperties, Integer> composition;
 
@@ -62,10 +65,15 @@ public class CompoundProperties extends ElementProperties{
     }
 
     private void addToComposition(String code, String amount) {
-        ElementProperties el = ElementProperties.getElementFromCode(code);
+        ElementProperties el = ElementProperties.getPropertiesFromCode(code);
         amount = (amount.isEmpty()) ? "1" : amount;
         int amnt = Integer.parseInt(amount);
         composition.put(el, amnt);
+    }
+
+    @Override
+    public void map() {
+        BY_CODE.put(code, this);
     }
 
 

@@ -1,0 +1,52 @@
+{
+   "elements": [
+        {
+            "name":"Hydrogen",
+            "symbol":"H",
+            "number":1,
+            "phase":"gas",
+            "specificHeatCapacity":14.418,
+            "meltingPoint":13.99,
+            "boilingPoint":20.271
+        },
+        {
+            "name":"Oxygen",
+            "symbol":"O",
+            "number":8,
+            "phase":"gas",
+            "specificHeatCapacity":14.418,
+            "meltingPoint":54.36,
+            "boilingPoint":90.188
+        },
+        {
+            "name":"Carbon",
+            "symbol":"C",
+            "number":6,
+            "phase":"solid",
+            "specificHeatCapacity":8.517,
+            "meltingPoint":3914.9,
+            "boilingPoint":3915
+        }
+    ],
+    "compounds":[
+        {
+            "name":"Water",
+            "symbol":"H2O",
+            "phase":"liquid",
+            "specificHeatCapacity":75.375,
+            "meltingPoint":273.15,
+            "boilingPoint":373.13
+        },
+        {
+            "name":"Carbon dioxide",
+            "symbol":"CO2",
+            "phase":"gas",
+            "specificHeatCapacity":37.135,
+            "meltingPoint":216.5,
+            "boilingPoint":216.6
+        }
+    ],
+    "reactions":[
+    
+    ]
+}
