@@ -76,6 +76,70 @@ public class CompoundProperties extends ElementProperties{
         BY_CODE.put(code, this);
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public int getOrderNumber() {
+        return orderNumber;
+    }
+
+    public void setOrderNumber(int orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
+    public double getSpecificHeatCapacity() {
+        return specificHeatCapacity;
+    }
+
+    public void setSpecificHeatCapacity(double specificHeatCapacity) {
+        this.specificHeatCapacity = specificHeatCapacity;
+    }
+
+    public double getMeltingPoint() {
+        return meltingPoint;
+    }
+
+    public void setMeltingPoint(double meltingPoint) {
+        this.meltingPoint = meltingPoint;
+    }
+
+    public double getBoilingPoint() {
+        return boilingPoint;
+    }
+
+    public void setBoilingPoint(double boilingPoint) {
+        this.boilingPoint = boilingPoint;
+    }
+
+    public double getFusionHeat() {
+        return fusionHeat;
+    }
+
+    public void setFusionHeat(double fusionHeat) {
+        this.fusionHeat = fusionHeat;
+    }
+
+    public double getVaporizationHeat() {
+        return vaporizationHeat;
+    }
+
+    public void setVaporizationHeat(double vaporizationHeat) {
+        this.vaporizationHeat = vaporizationHeat;
+    }
+
 
 
 }

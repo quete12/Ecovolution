@@ -5,9 +5,11 @@
             "symbol":"H",
             "number":1,
             "phase":"gas",
-            "specificHeatCapacity":14.418,
+            "specificHeatCapacity":28.836,
             "meltingPoint":13.99,
-            "boilingPoint":20.271
+            "boilingPoint":20.271,
+            "fusionHeat":117,
+            "vaporizationHeat":904
         },
         {
             "name":"Oxygen",
@@ -16,7 +18,9 @@
             "phase":"gas",
             "specificHeatCapacity":14.418,
             "meltingPoint":54.36,
-            "boilingPoint":90.188
+            "boilingPoint":90.188,
+            "fusionHeat":444,
+            "vaporizationHeat":6820
         },
         {
             "name":"Carbon",
@@ -25,7 +29,9 @@
             "phase":"solid",
             "specificHeatCapacity":8.517,
             "meltingPoint":3914.9,
-            "boilingPoint":3915
+            "boilingPoint":3915,
+            "fusionHeat":0,
+            "vaporizationHeat":117000
         }
     ],
     "compounds":[
@@ -35,7 +41,9 @@
             "phase":"gas",
             "specificHeatCapacity":28.836,
             "meltingPoint":13.99,
-            "boilingPoint":20.271
+            "boilingPoint":20.271,
+            "fusionHeat":117,
+            "vaporizationHeat":904
         },
         {
             "name":"Oxygen",
@@ -43,7 +51,9 @@
             "phase":"gas",
             "specificHeatCapacity":29.378,
             "meltingPoint":54.36,
-            "boilingPoint":90.188
+            "boilingPoint":90.188,
+            "fusionHeat":444,
+            "vaporizationHeat":6820
         },
         {
             "name":"Ozone",
@@ -51,7 +61,9 @@
             "phase":"gas",
             "specificHeatCapacity":39.22,
             "meltingPoint":81,
-            "boilingPoint":161
+            "boilingPoint":161,
+            "fusionHeat":0,
+            "vaporizationHeat":0
         },
         {
             "name":"Water",
@@ -59,7 +71,9 @@
             "phase":"liquid",
             "specificHeatCapacity":75.375,
             "meltingPoint":273.15,
-            "boilingPoint":373.13
+            "boilingPoint":373.13,
+            "fusionHeat":6020,
+            "vaporizationHeat":40650
         },
         {
             "name":"Carbon dioxide",
@@ -67,7 +81,9 @@
             "phase":"gas",
             "specificHeatCapacity":37.135,
             "meltingPoint":216.5,
-            "boilingPoint":216.6
+            "boilingPoint":216.6,
+            "fusionHeat":8347,
+            "vaporizationHeat":15326
         }
     ],
     "reactions":[

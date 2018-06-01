@@ -29,6 +29,8 @@ public class ElementProperties {
 
     protected double meltingPoint;
     protected double boilingPoint;
+    protected double fusionHeat;
+    protected double vaporizationHeat;
 
     private int[] electronsPerShell;
 
@@ -42,6 +44,8 @@ public class ElementProperties {
         specificHeatCapacity = object.getDouble("specificHeatCapacity");
         meltingPoint = object.optDouble("meltingPoint");
         boilingPoint = object.optDouble("boilingPoint");
+        fusionHeat = object.optDouble("fusionHeat");
+        vaporizationHeat = object.optDouble("vaporizationHeat");
     }
 
     public void map(){
