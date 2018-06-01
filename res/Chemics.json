@@ -30,6 +30,30 @@
     ],
     "compounds":[
         {
+            "name":"Hydrogen",
+            "symbol":"H2",
+            "phase":"gas",
+            "specificHeatCapacity":28.836,
+            "meltingPoint":13.99,
+            "boilingPoint":20.271
+        },
+        {
+            "name":"Oxygen",
+            "symbol":"O2",
+            "phase":"gas",
+            "specificHeatCapacity":29.378,
+            "meltingPoint":54.36,
+            "boilingPoint":90.188
+        },
+        {
+            "name":"Ozone",
+            "symbol":"O3",
+            "phase":"gas",
+            "specificHeatCapacity":39.22,
+            "meltingPoint":81,
+            "boilingPoint":161
+        },
+        {
             "name":"Water",
             "symbol":"H2O",
             "phase":"liquid",
