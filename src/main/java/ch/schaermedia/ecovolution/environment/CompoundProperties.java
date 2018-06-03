@@ -20,7 +20,7 @@ public class CompoundProperties extends ElementProperties{
         return BY_CODE.get(code);
     }
 
-    private Map<ElementProperties, Integer> composition;
+    private final Map<ElementProperties, Integer> composition = new HashMap<>();
 
     public CompoundProperties() {
     }
