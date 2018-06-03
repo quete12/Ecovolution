@@ -19,38 +19,42 @@ public class Compound {
         this.properties = properties;
     }
 
+    public double getTemperature_K() {
+        if (energy_j < energyToMeltingPoint_j() + energyRequiredToMelt_j()) {
+            return (energy_j / amount_mol) / properties.getSpecificHeatCapacity();
+        }
+        if (energy_j < energyToBoilingPoint_j() + energyRequiredToVaporize_j()) {
+            return ((energy_j - energyRequiredToMelt_j()) / amount_mol) / properties.getSpecificHeatCapacity();
+        }
+        return ((energy_j - energyRequiredToMelt_j() - energyRequiredToVaporize_j()) / amount_mol) / properties.getSpecificHeatCapacity();
+    }
+
     public Phase getPhase(){
-        if(energy_j < totalEnergyToMelt_j()){
+        if (energy_j < energyToMeltingPoint_j() + energyRequiredToMelt_j()) {
             return Phase.SOLID;
         }
-        if(energy_j < totalEnergyToVaporize_j()){
+        if (energy_j < energyToBoilingPoint_j() + energyRequiredToVaporize_j()) {
             return Phase.LIQUID;
         }
         return Phase.GAS;
     }
 
-    private double energyCapacityToMelting_j() {
-        return properties.getMeltingPoint() * amount_mol;
+    private double energyToMeltingPoint_j() {
+        return amount_mol * properties.getMeltingPoint() * properties.getSpecificHeatCapacity();
     }
 
     private double energyRequiredToMelt_j() {
-        return properties.getFusionHeat() * amount_mol;
+        return amount_mol * properties.getFusionHeat();
     }
 
-    private double totalEnergyToMelt_j() {
-        return energyCapacityToMelting_j() + energyRequiredToMelt_j();
-    }
-
-    private double energyCapacityToBoiling_j() {
-        return properties.getBoilingPoint() * amount_mol;
+    private double energyToBoilingPoint_j() {
+        double energyToBoilingPoint = amount_mol * properties.getBoilingPoint() * properties.getSpecificHeatCapacity();
+        double result = energyToBoilingPoint + energyRequiredToMelt_j();
+        return result;
     }
 
     private double energyRequiredToVaporize_j() {
-        return properties.getVaporizationHeat() * amount_mol;
-    }
-
-    private double totalEnergyToVaporize_j() {
-        return totalEnergyToMelt_j() + energyCapacityToBoiling_j() + energyRequiredToVaporize_j();
+        return amount_mol * properties.getVaporizationHeat();
     }
 
 }
