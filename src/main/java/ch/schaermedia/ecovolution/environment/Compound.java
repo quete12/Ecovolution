@@ -14,55 +14,60 @@ public class Compound {
     private final CompoundProperties properties;
     private double amount_mol;
     private double energy_kj;
+    private double energyInBuffer_kj;
+
+    private double temperature_K;
+    private Phase phase;
 
     public Compound(CompoundProperties properties) {
         this.properties = properties;
     }
 
-    public void addEnergy(double add_kj){
-        if(add_kj<0){
+    public void addEnergy(double add_kj) {
+        if (add_kj < 0) {
             //TODO: add proper error handling
             //Maybe even allow removeing energy this way ??
             System.out.println("Negative add!!");
             return;
         }
-        energy_kj += add_kj;
+        energyInBuffer_kj += add_kj;
+    }
+    /**
+     * imports the energy from internal buffer and recalculates the temperature and phase for this compound.
+     */
+    public void update() {
+        this.energy_kj += energyInBuffer_kj;
+        energyInBuffer_kj = 0;
+        updateTemperature();
+        updatePhase();
     }
 
-    public double getTemperature_K() {
-        if (energy_kj < energyToMeltingPoint_kj()) {
-            return temperature(energy_kj);
-        }else if( energy_kj <energyToMeltingPoint_kj() + energyRequiredToMelt_kj()){
-            return properties.getMeltingPoint();
+    private void updateTemperature() {
+        if (energy_kj <= energyToMeltingPoint_kj()) {
+            temperature_K = temperature(energy_kj);
+        } else if (energy_kj <= energyToMeltingPoint_kj() + energyRequiredToMelt_kj()) {
+            temperature_K = properties.getMeltingPoint();
+        } else if (energy_kj <= energyToBoilingPoint_kj()) {
+            temperature_K = temperature(energy_kj - energyRequiredToMelt_kj());
+        } else if (energy_kj <= energyToBoilingPoint_kj() + energyRequiredToVaporize_kj()) {
+            temperature_K = properties.getBoilingPoint();
+        } else {
+            temperature_K = temperature(energy_kj - energyRequiredToMelt_kj() - energyRequiredToVaporize_kj());
         }
-        if (energy_kj < energyToBoilingPoint_kj()) {
-            return temperature(energy_kj - energyRequiredToMelt_kj());
-        }else if(energy_kj < energyToBoilingPoint_kj() + energyRequiredToVaporize_kj()){
-            return properties.getBoilingPoint();
-        }
-        return temperature(energy_kj - energyRequiredToMelt_kj() - energyRequiredToVaporize_kj());
     }
 
-    private double temperature(double energyForTemperature_j) {
-        return (energyForTemperature_j / amount_mol) / properties.getSpecificHeatCapacity();
+    private double temperature(double energyForTemperature_kj) {
+        return (energyForTemperature_kj / amount_mol) / properties.getSpecificHeatCapacity();
     }
 
-    public Phase getPhase() {
+    private void updatePhase() {
         if (energy_kj < energyToMeltingPoint_kj() + energyRequiredToMelt_kj()) {
-            return Phase.SOLID;
+            phase = Phase.SOLID;
+        } else if (energy_kj < energyToBoilingPoint_kj() + energyRequiredToVaporize_kj()) {
+            phase = Phase.LIQUID;
+        } else {
+            phase = Phase.GAS;
         }
-        if (energy_kj < energyToBoilingPoint_kj() + energyRequiredToVaporize_kj()) {
-            return Phase.LIQUID;
-        }
-        return Phase.GAS;
-    }
-
-    public boolean isMelted() {
-        return energy_kj > energyToMeltingPoint_kj() + energyRequiredToMelt_kj();
-    }
-
-    public boolean isVaporized() {
-        return energy_kj > energyToBoilingPoint_kj() + energyRequiredToVaporize_kj();
     }
 
     private double energyToMeltingPoint_kj() {
@@ -94,6 +99,30 @@ public class Compound {
     @Override
     public String toString() {
         return "Compound{" + "properties=" + properties + ", amount_mol=" + amount_mol + ", energy_j=" + energy_kj + '}';
+    }
+
+    public double getEnergy_kj() {
+        return energy_kj;
+    }
+
+    public void setEnergy_kj(double energy_kj) {
+        this.energy_kj = energy_kj;
+    }
+
+    public double getTemperature_K() {
+        return temperature_K;
+    }
+
+    public void setTemperature_K(double temperature_K) {
+        this.temperature_K = temperature_K;
+    }
+
+    public Phase getPhase() {
+        return phase;
+    }
+
+    public void setPhase(Phase phase) {
+        this.phase = phase;
     }
 
 }
