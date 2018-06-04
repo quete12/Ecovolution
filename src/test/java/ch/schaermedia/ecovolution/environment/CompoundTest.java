@@ -35,7 +35,7 @@ public class CompoundTest {
         double expResult = 0.0;
         for (int i = 0; i < 25; i++) {
         double result = instance.getTemperature_K();
-        instance.addEnergy(200000);
+        instance.addEnergy(200);
             System.out.println("Temperature: " + result + " phase: " + instance.getPhase());
         }
         //assertEquals(expResult, result, 0.0);

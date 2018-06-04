@@ -25,14 +25,12 @@ public class ElementProperties {
     protected int orderNumber;
     protected Phase defaultPhase;
 
-    protected double specificHeatCapacity;
+    protected double specificHeatCapacity_kj_mol_K;
 
-    protected double meltingPoint;
-    protected double boilingPoint;
-    protected double fusionHeat;
-    protected double vaporizationHeat;
-
-    private int[] electronsPerShell;
+    protected double meltingPoint_K;
+    protected double boilingPoint_K;
+    protected double fusionHeat_kj;
+    protected double vaporizationHeat_kj;
 
     public ElementProperties() {
     }
@@ -41,14 +39,19 @@ public class ElementProperties {
         name = object.getString("name");
         code = object.getString("symbol");
         orderNumber = object.optInt("number");
-        specificHeatCapacity = object.getDouble("specificHeatCapacity");
-        meltingPoint = object.optDouble("meltingPoint");
-        boilingPoint = object.optDouble("boilingPoint");
-        fusionHeat = object.optDouble("fusionHeat");
-        vaporizationHeat = object.optDouble("vaporizationHeat");
+        specificHeatCapacity_kj_mol_K = object.getDouble("specificHeatCapacity");
+        meltingPoint_K = object.optDouble("meltingPoint");
+        boilingPoint_K = object.optDouble("boilingPoint");
+        fusionHeat_kj = object.optDouble("fusionHeat");
+        vaporizationHeat_kj = object.optDouble("vaporizationHeat");
     }
 
     public void map(){
         BY_CODE.put(code, this);
+    }
+
+    @Override
+    public String toString() {
+        return "ElementProperties{" + "name=" + name + ", code=" + code + ", orderNumber=" + orderNumber + ", defaultPhase=" + defaultPhase + ", specificHeatCapacity_kj_mol_K=" + specificHeatCapacity_kj_mol_K + ", meltingPoint_K=" + meltingPoint_K + ", boilingPoint_K=" + boilingPoint_K + ", fusionHeat_kj=" + fusionHeat_kj + ", vaporizationHeat_kj=" + vaporizationHeat_kj + '}';
     }
 }

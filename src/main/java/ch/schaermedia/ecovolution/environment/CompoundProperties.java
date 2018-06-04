@@ -101,45 +101,47 @@ public class CompoundProperties extends ElementProperties{
     }
 
     public double getSpecificHeatCapacity() {
-        return specificHeatCapacity;
+        return specificHeatCapacity_kj_mol_K;
     }
 
     public void setSpecificHeatCapacity(double specificHeatCapacity) {
-        this.specificHeatCapacity = specificHeatCapacity;
+        this.specificHeatCapacity_kj_mol_K = specificHeatCapacity;
     }
 
     public double getMeltingPoint() {
-        return meltingPoint;
+        return meltingPoint_K;
     }
 
     public void setMeltingPoint(double meltingPoint) {
-        this.meltingPoint = meltingPoint;
+        this.meltingPoint_K = meltingPoint;
     }
 
     public double getBoilingPoint() {
-        return boilingPoint;
+        return boilingPoint_K;
     }
 
     public void setBoilingPoint(double boilingPoint) {
-        this.boilingPoint = boilingPoint;
+        this.boilingPoint_K = boilingPoint;
     }
 
     public double getFusionHeat() {
-        return fusionHeat;
+        return fusionHeat_kj;
     }
 
     public void setFusionHeat(double fusionHeat) {
-        this.fusionHeat = fusionHeat;
+        this.fusionHeat_kj = fusionHeat;
     }
 
     public double getVaporizationHeat() {
-        return vaporizationHeat;
+        return vaporizationHeat_kj;
     }
 
     public void setVaporizationHeat(double vaporizationHeat) {
-        this.vaporizationHeat = vaporizationHeat;
+        this.vaporizationHeat_kj = vaporizationHeat;
     }
 
-
-
+    @Override
+    public String toString() {
+        return super.toString()+"\n\tCompoundProperties{" + "composition=" + composition + '}';
+    }
 }

@@ -18,4 +18,9 @@ public class Element {
     public Element(ElementProperties properties) {
         this.properties = properties;
     }
+
+    @Override
+    public String toString() {
+        return "Element{" + "properties=" + properties + ", phase=" + phase + ", amount_mol=" + amount_mol + '}';
+    }
 }
