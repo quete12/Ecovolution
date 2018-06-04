@@ -5,8 +5,8 @@
  */
 package ch.schaermedia.ecovolution.environment;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -17,83 +17,29 @@ public class CompoundMix {
     public static final double STATIC_PRESSURE_kPa = 101.325;
     public static final double STATIC_VOLUME_L = 10000;
 
-    private final List<Compound> mix;
+    // Map<code, Compound[phase_idx]>
+    private final Map<String, Compound[]> mix;
 
     private double heatCapacitySum;
     private double amount_mol;
     private double volume_L;
     private double pressure_kPa;
+    private double temperature_K;
 
     public CompoundMix() {
-        this.mix = new ArrayList<>();
+        this.mix = new HashMap<>();
     }
 
     public void spread(CompoundMix[] layer, CompoundMix higher, CompoundMix lower) {
         boolean hasLower = lower != null;
         boolean hasHigher = higher != null;
+
     }
 
-    private void spreadToLower(CompoundMix lower){
-        if(lower.getPressure_kPa() < STATIC_PRESSURE_kPa){
-            List<Compound>[] byPhases = byPhases();
-            List<Compound> solids = byPhases[0];
+    private void spreadToLower(CompoundMix lower) {
+        if (lower.getPressure_kPa() < STATIC_PRESSURE_kPa) {
 
         }
-    }
-
-    private List<Compound>[] byPhases(){
-        List<Compound>[] phased = new List[3];
-        for (int i = 0; i < phased.length; i++) {
-           phased[i] = new ArrayList<>();
-        }
-        for (Compound compound : mix) {
-            switch(compound.getPhase()){
-                case SOLID:
-                    phased[0].add(compound);
-                    break;
-                case LIQUID:
-                    phased[1].add(compound);
-                    break;
-                case GAS:
-                    phased[2].add(compound);
-                    break;
-                default:
-                    throw new AssertionError(compound.getPhase().name());
-            }
-        }
-        return phased;
-    }
-
-    private List<Compound> solids(){
-        ArrayList<Compound> result = new ArrayList<Compound>();
-        mix.stream().filter((compound) -> (compound.getPhase() == Phase.SOLID)).forEachOrdered((compound) -> {
-            result.add(compound);
-        });
-        return result;
-    }
-
-    private List<Compound> liquides(){
-        ArrayList<Compound> result = new ArrayList<Compound>();
-        mix.stream().filter((compound) -> (compound.getPhase() == Phase.LIQUID)).forEachOrdered((compound) -> {
-            result.add(compound);
-        });
-        return result;
-    }
-
-    private List<Compound> gases(){
-        ArrayList<Compound> result = new ArrayList<Compound>();
-        mix.stream().filter((compound) -> (compound.getPhase() == Phase.GAS)).forEachOrdered((compound) -> {
-            result.add(compound);
-        });
-        return result;
-    }
-
-    public void addEnergy(double energy_kj) {
-        mix.forEach((compound) -> {
-            double percentage = heatCapacitySum / compound.getTotalHeatCapacity();
-            double adding = energy_kj * percentage;
-            compound.addEnergy(adding);
-        });
     }
 
     public void update() {
@@ -101,13 +47,41 @@ public class CompoundMix {
         heatCapacitySum = 0;
         volume_L = 0;
         pressure_kPa = 0;
-        mix.forEach((compound) -> {
-            compound.update();
-            amount_mol += compound.getAmount_mol();
-            heatCapacitySum += compound.getTotalHeatCapacity();
-            volume_L += compound.volume_L(STATIC_PRESSURE_kPa);
-            pressure_kPa += compound.pressure_kPa(STATIC_VOLUME_L);
-        });
+        int compounds = 0;
+        double temperatureSum = 0;
+        for (Compound[] cl : mix.values()) {
+            for (int i = 0; i < cl.length; i++) {
+                Compound compound = cl[i];
+                if (compound == null) {
+                    continue;
+                }
+                compound.update();
+                int phaseIdx = compound.getPhase().idx;
+                if (phaseIdx != i) {
+                    if (cl[phaseIdx] == null) {
+                        cl[phaseIdx] = compound;
+                    } else {
+                        cl[phaseIdx].importCompound(compound);
+                    }
+                    cl[i] = null;
+                }
+                amount_mol += compound.getAmount_mol();
+                heatCapacitySum += compound.getTotalHeatCapacity();
+                volume_L += compound.volume_L(STATIC_PRESSURE_kPa);
+                pressure_kPa += compound.pressure_kPa(STATIC_VOLUME_L);
+                temperatureSum += compound.getTemperature_K();
+                compounds++;
+            }
+        }
+        temperature_K = temperatureSum / compounds;
+    }
+
+    public double molesToPressurize(){
+        double diffPressure = STATIC_PRESSURE_kPa-pressure_kPa;
+        if(diffPressure < 0){
+            return 0;
+        }
+        return ChemUtilities.moles(diffPressure, volume_L, temperature_K);
     }
 
     public double getAmount_mol() {

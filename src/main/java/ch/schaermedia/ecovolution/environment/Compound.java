@@ -25,11 +25,11 @@ public class Compound {
         this.properties = properties;
     }
 
-    public double volume_L(double pressure_kPa){
+    public double volume_L(double pressure_kPa) {
         return ChemUtilities.volume_L(pressure_kPa, amount_mol, temperature_K);
     }
 
-    public double pressure_kPa(double volume_L){
+    public double pressure_kPa(double volume_L) {
         return ChemUtilities.pressure_kPa(volume_L, amount_mol, temperature_K);
     }
 
@@ -46,16 +46,21 @@ public class Compound {
     public void addAmount(double add_mol) {
         if (add_mol < 0) {
             //TODO: add proper error handling
-            //Maybe even allow removeing energy this way ??
+            //Maybe even allow removeing moles this way ??
             System.out.println("Negative add!!");
             return;
         }
         amountBuffer_mol += add_mol;
     }
 
+    public void importCompound(Compound com) {
+        amountBuffer_mol += com.getAmount_mol();
+        energyBuffer_kj += com.getEnergy_kj();
+    }
+
     /**
-     * imports the energy and moles from internal buffer and recalculates the temperature
-     * and phase for this compound.
+     * imports the energy and moles from internal buffer and recalculates the
+     * temperature and phase for this compound.
      */
     public void update() {
         this.amount_mol += amountBuffer_mol;
@@ -161,8 +166,8 @@ public class Compound {
         return properties.getSpecificHeatCapacity();
     }
 
-    public double getTotalHeatCapacity(){
-        return properties.getSpecificHeatCapacity()*amount_mol;
+    public double getTotalHeatCapacity() {
+        return properties.getSpecificHeatCapacity() * amount_mol;
     }
 
 }
