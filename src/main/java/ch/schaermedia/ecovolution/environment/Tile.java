@@ -11,4 +11,10 @@ package ch.schaermedia.ecovolution.environment;
  */
 public class Tile {
     private static final int NUMBER_OF_ATMOSPHERELAYERS = 3;
+
+    private CompoundMix[] layers;
+
+    public Tile() {
+        this.layers = new CompoundMix[NUMBER_OF_ATMOSPHERELAYERS];
+    }
 }

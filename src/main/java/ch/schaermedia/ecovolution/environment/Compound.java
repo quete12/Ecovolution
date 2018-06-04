@@ -13,14 +13,24 @@ public class Compound {
 
     private final CompoundProperties properties;
     private double amount_mol;
+    private double amountBuffer_mol;
+
     private double energy_kj;
-    private double energyInBuffer_kj;
+    private double energyBuffer_kj;
 
     private double temperature_K;
     private Phase phase;
 
     public Compound(CompoundProperties properties) {
         this.properties = properties;
+    }
+
+    public double volume_L(double pressure_kPa){
+        return ChemUtilities.volume_L(pressure_kPa, amount_mol, temperature_K);
+    }
+
+    public double pressure_kPa(double volume_L){
+        return ChemUtilities.pressure_kPa(volume_L, amount_mol, temperature_K);
     }
 
     public void addEnergy(double add_kj) {
@@ -30,14 +40,28 @@ public class Compound {
             System.out.println("Negative add!!");
             return;
         }
-        energyInBuffer_kj += add_kj;
+        energyBuffer_kj += add_kj;
     }
+
+    public void addAmount(double add_mol) {
+        if (add_mol < 0) {
+            //TODO: add proper error handling
+            //Maybe even allow removeing energy this way ??
+            System.out.println("Negative add!!");
+            return;
+        }
+        amountBuffer_mol += add_mol;
+    }
+
     /**
-     * imports the energy from internal buffer and recalculates the temperature and phase for this compound.
+     * imports the energy and moles from internal buffer and recalculates the temperature
+     * and phase for this compound.
      */
     public void update() {
-        this.energy_kj += energyInBuffer_kj;
-        energyInBuffer_kj = 0;
+        this.amount_mol += amountBuffer_mol;
+        amountBuffer_mol = 0;
+        this.energy_kj += energyBuffer_kj;
+        energyBuffer_kj = 0;
         updateTemperature();
         updatePhase();
     }
@@ -123,6 +147,22 @@ public class Compound {
 
     public void setPhase(Phase phase) {
         this.phase = phase;
+    }
+
+    public String getName() {
+        return properties.getName();
+    }
+
+    public String getCode() {
+        return properties.getCode();
+    }
+
+    public double getSpecificHeatCapacity() {
+        return properties.getSpecificHeatCapacity();
+    }
+
+    public double getTotalHeatCapacity(){
+        return properties.getSpecificHeatCapacity()*amount_mol;
     }
 
 }
