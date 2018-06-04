@@ -35,6 +35,10 @@ public class CompoundMix {
         boolean hasHigher = higher != null;
 
     }
+
+    public void addEnergy(double energy_kj){
+        //TODO: add partial energy to all compounds
+    }
     /**
      * Tries to fill the lower mix untill lower mix has reached StaticPressure (1 atm)
      * @param lower
