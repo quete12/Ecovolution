@@ -35,9 +35,25 @@ public class CompoundMix {
         boolean hasHigher = higher != null;
 
     }
-
+    /**
+     * Tries to fill the lower mix untill lower mix has reached StaticPressure (1 atm)
+     * @param lower
+     */
     private void spreadToLower(CompoundMix lower) {
         if (lower.getPressure_kPa() < STATIC_PRESSURE_kPa) {
+            //TODO: solids fall down
+
+            //TODO: liquids rain down
+
+            //TODO: if there is still space in mix below fill with Gases
+        }
+    }
+    /**
+     * If the mixture takes up more volume than StaticVolume excess volume flows to higher mixture
+     * @param higher
+     */
+    private void spreadToHigher(CompoundMix higher){
+        if(volume_L > STATIC_VOLUME_L){
 
         }
     }
@@ -67,12 +83,15 @@ public class CompoundMix {
                 }
                 amount_mol += compound.getAmount_mol();
                 heatCapacitySum += compound.getTotalHeatCapacity();
+                //the sum of all partial volumes and pressures equal the total volume and pressure
                 volume_L += compound.volume_L(STATIC_PRESSURE_kPa);
                 pressure_kPa += compound.pressure_kPa(STATIC_VOLUME_L);
+
                 temperatureSum += compound.getTemperature_K();
                 compounds++;
             }
         }
+        //for now we average the temperature of all individual compounds to get the mixture temperature
         temperature_K = temperatureSum / compounds;
     }
 
