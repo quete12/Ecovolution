@@ -24,6 +24,7 @@ public class CompoundMix {
     private double amount_mol;
     private double volume_L;
     private double pressure_kPa;
+    //TODO find a way to prevent negative temperature since this could really screw up other calculations (resulting in nevative volume, pressure etc)
     private double temperature_K;
 
     public CompoundMix() {
@@ -36,19 +37,26 @@ public class CompoundMix {
 
     }
 
-    public void addEnergy(double energy_kj){
+    public void addEnergy(double energy_kj) {
         for (Compound[] value : mix.values()) {
             for (Compound compound : value) {
-                if(compound == null){
+                if (compound == null) {
                     continue;
                 }
-                double percent = compound.getSpecificHeatCapacity()/heatCapacitySum;
-                compound.addEnergy(energy_kj*percent);
+                double percent = compound.getSpecificHeatCapacity() / heatCapacitySum;
+                compound.addEnergy(energy_kj * percent);
             }
         }
     }
+
+    public void add(String code, int phase, double amount_mol, double energy_kj) {
+        //TODO add a compound
+    }
+
     /**
-     * Tries to fill the lower mix untill lower mix has reached StaticPressure (1 atm)
+     * Tries to fill the lower mix untill lower mix has reached StaticPressure
+     * (1 atm)
+     *
      * @param lower
      */
     private void spreadToLower(CompoundMix lower) {
@@ -59,37 +67,43 @@ public class CompoundMix {
             //for now we just take a percentage of each compound and phase
             double molesToPressurize = lower.molesToPressurize();
             double percentage = molesToPressurize / amount_mol;
-            if(percentage <=0){
+            if (percentage <= 0) {
                 return;
             }
-            if(percentage > 1){
+            if (percentage > 1) {
                 percentage = 1.0;
                 //to safe CPU cycles: add the complete Compound here and return
             }
-            for (Map.Entry<String, Compound[]> entry : mix.entrySet()) {
-                String key = entry.getKey();
-                Compound[] value = entry.getValue();
-                for (int i = 0; i < value.length; i++) {
-                    Compound compound = value[i];
-                    if(compound == null){
-                        continue;
-                    }
-                    lower.add(key, i, compound.splitMoles(percentage), compound.splitEnergy(percentage));
-                }
-            }
+            spreadByPercentage(lower, percentage);
         }
     }
 
-    public void add(String code, int phase, double amount_mol, double energy_kj){
-        //TODO add a compound
-    }
     /**
-     * If the mixture takes up more volume than StaticVolume excess volume flows to higher mixture
+     * If the mixture takes up more volume than StaticVolume excess volume flows
+     * to higher mixture
+     *
      * @param higher
      */
-    private void spreadToHigher(CompoundMix higher){
-        if(volume_L > STATIC_VOLUME_L){
+    private void spreadToHigher(CompoundMix higher) {
+        if (volume_L > STATIC_VOLUME_L) {
+            //since our volume is already greater than its supposed volume there's no need to check moles and percentage calculations for negative values.
+            double molesOverVolume = molesOverVolume();
+            double percentage = molesOverVolume / amount_mol;
+            spreadByPercentage(higher, percentage);
+        }
+    }
 
+    private void spreadByPercentage(CompoundMix spreadTo, double percentage) {
+        for (Map.Entry<String, Compound[]> entry : mix.entrySet()) {
+            String key = entry.getKey();
+            Compound[] value = entry.getValue();
+            for (int i = 0; i < value.length; i++) {
+                Compound compound = value[i];
+                if (compound == null) {
+                    continue;
+                }
+                spreadTo.add(key, i, compound.splitMoles(percentage), compound.splitEnergy(percentage));
+            }
         }
     }
 
@@ -130,12 +144,20 @@ public class CompoundMix {
         temperature_K = temperatureSum / compounds;
     }
 
-    public double molesToPressurize(){
-        double diffPressure = STATIC_PRESSURE_kPa-pressure_kPa;
-        if(diffPressure < 0){
+    public double molesToPressurize() {
+        double diffPressure = STATIC_PRESSURE_kPa - pressure_kPa;
+        if (diffPressure < 0) {
             return 0;
         }
         return ChemUtilities.moles(diffPressure, volume_L, temperature_K);
+    }
+
+    public double molesOverVolume() {
+        double diffVolume = volume_L - STATIC_VOLUME_L;
+        if (diffVolume < 0) {
+            return 0;
+        }
+        return ChemUtilities.moles(pressure_kPa, diffVolume, temperature_K);
     }
 
     public double getAmount_mol() {
