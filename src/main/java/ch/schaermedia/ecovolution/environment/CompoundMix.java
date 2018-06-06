@@ -37,7 +37,15 @@ public class CompoundMix {
     }
 
     public void addEnergy(double energy_kj){
-        //TODO: add partial energy to all compounds
+        for (Compound[] value : mix.values()) {
+            for (Compound compound : value) {
+                if(compound == null){
+                    continue;
+                }
+                double percent = compound.getSpecificHeatCapacity()/heatCapacitySum;
+                compound.addEnergy(energy_kj*percent);
+            }
+        }
     }
     /**
      * Tries to fill the lower mix untill lower mix has reached StaticPressure (1 atm)

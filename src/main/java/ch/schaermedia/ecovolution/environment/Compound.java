@@ -54,8 +54,8 @@ public class Compound {
     }
 
     public void importCompound(Compound com) {
-        amountBuffer_mol += com.getAmount_mol();
-        energyBuffer_kj += com.getEnergy_kj();
+        amountBuffer_mol += (com.getAmount_mol() + com.getAmountBuffer_mol());
+        energyBuffer_kj += (com.getEnergy_kj() + com.getEnergyBuffer_kj());
     }
 
     /**
@@ -123,6 +123,18 @@ public class Compound {
 
     public void setAmount_mol(double amount_mol) {
         this.amount_mol = amount_mol;
+    }
+
+    public CompoundProperties getProperties() {
+        return properties;
+    }
+
+    public double getAmountBuffer_mol() {
+        return amountBuffer_mol;
+    }
+
+    public double getEnergyBuffer_kj() {
+        return energyBuffer_kj;
     }
 
     @Override
