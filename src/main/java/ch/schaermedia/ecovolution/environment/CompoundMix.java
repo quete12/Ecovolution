@@ -64,6 +64,7 @@ public class CompoundMix {
             }
             if(percentage > 1){
                 percentage = 1.0;
+                //to safe CPU cycles: add the complete Compound here and return
             }
             for (Map.Entry<String, Compound[]> entry : mix.entrySet()) {
                 String key = entry.getKey();
