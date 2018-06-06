@@ -54,11 +54,33 @@ public class CompoundMix {
     private void spreadToLower(CompoundMix lower) {
         if (lower.getPressure_kPa() < STATIC_PRESSURE_kPa) {
             //TODO: solids fall down
-
             //TODO: liquids rain down
-
             //TODO: if there is still space in mix below fill with Gases
+            //for now we just take a percentage of each compound and phase
+            double molesToPressurize = lower.molesToPressurize();
+            double percentage = molesToPressurize / amount_mol;
+            if(percentage <=0){
+                return;
+            }
+            if(percentage > 1){
+                percentage = 1.0;
+            }
+            for (Map.Entry<String, Compound[]> entry : mix.entrySet()) {
+                String key = entry.getKey();
+                Compound[] value = entry.getValue();
+                for (int i = 0; i < value.length; i++) {
+                    Compound compound = value[i];
+                    if(compound == null){
+                        continue;
+                    }
+                    lower.add(key, i, compound.splitMoles(percentage), compound.splitEnergy(percentage));
+                }
+            }
         }
+    }
+
+    public void add(String code, int phase, double amount_mol, double energy_kj){
+        //TODO add a compound
     }
     /**
      * If the mixture takes up more volume than StaticVolume excess volume flows to higher mixture

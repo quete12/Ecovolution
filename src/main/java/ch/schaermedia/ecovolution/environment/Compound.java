@@ -58,6 +58,18 @@ public class Compound {
         energyBuffer_kj += (com.getEnergy_kj() + com.getEnergyBuffer_kj());
     }
 
+    public double splitMoles(double percentage){
+        double remove = amount_mol*percentage;
+        amount_mol -=remove;
+        return remove;
+    }
+
+    public double splitEnergy(double percentage){
+        double remove = energy_kj*percentage;
+        energy_kj-=remove;
+        return remove;
+    }
+
     /**
      * imports the energy and moles from internal buffer and recalculates the
      * temperature and phase for this compound.
