@@ -6,6 +6,7 @@
 package ch.schaermedia.ecovolution.environment;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,13 +32,28 @@ public class CompoundMix {
         this.mix = new HashMap<>();
     }
 
-    public void spread(CompoundMix[] layer, CompoundMix higher, CompoundMix lower) {
+    public void spread(List<CompoundMix> layer, CompoundMix higher, CompoundMix lower) {
         boolean hasLower = lower != null;
         boolean hasHigher = higher != null;
-        if(hasLower){
-
+        double tmp_heatCapacitySum = heatCapacitySum;
+        double tmp_amount_mol = amount_mol;
+        double tmp_volume_L = volume_L;
+        double tmp_pressure_kPa = pressure_kPa;
+        if (hasLower) {
+            double spreadPercentage = spreadToLower(lower);
+            tmp_heatCapacitySum -= tmp_heatCapacitySum * spreadPercentage;
+            tmp_amount_mol -= tmp_amount_mol * spreadPercentage;
+            tmp_volume_L -= tmp_volume_L * spreadPercentage;
+            tmp_pressure_kPa -= tmp_pressure_kPa * spreadPercentage;
         }
-
+        if (hasHigher) {
+            double spreadPercentage = spreadToHigher(higher, tmp_volume_L);
+            tmp_heatCapacitySum -= tmp_heatCapacitySum * spreadPercentage;
+            tmp_amount_mol -= tmp_amount_mol * spreadPercentage;
+            tmp_volume_L -= tmp_volume_L * spreadPercentage;
+            tmp_pressure_kPa -= tmp_pressure_kPa * spreadPercentage;
+        }
+        spread(layer, tmp_amount_mol);
     }
 
     public void addEnergy(double energy_kj) {
@@ -56,13 +72,26 @@ public class CompoundMix {
         //TODO add a compound
     }
 
+    private void spread(List<CompoundMix> layer, double currentAmount_mol) {
+        /*
+        Adding one (represents our Mix).
+        It's important to include this mix in the calculation of average to keep a basevalue in this mix.
+        If we would spread the full value we would get a wierd flickering going on.
+         */
+        int count = layer.size() + 1;
+        double percentage = (double) (1.0 / count);
+        for (CompoundMix compoundMix : layer) {
+            spreadByPercentage(compoundMix, percentage);
+        }
+    }
+
     /**
      * Tries to fill the lower mix untill lower mix has reached StaticPressure
      * (1 atm)
      *
      * @param lower
      */
-    private void spreadToLower(CompoundMix lower) {
+    private double spreadToLower(CompoundMix lower) {
         if (lower.getPressure_kPa() < STATIC_PRESSURE_kPa) {
             //TODO: solids fall down
             //TODO: liquids rain down
@@ -71,14 +100,16 @@ public class CompoundMix {
             double molesToPressurize = lower.molesToPressurize();
             double percentage = molesToPressurize / amount_mol;
             if (percentage <= 0) {
-                return;
+                return 0;
             }
             if (percentage > 1) {
                 percentage = 1.0;
                 //to safe CPU cycles: add the complete Compound here and return
             }
             spreadByPercentage(lower, percentage);
+            return percentage;
         }
+        return 0;
     }
 
     /**
@@ -87,13 +118,15 @@ public class CompoundMix {
      *
      * @param higher
      */
-    private void spreadToHigher(CompoundMix higher) {
+    private double spreadToHigher(CompoundMix higher, double currentVolume) {
         if (volume_L > STATIC_VOLUME_L) {
             //since our volume is already greater than its supposed volume there's no need to check moles and percentage calculations for negative values.
-            double molesOverVolume = molesOverVolume();
+            double molesOverVolume = molesOverVolume(currentVolume);
             double percentage = molesOverVolume / amount_mol;
             spreadByPercentage(higher, percentage);
+            return percentage;
         }
+        return 0;
     }
 
     private void spreadByPercentage(CompoundMix spreadTo, double percentage) {
@@ -105,7 +138,7 @@ public class CompoundMix {
                 if (compound == null) {
                     continue;
                 }
-                spreadTo.add(key, i, compound.splitDirectMoles(percentage), compound.splitDirectEnergy(percentage));
+                spreadTo.add(key, i, compound.splitMoles(percentage), compound.splitEnergy(percentage));
             }
         }
     }
@@ -155,8 +188,8 @@ public class CompoundMix {
         return ChemUtilities.moles(diffPressure, volume_L, temperature_K);
     }
 
-    public double molesOverVolume() {
-        double diffVolume = volume_L - STATIC_VOLUME_L;
+    public double molesOverVolume(double baseVolume) {
+        double diffVolume = baseVolume - STATIC_VOLUME_L;
         if (diffVolume < 0) {
             return 0;
         }
