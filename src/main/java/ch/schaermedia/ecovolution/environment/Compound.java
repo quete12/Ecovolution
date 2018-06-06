@@ -58,15 +58,27 @@ public class Compound {
         energyBuffer_kj += (com.getEnergy_kj() + com.getEnergyBuffer_kj());
     }
 
-    public double splitMoles(double percentage){
-        double remove = amount_mol*percentage;
-        amount_mol -=remove;
+    public double splitDirectMoles(double percentage) {
+        double remove = amount_mol * percentage;
+        amount_mol -= remove;
         return remove;
     }
 
-    public double splitEnergy(double percentage){
-        double remove = energy_kj*percentage;
-        energy_kj-=remove;
+    public double splitDirectEnergy(double percentage) {
+        double remove = energy_kj * percentage;
+        energy_kj -= remove;
+        return remove;
+    }
+
+    public double splitMoles(double percentage) {
+        double remove = amount_mol * percentage;
+        amountBuffer_mol -= remove;
+        return remove;
+    }
+
+    public double splitEnergy(double percentage) {
+        double remove = energy_kj * percentage;
+        energyBuffer_kj -= remove;
         return remove;
     }
 

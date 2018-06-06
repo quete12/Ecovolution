@@ -34,6 +34,9 @@ public class CompoundMix {
     public void spread(CompoundMix[] layer, CompoundMix higher, CompoundMix lower) {
         boolean hasLower = lower != null;
         boolean hasHigher = higher != null;
+        if(hasLower){
+
+        }
 
     }
 
@@ -102,7 +105,7 @@ public class CompoundMix {
                 if (compound == null) {
                     continue;
                 }
-                spreadTo.add(key, i, compound.splitMoles(percentage), compound.splitEnergy(percentage));
+                spreadTo.add(key, i, compound.splitDirectMoles(percentage), compound.splitDirectEnergy(percentage));
             }
         }
     }
