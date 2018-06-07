@@ -70,12 +70,12 @@ public class CompoundMix {
 
     public void add(String code, int phase, double amount_mol, double energy_kj) {
         Compound[] compounds = mix.get(code);
-        if(compounds == null){
+        if (compounds == null) {
             compounds = new Compound[3];
             mix.put(code, compounds);
         }
         Compound compound = compounds[phase];
-        if(compound == null){
+        if (compound == null) {
             compound = new Compound(CompoundProperties.getPropertiesFromCode(code));
             compounds[phase] = compound;
         }
@@ -91,11 +91,11 @@ public class CompoundMix {
          */
         int count = layer.size() + 1;
         double percentage = (double) (1.0 / count);
-        double totalSpreadPercentage = percentage*layer.size();
+        double totalSpreadPercentage = percentage * layer.size();
         //to avoid any conflics with previous calculations we invert compound and layer spreading in comparison to spreadByPercentage()
         for (Compound[] value : mix.values()) {
             for (Compound compound : value) {
-                if(compound == null){
+                if (compound == null) {
                     continue;
                 }
                 double splitMoles = compound.splitMoles(totalSpreadPercentage);
@@ -118,26 +118,25 @@ public class CompoundMix {
      * @param lower
      */
     private double spreadToLower(CompoundMix lower) {
-        //maybe invert if and return
-        if (lower.getPressure_kPa() < STATIC_PRESSURE_kPa) {
-            //maybe write a function to handle this or invert if for better control flow
-            //TODO: solids fall down
-            //TODO: liquids rain down
-            //TODO: if there is still space in mix below fill with Gases
-            //for now we just take a percentage of each compound and phase
-            double molesToPressurize = lower.molesToPressurize();
-            double percentage = molesToPressurize / amount_mol;
-            if (percentage <= 0) {
-                return 0;
-            }
-            if (percentage > 1) {
-                percentage = 1.0;
-                //to safe CPU cycles: add the complete Compound here and return
-            }
-            spreadByPercentage(lower, percentage);
-            return percentage;
+        if (lower.getPressure_kPa() >= STATIC_PRESSURE_kPa) {
+            return 0;
         }
-        return 0;
+        //TODO: solids fall down
+        //TODO: liquids rain down
+        //TODO: if there is still space in mix below fill with Gases
+
+        //for now we just take a percentage of each compound and phase
+        double molesToPressurize = lower.molesToPressurize();
+        double percentage = molesToPressurize / amount_mol;
+        if (percentage <= 0) {
+            return 0;
+        }
+        if (percentage > 1) {
+            percentage = 1.0;
+            //to safe CPU cycles: add the complete Compound here and return
+        }
+        spreadByPercentage(lower, percentage);
+        return percentage;
     }
 
     /**
@@ -147,17 +146,14 @@ public class CompoundMix {
      * @param higher
      */
     private double spreadToHigher(CompoundMix higher, double currentVolume) {
-        //maybe invert if and return
-        if (volume_L > STATIC_VOLUME_L) {
-            //maybe write a function to handle this or invert if for better control flow
-
-            //since our volume is already greater than its supposed volume there's no need to check moles and percentage calculations for negative values.
-            double molesOverVolume = molesOverVolume(currentVolume);
-            double percentage = molesOverVolume / amount_mol;
-            spreadByPercentage(higher, percentage);
-            return percentage;
+        if (volume_L <= STATIC_VOLUME_L) {
+            return 0;
         }
-        return 0;
+        //since our volume is already greater than its supposed volume there's no need to check moles and percentage calculations for negative values.
+        double molesOverVolume = molesOverVolume(currentVolume);
+        double percentage = molesOverVolume / amount_mol;
+        spreadByPercentage(higher, percentage);
+        return percentage;
     }
 
     private void spreadByPercentage(CompoundMix spreadTo, double percentage) {
