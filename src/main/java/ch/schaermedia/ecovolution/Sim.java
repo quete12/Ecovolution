@@ -5,9 +5,12 @@
  */
 package ch.schaermedia.ecovolution;
 
-import org.joml.Vector2f;
+import ch.schaermedia.ecovolution.environment.basic.Tile;
+import ch.schaermedia.ecovolution.environment.basic.TileGenerator;
+import ch.schaermedia.ecovolution.environment.basic.World;
+import ch.schaermedia.ecovolution.representation.WorldRenderer;
 import processing.core.PApplet;
-import processing.event.MouseEvent;
+import processing.core.PGraphics;
 
 /**
  *
@@ -15,10 +18,8 @@ import processing.event.MouseEvent;
  */
 public class Sim extends PApplet {
 
-    public static final int border = 5;
-    private final double zoomStep = 0.01;
-    private double zoom = 0.1;
-    private final Vector2f worldTranslation = new Vector2f();
+    private World world;
+    private WorldRenderer renderer;
 
     @Override
     public void settings() {
@@ -27,32 +28,21 @@ public class Sim extends PApplet {
 
     @Override
     public void draw() {
-        background(0);
-        pushMatrix();
-        translate(border, border);
-        pushMatrix();
-        Vector2f mousePos = new Vector2f(mouseX, mouseY);
-        if (mousePressed) {
-            Vector2f diff = mouseStart.sub(mousePos, new Vector2f());
-            mouseStart = mousePos;
-            worldTranslation.add(diff.negate());
-        }
-        translate(worldTranslation.x, worldTranslation.y);
-        scale((float) zoom);
-
-        popMatrix();
-        popMatrix();
-        fill(0);
-        noStroke();
-        rect(0, 0, width, border);
-        rect(0, 0, border, height);
-        rect(0, height - border, width, border);
-        rect(width - border, 0, border, height);
+        background(255);
+        PGraphics graph = createGraphics(200, 200, P2D);
+        renderer.render(world, graph);
+        image(graph, 0, 0);
     }
 
     @Override
     public void setup() {
         windowSetup();
+        worldSetup();
+        rendererSetup();
+    }
+
+    private void rendererSetup() {
+        renderer = new WorldRenderer();
     }
 
     private void windowSetup() {
@@ -61,26 +51,21 @@ public class Sim extends PApplet {
         surface.setFrameRate(60);
     }
 
-    @Override
-    public void mouseWheel(MouseEvent event) {
-        zoom -= event.getCount() * zoomStep;
-    }
-    private Vector2f mouseStart = new Vector2f();
-
-    @Override
-    public void mouseReleased() {
-    }
-
-    @Override
-    public void mousePressed() {
-        if (mouseButton == LEFT) {
-            mouseStart.x = mouseX;
-            mouseStart.y = mouseY;
-        }
-    }
-
     public static void main(String[] args) {
         PApplet.main(Sim.class, args);
+    }
+
+    private void worldSetup() {
+        world = new World(20, 20, 3, new TGenerator());
+    }
+
+    private class TGenerator implements TileGenerator {
+
+        @Override
+        public Tile generate(int x, int y, float size) {
+            return new Tile(size, size, x, y);
+        }
+
     }
 
 }

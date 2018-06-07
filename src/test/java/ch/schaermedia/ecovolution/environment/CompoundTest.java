@@ -5,6 +5,9 @@
  */
 package ch.schaermedia.ecovolution.environment;
 
+import ch.schaermedia.ecovolution.environment.chem.CompoundProperties;
+import ch.schaermedia.ecovolution.environment.chem.Compound;
+import ch.schaermedia.ecovolution.environment.chem.ChemUtilities;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

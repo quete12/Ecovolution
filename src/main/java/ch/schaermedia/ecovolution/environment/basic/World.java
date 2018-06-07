@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ch.schaermedia.ecovolution.environment;
+package ch.schaermedia.ecovolution.environment.basic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +14,22 @@ import java.util.List;
  */
 public class World {
 
-    private final int width = 20;
-    private final int height = 20;
+    public static final float TILE_SIZE = 10f;
 
-    private final int spreadRange = 3;
+    private final int width;
+    private final int height;
+
+    private final int spreadRange;
+
+    private final TileGenerator tileGenerator;
 
     private Tile[][] grid;
 
-    public World() {
+    public World(int width, int height, int spreadRange, TileGenerator tileGenerator) {
+        this.width = width;
+        this.height = height;
+        this.spreadRange = spreadRange;
+        this.tileGenerator = tileGenerator;
         this.grid = new Tile[width][height];
         init();
     }
@@ -29,7 +37,7 @@ public class World {
     private void init() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                grid[x][y] = new Tile();
+                grid[x][y] = tileGenerator.generate(x, y, TILE_SIZE);
             }
         }
     }
@@ -66,5 +74,9 @@ public class World {
             }
         }
         return neighbours;
+    }
+
+    public Tile[][] getGrid() {
+        return grid;
     }
 }

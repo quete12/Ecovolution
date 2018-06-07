@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ch.schaermedia.ecovolution.environment;
+package ch.schaermedia.ecovolution.environment.chem;
 
+import ch.schaermedia.ecovolution.environment.chem.ChemUtilities;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

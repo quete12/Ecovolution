@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ch.schaermedia.ecovolution.environment;
+package ch.schaermedia.ecovolution.environment.basic;
 
+import ch.schaermedia.ecovolution.environment.chem.CompoundMix;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,10 +17,27 @@ public class Tile {
 
     private static final int NUMBER_OF_ATMOSPHERELAYERS = 3;
 
-    private CompoundMix[] layers;
+    private final float width;
+    private final float height;
 
-    public Tile() {
+    private final int x;
+    private final int y;
+
+    private final CompoundMix[] layers;
+
+    public Tile(float width, float height, int x, int y) {
+        this.width = width;
+        this.height = height;
+        this.x = x;
+        this.y = y;
         this.layers = new CompoundMix[NUMBER_OF_ATMOSPHERELAYERS];
+        init();
+    }
+
+    private void init(){
+        for (int i = 0; i < layers.length; i++) {
+            layers[i] = new CompoundMix();
+        }
     }
 
     public void calculate(List<Tile> tiles) {
@@ -40,7 +58,27 @@ public class Tile {
         }
     }
 
+    public CompoundMix[] getLayers() {
+        return layers;
+    }
+
     public CompoundMix getMixAtLayer(int layer) {
         return layers[layer];
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 }
