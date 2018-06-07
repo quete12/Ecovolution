@@ -41,7 +41,7 @@ public class CompoundMix {
             tmp_volume_L -= tmp_volume_L * spreadPercentage;
         }
         if (hasHigher) {
-            double spreadPercentage = spreadToHigher(higher, tmp_volume_L);
+            spreadToHigher(higher, tmp_volume_L);
         }
         spread(layer);
     }
@@ -88,9 +88,11 @@ public class CompoundMix {
                 if (compound == null) {
                     continue;
                 }
+                //get the total amount to spread
                 double splitMoles = compound.splitMoles(totalSpreadPercentage);
                 double splitEnergy = compound.splitEnergy(totalSpreadPercentage);
 
+                //devide it to each mix
                 double splitMolesPerMix = splitMoles / layer.size();
                 double splitEnergyPerMix = splitEnergy / layer.size();
 
