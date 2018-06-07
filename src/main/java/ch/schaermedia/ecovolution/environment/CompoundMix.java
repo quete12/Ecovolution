@@ -69,14 +69,18 @@ public class CompoundMix {
     }
 
     public void add(String code, int phase, double amount_mol, double energy_kj) {
-        //TODO add a compound
-
-        //Search mix for compound code
-        //assign result of mix.get() to variable
-        //If compound is nonexistent (mix.get() returns null) -> create an array of length 3 and put it to key code
-
-        //if array[phase] is nonexistent -> create new compound at array[phase]
-        //else -> add the given values to the existing compound
+        Compound[] compounds = mix.get(code);
+        if(compounds == null){
+            compounds = new Compound[3];
+            mix.put(code, compounds);
+        }
+        Compound compound = compounds[phase];
+        if(compound == null){
+            compound = new Compound(CompoundProperties.getPropertiesFromCode(code));
+            compounds[phase] = compound;
+        }
+        compound.addAmount(amount_mol);
+        compound.addEnergy(energy_kj);
     }
 
     private void spread(List<CompoundMix> layer) {
