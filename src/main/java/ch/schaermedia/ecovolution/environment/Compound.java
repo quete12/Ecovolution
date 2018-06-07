@@ -13,9 +13,11 @@ public class Compound {
 
     private final CompoundProperties properties;
     private double amount_mol;
+    private double splitOffAmountBuffer_mol;
     private double amountBuffer_mol;
 
     private double energy_kj;
+    private double splitOffEnergyBuffer_kj;
     private double energyBuffer_kj;
 
     private double temperature_K;
@@ -59,12 +61,14 @@ public class Compound {
     }
 
     public double splitDirectMoles(double percentage) {
+        //maybe we should consider the buffer in this calculation even though it sould be 0 by the time this method gets called, just to avoid negative values
         double remove = amount_mol * percentage;
         amount_mol -= remove;
         return remove;
     }
 
     public double splitDirectEnergy(double percentage) {
+        //maybe we should consider the buffer in this calculation even though it sould be 0 by the time this method gets called, just to avoid negative values
         double remove = energy_kj * percentage;
         energy_kj -= remove;
         return remove;
@@ -80,6 +84,19 @@ public class Compound {
         double remove = energy_kj * percentage;
         energyBuffer_kj -= remove;
         return remove;
+    }
+
+    public double removeAmount(double moles){
+        double tmp_amount = amount_mol+amountBuffer_mol-moles;
+        if(tmp_amount < 0){
+            double diff = moles - (amount_mol+amountBuffer_mol);
+            if(diff < 0){
+                return 0;
+            }
+            amountBuffer_mol -= diff;
+            return diff;
+        }
+        return moles;
     }
 
     /**

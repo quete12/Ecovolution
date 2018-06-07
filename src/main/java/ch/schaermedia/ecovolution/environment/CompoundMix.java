@@ -53,7 +53,7 @@ public class CompoundMix {
             tmp_volume_L -= tmp_volume_L * spreadPercentage;
             tmp_pressure_kPa -= tmp_pressure_kPa * spreadPercentage;
         }
-        spread(layer, tmp_amount_mol);
+        spread(layer);
     }
 
     public void addEnergy(double energy_kj) {
@@ -72,7 +72,7 @@ public class CompoundMix {
         //TODO add a compound
     }
 
-    private void spread(List<CompoundMix> layer, double currentAmount_mol) {
+    private void spread(List<CompoundMix> layer) {
         /*
         Adding one (represents our Mix).
         It's important to include this mix in the calculation of average to keep a basevalue in this mix.
@@ -80,8 +80,23 @@ public class CompoundMix {
          */
         int count = layer.size() + 1;
         double percentage = (double) (1.0 / count);
-        for (CompoundMix compoundMix : layer) {
-            spreadByPercentage(compoundMix, percentage);
+        double totalSpreadPercentage = percentage*layer.size();
+        //to avoid any conflics with previous calculations we invert compound and layer spreading in comparison to spreadByPercentage()
+        for (Compound[] value : mix.values()) {
+            for (Compound compound : value) {
+                if(compound == null){
+                    continue;
+                }
+                double splitMoles = compound.splitMoles(totalSpreadPercentage);
+                double splitEnergy = compound.splitEnergy(totalSpreadPercentage);
+
+                double splitMolesPerMix = splitMoles / layer.size();
+                double splitEnergyPerMix = splitEnergy / layer.size();
+
+                for (CompoundMix compoundMix : layer) {
+                    compoundMix.add(compound.getCode(), compound.getPhase().idx, splitMolesPerMix, splitEnergyPerMix);
+                }
+            }
         }
     }
 
@@ -138,7 +153,7 @@ public class CompoundMix {
                 if (compound == null) {
                     continue;
                 }
-                spreadTo.add(key, i, compound.splitMoles(percentage), compound.splitEnergy(percentage));
+                spreadTo.add(key, i, compound.splitDirectMoles(percentage), compound.splitDirectEnergy(percentage));
             }
         }
     }
