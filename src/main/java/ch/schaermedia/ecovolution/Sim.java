@@ -34,7 +34,7 @@ public class Sim extends PApplet {
     public void draw() {
         world.update();
         background(255);
-        PGraphics graph = createGraphics(200, 200, P2D);
+        PGraphics graph = createGraphics((int) (world.getWidth() * World.TILE_SIZE), (int) (world.getHeight() * World.TILE_SIZE), P2D);
         renderer.render(world, graph);
         scale(2);
         image(graph, 0, 0);
@@ -71,7 +71,7 @@ public class Sim extends PApplet {
     }
 
     private void worldSetup() {
-        world = new World(20, 20, 3, new TGenerator());
+        world = new World(50, 50, 3, new TGenerator());
     }
 
     private class TGenerator implements TileGenerator {
@@ -79,7 +79,7 @@ public class Sim extends PApplet {
         @Override
         public Tile generate(int x, int y, float size) {
             Tile tile = new Tile(size, size, x, y);
-            tile.getMixAtLayer(0).add("CO2", 0, 30000, 50000);
+            tile.getMixAtLayer(0).add("CO2", 0, 30000, 1500);
             return tile;
         }
 

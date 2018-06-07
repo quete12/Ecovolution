@@ -37,7 +37,7 @@ public class CompoundMix {
         this.mix = new HashMap<>();
     }
 
-    public void spread(List<CompoundMix> layer, CompoundMix higher, CompoundMix lower) {
+    public void spread(List<CompoundMix> layer, CompoundMix higher, CompoundMix lower, int range) {
         boolean hasLower = lower != null;
         boolean hasHigher = higher != null;
         double tmp_volume_L = volume_L;
@@ -48,7 +48,8 @@ public class CompoundMix {
         if (hasHigher) {
             spreadToHigher(higher, tmp_volume_L);
         }
-        spread(layer);
+        int side = 2 * range + 1;
+        spread(layer, side * side);
     }
 
     public void addEnergy(double energy_kj) {
@@ -78,14 +79,13 @@ public class CompoundMix {
         compound.addEnergy(energy_kj);
     }
 
-    private void spread(List<CompoundMix> layer) {
+    private void spread(List<CompoundMix> layer, int sqareSize) {
         /*
         Adding one (represents our Mix).
         It's important to include this mix in the calculation of average to keep a basevalue in this mix.
         If we would spread the full value we would get a wierd flickering going on.
          */
-        int count = layer.size() + 1;
-        double percentage = (double) (1.0 / count);
+        double percentage = (double) (1.0 / sqareSize);
         double totalSpreadPercentage = percentage * layer.size();
         //to avoid any conflics with previous calculations we invert compound and layer spreading in comparison to spreadByPercentage()
         for (Compound[] value : mix.values()) {
@@ -132,8 +132,8 @@ public class CompoundMix {
         if (percentage <= 0) {
             return 0;
         }
-        if (percentage > 1) {
-            percentage = 1.0;
+        if (percentage > 0.9) {
+            percentage = 0.9;
             //to safe CPU cycles: add the complete Compound here and return
         }
         spreadByPercentage(lower, percentage);
@@ -153,6 +153,9 @@ public class CompoundMix {
         //since our volume is already greater than its supposed volume there's no need to check moles and percentage calculations for negative values.
         double molesOverVolume = molesOverVolume(currentVolume);
         double percentage = molesOverVolume / amount_mol;
+        if (percentage > 0.9) {
+            percentage = 0.9;
+        }
         spreadByPercentage(higher, percentage);
         return percentage;
     }
@@ -213,7 +216,7 @@ public class CompoundMix {
         if (diffPressure < 0) {
             return 0;
         }
-        return ChemUtilities.moles(diffPressure, volume_L, temperature_K);
+        return ChemUtilities.moles(diffPressure, STATIC_VOLUME_L, temperature_K);
     }
 
     public double molesOverVolume(double baseVolume) {

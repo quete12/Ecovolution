@@ -34,6 +34,14 @@ public class World {
         init();
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
     private void init() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -45,7 +53,7 @@ public class World {
     public void update() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                grid[x][y].calculate(getNeighbours(spreadRange, x, y));
+                grid[x][y].calculate(getNeighbours(spreadRange, x, y), spreadRange);
             }
         }
         for (int x = 0; x < width; x++) {

@@ -40,7 +40,7 @@ public class Tile {
         }
     }
 
-    public void calculate(List<Tile> tiles) {
+    public void calculate(List<Tile> tiles, int range) {
         for (int i = 0; i < layers.length; i++) {
             List<CompoundMix> neighbours = new ArrayList<>();
             for (Tile tile : tiles) {
@@ -48,7 +48,7 @@ public class Tile {
             }
             CompoundMix higher = i < layers.length - 1 ? layers[i + 1] : null;
             CompoundMix lower = i > 0 ? layers[i - 1] : null;
-            layers[i].spread(neighbours, higher, lower);
+            layers[i].spread(neighbours, higher, lower, range);
         }
     }
 
