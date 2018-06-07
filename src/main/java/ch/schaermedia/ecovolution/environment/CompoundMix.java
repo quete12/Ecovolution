@@ -70,6 +70,13 @@ public class CompoundMix {
 
     public void add(String code, int phase, double amount_mol, double energy_kj) {
         //TODO add a compound
+
+        //Search mix for compound code
+        //assign result of mix.get() to variable
+        //If compound is nonexistent (mix.get() returns null) -> create an array of length 3 and put it to key code
+
+        //if array[phase] is nonexistent -> create new compound at array[phase]
+        //else -> add the given values to the existing compound
     }
 
     private void spread(List<CompoundMix> layer) {
@@ -107,7 +114,9 @@ public class CompoundMix {
      * @param lower
      */
     private double spreadToLower(CompoundMix lower) {
+        //maybe invert if and return
         if (lower.getPressure_kPa() < STATIC_PRESSURE_kPa) {
+            //maybe write a function to handle this or invert if for better control flow
             //TODO: solids fall down
             //TODO: liquids rain down
             //TODO: if there is still space in mix below fill with Gases
@@ -134,7 +143,10 @@ public class CompoundMix {
      * @param higher
      */
     private double spreadToHigher(CompoundMix higher, double currentVolume) {
+        //maybe invert if and return
         if (volume_L > STATIC_VOLUME_L) {
+            //maybe write a function to handle this or invert if for better control flow
+
             //since our volume is already greater than its supposed volume there's no need to check moles and percentage calculations for negative values.
             double molesOverVolume = molesOverVolume(currentVolume);
             double percentage = molesOverVolume / amount_mol;

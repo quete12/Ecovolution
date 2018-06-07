@@ -13,11 +13,9 @@ public class Compound {
 
     private final CompoundProperties properties;
     private double amount_mol;
-    private double splitOffAmountBuffer_mol;
     private double amountBuffer_mol;
 
     private double energy_kj;
-    private double splitOffEnergyBuffer_kj;
     private double energyBuffer_kj;
 
     private double temperature_K;
@@ -104,10 +102,13 @@ public class Compound {
      * temperature and phase for this compound.
      */
     public void update() {
+        //Import buffers
         this.amount_mol += amountBuffer_mol;
-        amountBuffer_mol = 0;
         this.energy_kj += energyBuffer_kj;
+        //reset buffers
+        amountBuffer_mol = 0;
         energyBuffer_kj = 0;
+        //other procedures
         updateTemperature();
         updatePhase();
     }
