@@ -35,23 +35,13 @@ public class CompoundMix {
     public void spread(List<CompoundMix> layer, CompoundMix higher, CompoundMix lower) {
         boolean hasLower = lower != null;
         boolean hasHigher = higher != null;
-        double tmp_heatCapacitySum = heatCapacitySum;
-        double tmp_amount_mol = amount_mol;
         double tmp_volume_L = volume_L;
-        double tmp_pressure_kPa = pressure_kPa;
         if (hasLower) {
             double spreadPercentage = spreadToLower(lower);
-            tmp_heatCapacitySum -= tmp_heatCapacitySum * spreadPercentage;
-            tmp_amount_mol -= tmp_amount_mol * spreadPercentage;
             tmp_volume_L -= tmp_volume_L * spreadPercentage;
-            tmp_pressure_kPa -= tmp_pressure_kPa * spreadPercentage;
         }
         if (hasHigher) {
             double spreadPercentage = spreadToHigher(higher, tmp_volume_L);
-            tmp_heatCapacitySum -= tmp_heatCapacitySum * spreadPercentage;
-            tmp_amount_mol -= tmp_amount_mol * spreadPercentage;
-            tmp_volume_L -= tmp_volume_L * spreadPercentage;
-            tmp_pressure_kPa -= tmp_pressure_kPa * spreadPercentage;
         }
         spread(layer);
     }
