@@ -34,9 +34,9 @@ public class Tile {
         init();
     }
 
-    private void init(){
+    private void init() {
         for (int i = 0; i < layers.length; i++) {
-            layers[i] = new CompoundMix();
+            layers[i] = new CompoundMix(x, y, i);
         }
     }
 

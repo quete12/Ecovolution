@@ -8,7 +8,11 @@ package ch.schaermedia.ecovolution;
 import ch.schaermedia.ecovolution.environment.basic.Tile;
 import ch.schaermedia.ecovolution.environment.basic.TileGenerator;
 import ch.schaermedia.ecovolution.environment.basic.World;
+import ch.schaermedia.ecovolution.environment.chem.ChemUtilities;
 import ch.schaermedia.ecovolution.representation.WorldRenderer;
+import java.io.FileNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
@@ -28,17 +32,28 @@ public class Sim extends PApplet {
 
     @Override
     public void draw() {
+        world.update();
         background(255);
         PGraphics graph = createGraphics(200, 200, P2D);
         renderer.render(world, graph);
+        scale(2);
         image(graph, 0, 0);
     }
 
     @Override
     public void setup() {
         windowSetup();
+        chemSetup();
         worldSetup();
         rendererSetup();
+    }
+
+    private void chemSetup() {
+        try {
+            ChemUtilities.readElements("res/Chemics.json");
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Sim.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void rendererSetup() {
@@ -63,7 +78,9 @@ public class Sim extends PApplet {
 
         @Override
         public Tile generate(int x, int y, float size) {
-            return new Tile(size, size, x, y);
+            Tile tile = new Tile(size, size, x, y);
+            tile.getMixAtLayer(0).add("CO2", 0, 30000, 50000);
+            return tile;
         }
 
     }

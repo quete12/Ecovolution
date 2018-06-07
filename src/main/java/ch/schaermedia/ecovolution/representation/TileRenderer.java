@@ -17,7 +17,12 @@ public class TileRenderer {
 
     public void render(Tile tile, PGraphics g) {
         g.noStroke();
-        g.fill((float) (tile.getMixAtLayer(0).getVolume_L() / CompoundMix.STATIC_VOLUME_L));
+        double volume = tile.getMixAtLayer(0).getVolume_L();
+        if (volume < 0) {
+            g.color(255, 0, 0);
+        } else {
+            g.fill((float) (volume / CompoundMix.STATIC_VOLUME_L)*255);
+        }
         g.rect(tile.getX() * tile.getWidth(), tile.getY() * tile.getHeight(), tile.getWidth(), tile.getHeight());
     }
 }

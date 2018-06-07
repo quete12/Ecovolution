@@ -5,8 +5,6 @@
  */
 package ch.schaermedia.ecovolution.environment.chem;
 
-import ch.schaermedia.ecovolution.environment.chem.ChemUtilities;
-
 /**
  *
  * @author Quentin
@@ -25,6 +23,7 @@ public class Compound {
 
     public Compound(CompoundProperties properties) {
         this.properties = properties;
+        this.phase = Phase.SOLID;
     }
 
     public double volume_L(double pressure_kPa) {
@@ -39,7 +38,7 @@ public class Compound {
         if (add_kj < 0) {
             //TODO: add proper error handling
             //Maybe even allow removeing energy this way ??
-            System.out.println("Negative add!!");
+            System.out.println("Negative Energy add!!");
             return;
         }
         energyBuffer_kj += add_kj;
@@ -49,8 +48,8 @@ public class Compound {
         if (add_mol < 0) {
             //TODO: add proper error handling
             //Maybe even allow removeing moles this way ??
-            System.out.println("Negative add!!");
-            return;
+            System.out.println("Negative Moles add!!");
+            throw new RuntimeException("Negative Moles Add!");
         }
         amountBuffer_mol += add_mol;
     }
@@ -86,11 +85,11 @@ public class Compound {
         return remove;
     }
 
-    public double removeAmount(double moles){
-        double tmp_amount = amount_mol+amountBuffer_mol-moles;
-        if(tmp_amount < 0){
-            double diff = moles - (amount_mol+amountBuffer_mol);
-            if(diff < 0){
+    public double removeAmount(double moles) {
+        double tmp_amount = amount_mol + amountBuffer_mol - moles;
+        if (tmp_amount < 0) {
+            double diff = moles - (amount_mol + amountBuffer_mol);
+            if (diff < 0) {
                 return 0;
             }
             amountBuffer_mol -= diff;
@@ -183,7 +182,7 @@ public class Compound {
 
     @Override
     public String toString() {
-        return "Compound{" + "properties=" + properties + ", amount_mol=" + amount_mol + ", energy_j=" + energy_kj + '}';
+        return "Compound{" + "amount_mol=" + amount_mol + ", energy_j=" + energy_kj + '}';
     }
 
     public double getEnergy_kj() {

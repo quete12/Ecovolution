@@ -21,11 +21,13 @@ public class WorldRenderer {
     }
 
     public void render(World world, PGraphics g){
+        g.beginDraw();
         Tile[][] grid = world.getGrid();
         for (Tile[] tiles : grid) {
             for (Tile tile : tiles) {
                 tileRenderer.render(tile, g);
             }
         }
+        g.endDraw();
     }
 }

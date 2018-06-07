@@ -59,7 +59,7 @@ public class World {
         List<Tile> neighbours = new ArrayList<>();
         for (int i = -range; i <= range; i++) {
             int myX = x + i;
-            if (myX < 0 || myX > width) {
+            if (myX < 0 || myX >= width) {
                 continue;
             }
             for (int j = -range; j <= range; j++) {
@@ -67,7 +67,7 @@ public class World {
                     continue;
                 }
                 int myY = y + j;
-                if (myY < 0 || myY > height) {
+                if (myY < 0 || myY >= height) {
                     continue;
                 }
                 neighbours.add(grid[myX][myY]);

@@ -5,7 +5,6 @@
  */
 package ch.schaermedia.ecovolution.environment.chem;
 
-import ch.schaermedia.ecovolution.environment.chem.ChemUtilities;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +21,8 @@ public class CompoundMix {
     // Map<code, Compound[phase_idx]>
     private final Map<String, Compound[]> mix;
 
+    private final int x, y, z;
+
     private double heatCapacitySum;
     private double amount_mol;
     private double volume_L;
@@ -29,7 +30,10 @@ public class CompoundMix {
     //TODO find a way to prevent negative temperature since this could really screw up other calculations (resulting in nevative volume, pressure etc)
     private double temperature_K;
 
-    public CompoundMix() {
+    public CompoundMix(int x, int y, int z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
         this.mix = new HashMap<>();
     }
 
@@ -92,6 +96,10 @@ public class CompoundMix {
                 //get the total amount to spread
                 double splitMoles = compound.splitMoles(totalSpreadPercentage);
                 double splitEnergy = compound.splitEnergy(totalSpreadPercentage);
+                if (splitMoles < 0) {
+                    System.out.println("x: " + x + " y: " + y + " z: " + z);
+                    System.out.println(compound);
+                }
 
                 //devide it to each mix
                 double splitMolesPerMix = splitMoles / layer.size();
@@ -197,7 +205,7 @@ public class CompoundMix {
             }
         }
         //for now we average the temperature of all individual compounds to get the mixture temperature
-        temperature_K = temperatureSum / compounds;
+        temperature_K = (compounds > 0) ? temperatureSum / compounds : 0;
     }
 
     public double molesToPressurize() {
@@ -213,7 +221,7 @@ public class CompoundMix {
         if (diffVolume < 0) {
             return 0;
         }
-        return ChemUtilities.moles(pressure_kPa, diffVolume, temperature_K);
+        return ChemUtilities.moles(STATIC_PRESSURE_kPa, diffVolume, temperature_K);
     }
 
     public double getAmount_mol() {
