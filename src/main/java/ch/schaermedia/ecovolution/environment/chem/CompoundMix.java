@@ -126,14 +126,15 @@ public class CompoundMix {
         //TODO: liquids rain down
         //TODO: if there is still space in mix below fill with Gases
 
-        //for now we just take a percentage of each compound and phase
+        //Untill beforementionned features are implemented: spread a percentage of each compound and phase
         double molesToPressurize = lower.molesToPressurize();
         double percentage = molesToPressurize / amount_mol;
         if (percentage <= 0) {
             return 0;
         }
-        if (percentage > 0.9) {
-            percentage = 0.9;
+        //TODO: Test if using 100% will result in flickering.
+        if (percentage > 1.0) {
+            percentage = 1.0;
             //to safe CPU cycles: add the complete Compound here and return
         }
         spreadByPercentage(lower, percentage);
@@ -153,8 +154,9 @@ public class CompoundMix {
         //since our volume is already greater than its supposed volume there's no need to check moles and percentage calculations for negative values.
         double molesOverVolume = molesOverVolume(currentVolume);
         double percentage = molesOverVolume / amount_mol;
-        if (percentage > 0.9) {
-            percentage = 0.9;
+        //TODO: Test if using 100% will result in flickering.
+        if (percentage > 1.0) {
+            percentage = 1.0;
         }
         spreadByPercentage(higher, percentage);
         return percentage;
@@ -199,7 +201,7 @@ public class CompoundMix {
                 }
                 amount_mol += compound.getAmount_mol();
                 heatCapacitySum += compound.getTotalHeatCapacity();
-                //the sum of all partial volumes and pressures equal the total volume and pressure
+
                 volume_L += compound.volume_L(STATIC_PRESSURE_kPa);
                 pressure_kPa += compound.pressure_kPa(STATIC_VOLUME_L);
 
@@ -216,6 +218,7 @@ public class CompoundMix {
         if (diffPressure < 0) {
             return 0;
         }
+        //Use static volume because the original pressure was calculated using static volume. If we would use our calculated volume the result would be way off!
         return ChemUtilities.moles(diffPressure, STATIC_VOLUME_L, temperature_K);
     }
 
@@ -224,6 +227,7 @@ public class CompoundMix {
         if (diffVolume < 0) {
             return 0;
         }
+        //Use static pressure because the original volume was calculated using static pressure. If we would use our calculated pressure the result would be way off!
         return ChemUtilities.moles(STATIC_PRESSURE_kPa, diffVolume, temperature_K);
     }
 
