@@ -35,6 +35,7 @@ public class Sim extends PApplet {
     public void draw()
     {
         world.update();
+        world.getGrid()[1][1].getMixAtLayer(0).addEnergy(10000000d);
         background(255);
         PGraphics graph = createGraphics((int) (world.getWidth() * World.TILE_SIZE), (int) (world.getHeight() * World.TILE_SIZE), P2D);
         renderer.render(world, graph);
@@ -90,7 +91,7 @@ public class Sim extends PApplet {
         public Tile generate(int x, int y, float size)
         {
             Tile tile = new Tile(size, size, x, y);
-            tile.getMixAtLayer(0).add("CO2", 0, 30000, 1500);
+            tile.getMixAtLayer(0).add("CO2", 0, 3000, 150);
             return tile;
         }
 

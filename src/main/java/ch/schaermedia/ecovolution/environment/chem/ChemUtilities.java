@@ -79,6 +79,9 @@ public class ChemUtilities {
      */
     public static double pressure_kPa(double volume_L, double amount_mol, double temperature_K)
     {
+        if(volume_L == 0){
+            return 0;
+        }
         return (amount_mol * GAS_CONSTANT_L_kPa_K * temperature_K) / volume_L;
     }
 
@@ -91,6 +94,9 @@ public class ChemUtilities {
      */
     public static double temperature_K(double pressure_kPa, double volume_L, double amount_mol)
     {
+        if(amount_mol == 0){
+            return 0;
+        }
         return pressure_kPa * volume_L / (amount_mol * GAS_CONSTANT_L_kPa_K);
     }
 
@@ -135,6 +141,9 @@ public class ChemUtilities {
      */
     public static double volume_L(double pressure_kPa, double amount_mol, double temperature_K)
     {
+        if(pressure_kPa == 0){
+            return 0;
+        }
         return (amount_mol * GAS_CONSTANT_L_kPa_K * temperature_K) / pressure_kPa;
     }
 

@@ -16,7 +16,7 @@ import java.util.Map;
 public class CompoundMix {
     //Equivalent to 1 Atm
     public static final double STATIC_PRESSURE_kPa = 101.325;
-    //10 * 10 * 100 
+    //10 * 10 * 100
     public static final double STATIC_VOLUME_L = 10000;
 
     // Map<code, Compound[phase_idx]>
@@ -41,6 +41,9 @@ public class CompoundMix {
 
     public void spread(List<CompoundMix> layer, CompoundMix higher, CompoundMix lower, int range)
     {
+        if(amount_mol == 0){
+            return;
+        }
         boolean hasLower = lower != null;
         boolean hasHigher = higher != null;
         double tmp_volume_L = volume_L;
@@ -55,6 +58,10 @@ public class CompoundMix {
         }
         int side = 2 * range + 1;
         spread(layer, side * side);
+    }
+
+    public Compound[] getPhasesByCode(String code){
+        return mix.get(code);
     }
 
     public void addEnergy(double energy_kj)
@@ -176,6 +183,9 @@ public class CompoundMix {
             return 0;
         }
         double molesOverVolume = molesOverVolume(currentVolume);
+        if(Double.isNaN(molesOverVolume)){
+            System.out.println("NAN");
+        }
         double percentage = molesOverVolume / amount_mol;
         //TODO: Test if using 100% will result in flickering.
         if (percentage > 1.0)
@@ -241,6 +251,9 @@ public class CompoundMix {
                 pressure_kPa += compound.pressure_kPa(STATIC_VOLUME_L);
 
                 temperatureSum += compound.getTemperature_K();
+                if(Double.isNaN(volume_L)){
+                    System.out.println("FIXME!!!!!");
+                }
                 compounds++;
             }
         }
@@ -283,6 +296,11 @@ public class CompoundMix {
     public double getPressure_kPa()
     {
         return pressure_kPa;
+    }
+
+    public double getTemperature_K()
+    {
+        return temperature_K;
     }
 
 }

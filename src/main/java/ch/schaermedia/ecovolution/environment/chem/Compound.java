@@ -12,13 +12,13 @@ package ch.schaermedia.ecovolution.environment.chem;
 public class Compound {
 
     private final CompoundProperties properties;
-    private double amount_mol;
-    private double amountBuffer_mol;
+    private double amount_mol = 0;
+    private double amountBuffer_mol = 0;
 
-    private double energy_kj;
-    private double energyBuffer_kj;
+    private double energy_kj = 0;
+    private double energyBuffer_kj = 0;
 
-    private double temperature_K;
+    private double temperature_K = 0;
     private Phase phase;
 
     public Compound(CompoundProperties properties)
@@ -29,16 +29,28 @@ public class Compound {
 
     public double volume_L(double pressure_kPa)
     {
+        if (Double.isNaN(pressure_kPa))
+        {
+            System.out.println("NAN");
+        }
         return ChemUtilities.volume_L(pressure_kPa, amount_mol, temperature_K);
     }
 
     public double pressure_kPa(double volume_L)
     {
+        if (Double.isNaN(volume_L))
+        {
+            System.out.println("NAN");
+        }
         return ChemUtilities.pressure_kPa(volume_L, amount_mol, temperature_K);
     }
 
     public void addEnergy(double add_kj)
     {
+        if (Double.isNaN(add_kj))
+        {
+            throw new RuntimeException("Adding NaN Energy");
+        }
         if (add_kj < 0)
         {
             //TODO: add proper error handling
@@ -51,6 +63,10 @@ public class Compound {
 
     public void addAmount(double add_mol)
     {
+        if (Double.isNaN(add_mol))
+        {
+            throw new RuntimeException("Adding NaN Moles");
+        }
         if (add_mol < 0)
         {
             //TODO: add proper error handling
@@ -71,6 +87,10 @@ public class Compound {
     {
         //maybe we should consider the buffer in this calculation even though it sould be 0 by the time this method gets called, just to avoid negative values
         double remove = amount_mol * percentage;
+        if (Double.isNaN(remove))
+        {
+            throw new RuntimeException("invalid remove!");
+        }
         amount_mol -= remove;
         return remove;
     }
@@ -132,6 +152,11 @@ public class Compound {
 
     private void updateTemperature()
     {
+        if (energy_kj == 0)
+        {
+            temperature_K = 0;
+            return;
+        }
         if (energy_kj <= energyToMeltingPoint_kj())
         {
             temperature_K = temperature(energy_kj);
@@ -152,6 +177,9 @@ public class Compound {
 
     private double temperature(double energyForTemperature_kj)
     {
+        if(amount_mol == 0){
+            return 0;
+        }
         return (energyForTemperature_kj / amount_mol) / properties.getSpecificHeatCapacity();
     }
 
