@@ -22,65 +22,19 @@ public class CompoundProperties extends ElementProperties {
         return BY_CODE.get(code);
     }
 
-    private final Map<ElementProperties, Integer> composition = new HashMap<>();
+    private final Map<ElementProperties, Integer> composition;
 
     public CompoundProperties()
     {
+        this.composition = new HashMap<>();
     }
 
     public CompoundProperties(JSONObject object)
     {
         super(object);
-        decodeComposition(code);
+        this.composition = new CompoundDecoder(code).getComposition();
     }
 
-    private void decodeComposition(String code)
-    {
-        char[] chars = code.toCharArray();
-        StringBuilder current = new StringBuilder();
-        StringBuilder digits = new StringBuilder();
-        for (int i = 0; i < chars.length; i++)
-        {
-            char aChar = chars[i];
-            boolean upperCase = Character.isUpperCase(aChar);
-            boolean lowerCase = Character.isLowerCase(aChar);
-            boolean digit = Character.isDigit(aChar);
-
-            if (upperCase)
-            {
-                if (i != 0)
-                {
-                    //push current to result
-                    String currentS = current.toString();
-                    String num = digits.toString();
-                    addToComposition(currentS, num);
-                }
-                //begin new
-                current = new StringBuilder().append(aChar);
-                digits = new StringBuilder();
-                continue;
-            }
-            if (lowerCase)
-            {
-                current.append(aChar);
-            }
-            if (digit)
-            {
-                digits.append(aChar);
-            }
-        }
-        String currentS = current.toString();
-        String num = digits.toString();
-        addToComposition(currentS, num);
-    }
-
-    private void addToComposition(String code, String amount)
-    {
-        ElementProperties el = ElementProperties.getPropertiesFromCode(code);
-        amount = (amount.isEmpty()) ? "1" : amount;
-        int amnt = Integer.parseInt(amount);
-        composition.put(el, amnt);
-    }
 
     @Override
     public void map()
