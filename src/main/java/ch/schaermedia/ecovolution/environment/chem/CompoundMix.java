@@ -148,10 +148,9 @@ public class CompoundMix {
      * @param higher
      */
     private double spreadToHigher(CompoundMix higher, double currentVolume) {
-        if (volume_L <= STATIC_VOLUME_L) {
+        if (currentVolume <= STATIC_VOLUME_L) {
             return 0;
         }
-        //since our volume is already greater than its supposed volume there's no need to check moles and percentage calculations for negative values.
         double molesOverVolume = molesOverVolume(currentVolume);
         double percentage = molesOverVolume / amount_mol;
         //TODO: Test if using 100% will result in flickering.
