@@ -14,8 +14,9 @@ import java.util.Map;
  * @author Quentin
  */
 public class CompoundMix {
-
+    //Equivalent to 1 Atm
     public static final double STATIC_PRESSURE_kPa = 101.325;
+    //10 * 10 * 100 
     public static final double STATIC_VOLUME_L = 10000;
 
     // Map<code, Compound[phase_idx]>
