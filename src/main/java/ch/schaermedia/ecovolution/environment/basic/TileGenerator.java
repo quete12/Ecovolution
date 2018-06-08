@@ -10,5 +10,6 @@ package ch.schaermedia.ecovolution.environment.basic;
  * @author Quentin
  */
 public interface TileGenerator {
+
     public Tile generate(int x, int y, float size);
 }

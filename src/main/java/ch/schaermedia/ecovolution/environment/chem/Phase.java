@@ -14,9 +14,9 @@ public enum Phase {
 
     public final int idx;
 
-    private Phase(int idx) {
+    private Phase(int idx)
+    {
         this.idx = idx;
     }
-
 
 }

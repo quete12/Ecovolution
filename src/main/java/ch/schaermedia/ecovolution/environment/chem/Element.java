@@ -15,12 +15,14 @@ public class Element {
     private Phase phase;
     private double amount_mol;
 
-    public Element(ElementProperties properties) {
+    public Element(ElementProperties properties)
+    {
         this.properties = properties;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "Element{" + "properties=" + properties + ", phase=" + phase + ", amount_mol=" + amount_mol + '}';
     }
 }

@@ -14,17 +14,22 @@ import processing.core.PGraphics;
  * @author Quentin
  */
 public class WorldRenderer {
+
     private final TileRenderer tileRenderer;
 
-    public WorldRenderer() {
+    public WorldRenderer()
+    {
         this.tileRenderer = new TileRenderer();
     }
 
-    public void render(World world, PGraphics g){
+    public void render(World world, PGraphics g)
+    {
         g.beginDraw();
         Tile[][] grid = world.getGrid();
-        for (Tile[] tiles : grid) {
-            for (Tile tile : tiles) {
+        for (Tile[] tiles : grid)
+        {
+            for (Tile tile : tiles)
+            {
                 tileRenderer.render(tile, g);
             }
         }

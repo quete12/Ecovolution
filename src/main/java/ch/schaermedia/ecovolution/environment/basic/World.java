@@ -25,7 +25,8 @@ public class World {
 
     private Tile[][] grid;
 
-    public World(int width, int height, int spreadRange, TileGenerator tileGenerator) {
+    public World(int width, int height, int spreadRange, TileGenerator tileGenerator)
+    {
         this.width = width;
         this.height = height;
         this.spreadRange = spreadRange;
@@ -34,48 +35,64 @@ public class World {
         init();
     }
 
-    public int getWidth() {
+    public int getWidth()
+    {
         return width;
     }
 
-    public int getHeight() {
+    public int getHeight()
+    {
         return height;
     }
 
-    private void init() {
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
+    private void init()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
                 grid[x][y] = tileGenerator.generate(x, y, TILE_SIZE);
             }
         }
     }
 
-    public void update() {
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
+    public void update()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
                 grid[x][y].calculate(getNeighbours(spreadRange, x, y), spreadRange);
             }
         }
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
                 grid[x][y].update();
             }
         }
     }
 
-    private List<Tile> getNeighbours(int range, int x, int y) {
+    private List<Tile> getNeighbours(int range, int x, int y)
+    {
         List<Tile> neighbours = new ArrayList<>();
-        for (int i = -range; i <= range; i++) {
+        for (int i = -range; i <= range; i++)
+        {
             int myX = x + i;
-            if (myX < 0 || myX >= width) {
+            if (myX < 0 || myX >= width)
+            {
                 continue;
             }
-            for (int j = -range; j <= range; j++) {
-                if (i == 0 && j == 0) {
+            for (int j = -range; j <= range; j++)
+            {
+                if (i == 0 && j == 0)
+                {
                     continue;
                 }
                 int myY = y + j;
-                if (myY < 0 || myY >= height) {
+                if (myY < 0 || myY >= height)
+                {
                     continue;
                 }
                 neighbours.add(grid[myX][myY]);
@@ -84,7 +101,8 @@ public class World {
         return neighbours;
     }
 
-    public Tile[][] getGrid() {
+    public Tile[][] getGrid()
+    {
         return grid;
     }
 }

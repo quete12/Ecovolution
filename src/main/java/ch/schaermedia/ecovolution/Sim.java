@@ -26,12 +26,14 @@ public class Sim extends PApplet {
     private WorldRenderer renderer;
 
     @Override
-    public void settings() {
+    public void settings()
+    {
         size(1200, 800, P2D);
     }
 
     @Override
-    public void draw() {
+    public void draw()
+    {
         world.update();
         background(255);
         PGraphics graph = createGraphics((int) (world.getWidth() * World.TILE_SIZE), (int) (world.getHeight() * World.TILE_SIZE), P2D);
@@ -41,43 +43,52 @@ public class Sim extends PApplet {
     }
 
     @Override
-    public void setup() {
+    public void setup()
+    {
         windowSetup();
         chemSetup();
         worldSetup();
         rendererSetup();
     }
 
-    private void chemSetup() {
-        try {
+    private void chemSetup()
+    {
+        try
+        {
             ChemUtilities.readElements("res/Chemics.json");
-        } catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException ex)
+        {
             Logger.getLogger(Sim.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void rendererSetup() {
+    private void rendererSetup()
+    {
         renderer = new WorldRenderer();
     }
 
-    private void windowSetup() {
+    private void windowSetup()
+    {
         surface.setResizable(true);
         surface.setTitle("Evolution Simulation");
         surface.setFrameRate(60);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         PApplet.main(Sim.class, args);
     }
 
-    private void worldSetup() {
+    private void worldSetup()
+    {
         world = new World(50, 50, 3, new TGenerator());
     }
 
     private class TGenerator implements TileGenerator {
 
         @Override
-        public Tile generate(int x, int y, float size) {
+        public Tile generate(int x, int y, float size)
+        {
             Tile tile = new Tile(size, size, x, y);
             tile.getMixAtLayer(0).add("CO2", 0, 30000, 1500);
             return tile;

@@ -14,9 +14,11 @@ import org.json.JSONObject;
  * @author Quentin
  */
 public class ElementProperties {
+
     private static final Map<String, ElementProperties> BY_CODE = new HashMap<>();
 
-    public static ElementProperties getPropertiesFromCode(String code) {
+    public static ElementProperties getPropertiesFromCode(String code)
+    {
         return BY_CODE.get(code);
     }
 
@@ -32,10 +34,12 @@ public class ElementProperties {
     protected double fusionHeat_kj;
     protected double vaporizationHeat_kj;
 
-    public ElementProperties() {
+    public ElementProperties()
+    {
     }
 
-    public ElementProperties(JSONObject object) {
+    public ElementProperties(JSONObject object)
+    {
         name = object.getString("name");
         code = object.getString("symbol");
         orderNumber = object.optInt("number");
@@ -46,12 +50,14 @@ public class ElementProperties {
         vaporizationHeat_kj = object.optDouble("vaporizationHeat");
     }
 
-    public void map(){
+    public void map()
+    {
         BY_CODE.put(code, this);
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "ElementProperties{" + "name=" + name + ", code=" + code + ", orderNumber=" + orderNumber + ", defaultPhase=" + defaultPhase + ", specificHeatCapacity_kj_mol_K=" + specificHeatCapacity_kj_mol_K + ", meltingPoint_K=" + meltingPoint_K + ", boilingPoint_K=" + boilingPoint_K + ", fusionHeat_kj=" + fusionHeat_kj + ", vaporizationHeat_kj=" + vaporizationHeat_kj + '}';
     }
 }

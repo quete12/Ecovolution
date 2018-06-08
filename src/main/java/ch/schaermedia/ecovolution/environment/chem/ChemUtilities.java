@@ -19,6 +19,7 @@ import org.json.JSONTokener;
  * @author Quentin
  */
 public class ChemUtilities {
+
     public static final double CELSIUS_TO_KELVIN_CONVERSION = 273.15;
     public static final double GAS_CONSTANT_L_kPa_K = 8.3144598;
 
@@ -29,7 +30,8 @@ public class ChemUtilities {
      * @param volume_L the value of volume_L
      * @return the double
      */
-    public static double density_mol_L(double amount_mol, double volume_L) {
+    public static double density_mol_L(double amount_mol, double volume_L)
+    {
         return amount_mol / volume_L;
     }
 
@@ -40,7 +42,8 @@ public class ChemUtilities {
      * @param temperature_K the value of temperature_K
      * @return the double
      */
-    public static double density_mol_L(double pressure_kPa, double amount_mol, double temperature_K) {
+    public static double density_mol_L(double pressure_kPa, double amount_mol, double temperature_K)
+    {
         return amount_mol / volume_L(pressure_kPa, amount_mol, temperature_K);
     }
 
@@ -51,7 +54,8 @@ public class ChemUtilities {
      * @param temperature_K the value of temperature_K
      * @return the double
      */
-    public static double moles(double pressure_kPa, double volume_L, double temperature_K) {
+    public static double moles(double pressure_kPa, double volume_L, double temperature_K)
+    {
         return pressure_kPa * volume_L / (GAS_CONSTANT_L_kPa_K * temperature_K);
     }
 
@@ -61,7 +65,8 @@ public class ChemUtilities {
      * @param density_mol_L the value of density_mol_L
      * @return the double
      */
-    public static double molesOfDensity_mol(double volume_L, double density_mol_L) {
+    public static double molesOfDensity_mol(double volume_L, double density_mol_L)
+    {
         return density_mol_L * volume_L;
     }
 
@@ -72,7 +77,8 @@ public class ChemUtilities {
      * @param temperature_K the value of temperature_K
      * @return the double
      */
-    public static double pressure_kPa(double volume_L, double amount_mol, double temperature_K) {
+    public static double pressure_kPa(double volume_L, double amount_mol, double temperature_K)
+    {
         return (amount_mol * GAS_CONSTANT_L_kPa_K * temperature_K) / volume_L;
     }
 
@@ -83,7 +89,8 @@ public class ChemUtilities {
      * @param amount_mol the value of amount_mol
      * @return the double
      */
-    public static double temperature_K(double pressure_kPa, double volume_L, double amount_mol) {
+    public static double temperature_K(double pressure_kPa, double volume_L, double amount_mol)
+    {
         return pressure_kPa * volume_L / (amount_mol * GAS_CONSTANT_L_kPa_K);
     }
 
@@ -92,7 +99,8 @@ public class ChemUtilities {
      * @param tempInK the value of tempInK
      * @return the double
      */
-    public static double toCelsius(double tempInK) {
+    public static double toCelsius(double tempInK)
+    {
         return tempInK - CELSIUS_TO_KELVIN_CONVERSION;
     }
     //</editor-fold>
@@ -102,7 +110,8 @@ public class ChemUtilities {
      * @param tempInC the value of tempInC
      * @return the double
      */
-    public static double toKelvin(double tempInC) {
+    public static double toKelvin(double tempInC)
+    {
         return tempInC + CELSIUS_TO_KELVIN_CONVERSION;
     }
 
@@ -112,7 +121,8 @@ public class ChemUtilities {
      * @param density_mol_L the value of density_mol_L
      * @return the double
      */
-    public static double volumeOfDensity_L(double amount_mol, double density_mol_L) {
+    public static double volumeOfDensity_L(double amount_mol, double density_mol_L)
+    {
         return amount_mol / density_mol_L;
     }
 
@@ -123,54 +133,68 @@ public class ChemUtilities {
      * @param temperature_K the value of temperature_K
      * @return the double
      */
-    public static double volume_L(double pressure_kPa, double amount_mol, double temperature_K) {
+    public static double volume_L(double pressure_kPa, double amount_mol, double temperature_K)
+    {
         return (amount_mol * GAS_CONSTANT_L_kPa_K * temperature_K) / pressure_kPa;
     }
 
-    public static void readElements(String file) throws FileNotFoundException {
+    public static void readElements(String file) throws FileNotFoundException
+    {
         JSONObject root;
-        try {
+        try
+        {
             root = new JSONObject(new JSONTokener(new FileReader(file)));
             readElements(root);
             readCompounds(root);
             readReactions(root);
-        } catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException ex)
+        {
             throw ex;
         }
     }
 
-    private static void readElements(JSONObject root){
+    private static void readElements(JSONObject root)
+    {
         JSONArray array = root.getJSONArray("elements");
-        for (int i = 0; i < array.length(); i++) {
+        for (int i = 0; i < array.length(); i++)
+        {
             ElementProperties element = null;
-            try {
+            try
+            {
                 element = new ElementProperties(array.getJSONObject(i));
                 element.map();
-                Logger.getLogger(Element.class.getName()).log(Level.INFO,"Loaded: {0}", element);
-            } catch (JSONException ex) {
+                Logger.getLogger(Element.class.getName()).log(Level.INFO, "Loaded: {0}", element);
+            } catch (JSONException ex)
+            {
                 Logger.getLogger(Element.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
-    private static void readCompounds(JSONObject root){
+    private static void readCompounds(JSONObject root)
+    {
         JSONArray array = root.getJSONArray("compounds");
-        for (int i = 0; i < array.length(); i++) {
+        for (int i = 0; i < array.length(); i++)
+        {
             CompoundProperties compound = null;
-            try {
+            try
+            {
                 compound = new CompoundProperties(array.getJSONObject(i));
                 compound.map();
-                Logger.getLogger(Element.class.getName()).log(Level.INFO,"Loaded: {0}", compound);
-            } catch (JSONException ex) {
+                Logger.getLogger(Element.class.getName()).log(Level.INFO, "Loaded: {0}", compound);
+            } catch (JSONException ex)
+            {
                 Logger.getLogger(Element.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
     }
 
-    private static void readReactions(JSONObject root){
+    private static void readReactions(JSONObject root)
+    {
         JSONArray array = root.getJSONArray("reactions");
-        for (int i = 0; i < array.length(); i++) {
+        for (int i = 0; i < array.length(); i++)
+        {
 //            ElementProperties element = null;
 //            try {
 //                Logger.getLogger(Element.class.getName()).log(Level.INFO,"Loaded: {0}", element);

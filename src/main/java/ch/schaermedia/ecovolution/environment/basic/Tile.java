@@ -25,7 +25,8 @@ public class Tile {
 
     private final CompoundMix[] layers;
 
-    public Tile(float width, float height, int x, int y) {
+    public Tile(float width, float height, int x, int y)
+    {
         this.width = width;
         this.height = height;
         this.x = x;
@@ -34,16 +35,21 @@ public class Tile {
         init();
     }
 
-    private void init() {
-        for (int i = 0; i < layers.length; i++) {
+    private void init()
+    {
+        for (int i = 0; i < layers.length; i++)
+        {
             layers[i] = new CompoundMix(x, y, i);
         }
     }
 
-    public void calculate(List<Tile> tiles, int range) {
-        for (int i = 0; i < layers.length; i++) {
+    public void calculate(List<Tile> tiles, int range)
+    {
+        for (int i = 0; i < layers.length; i++)
+        {
             List<CompoundMix> neighbours = new ArrayList<>();
-            for (Tile tile : tiles) {
+            for (Tile tile : tiles)
+            {
                 neighbours.add(tile.getMixAtLayer(i));
             }
             CompoundMix higher = i < layers.length - 1 ? layers[i + 1] : null;
@@ -52,33 +58,41 @@ public class Tile {
         }
     }
 
-    public void update() {
-        for (CompoundMix layer : layers) {
+    public void update()
+    {
+        for (CompoundMix layer : layers)
+        {
             layer.update();
         }
     }
 
-    public CompoundMix[] getLayers() {
+    public CompoundMix[] getLayers()
+    {
         return layers;
     }
 
-    public CompoundMix getMixAtLayer(int layer) {
+    public CompoundMix getMixAtLayer(int layer)
+    {
         return layers[layer];
     }
 
-    public float getWidth() {
+    public float getWidth()
+    {
         return width;
     }
 
-    public float getHeight() {
+    public float getHeight()
+    {
         return height;
     }
 
-    public int getX() {
+    public int getX()
+    {
         return x;
     }
 
-    public int getY() {
+    public int getY()
+    {
         return y;
     }
 }

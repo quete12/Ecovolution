@@ -13,35 +13,43 @@ import org.json.JSONObject;
  *
  * @author Quentin
  */
-public class CompoundProperties extends ElementProperties{
+public class CompoundProperties extends ElementProperties {
+
     private static final Map<String, CompoundProperties> BY_CODE = new HashMap<>();
 
-    public static CompoundProperties getPropertiesFromCode(String code) {
+    public static CompoundProperties getPropertiesFromCode(String code)
+    {
         return BY_CODE.get(code);
     }
 
     private final Map<ElementProperties, Integer> composition = new HashMap<>();
 
-    public CompoundProperties() {
+    public CompoundProperties()
+    {
     }
 
-    public CompoundProperties(JSONObject object) {
+    public CompoundProperties(JSONObject object)
+    {
         super(object);
         decodeComposition(code);
     }
 
-    private void decodeComposition(String code) {
+    private void decodeComposition(String code)
+    {
         char[] chars = code.toCharArray();
         StringBuilder current = new StringBuilder();
         StringBuilder digits = new StringBuilder();
-        for (int i = 0; i < chars.length; i++) {
+        for (int i = 0; i < chars.length; i++)
+        {
             char aChar = chars[i];
             boolean upperCase = Character.isUpperCase(aChar);
             boolean lowerCase = Character.isLowerCase(aChar);
             boolean digit = Character.isDigit(aChar);
 
-            if (upperCase) {
-                if (i != 0) {
+            if (upperCase)
+            {
+                if (i != 0)
+                {
                     //push current to result
                     String currentS = current.toString();
                     String num = digits.toString();
@@ -52,10 +60,12 @@ public class CompoundProperties extends ElementProperties{
                 digits = new StringBuilder();
                 continue;
             }
-            if (lowerCase) {
+            if (lowerCase)
+            {
                 current.append(aChar);
             }
-            if (digit) {
+            if (digit)
+            {
                 digits.append(aChar);
             }
         }
@@ -64,7 +74,8 @@ public class CompoundProperties extends ElementProperties{
         addToComposition(currentS, num);
     }
 
-    private void addToComposition(String code, String amount) {
+    private void addToComposition(String code, String amount)
+    {
         ElementProperties el = ElementProperties.getPropertiesFromCode(code);
         amount = (amount.isEmpty()) ? "1" : amount;
         int amnt = Integer.parseInt(amount);
@@ -72,76 +83,94 @@ public class CompoundProperties extends ElementProperties{
     }
 
     @Override
-    public void map() {
+    public void map()
+    {
         BY_CODE.put(code, this);
     }
 
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(String name)
+    {
         this.name = name;
     }
 
-    public String getCode() {
+    public String getCode()
+    {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(String code)
+    {
         this.code = code;
     }
 
-    public int getOrderNumber() {
+    public int getOrderNumber()
+    {
         return orderNumber;
     }
 
-    public void setOrderNumber(int orderNumber) {
+    public void setOrderNumber(int orderNumber)
+    {
         this.orderNumber = orderNumber;
     }
 
-    public double getSpecificHeatCapacity() {
+    public double getSpecificHeatCapacity()
+    {
         return specificHeatCapacity_kj_mol_K;
     }
 
-    public void setSpecificHeatCapacity(double specificHeatCapacity) {
+    public void setSpecificHeatCapacity(double specificHeatCapacity)
+    {
         this.specificHeatCapacity_kj_mol_K = specificHeatCapacity;
     }
 
-    public double getMeltingPoint() {
+    public double getMeltingPoint()
+    {
         return meltingPoint_K;
     }
 
-    public void setMeltingPoint(double meltingPoint) {
+    public void setMeltingPoint(double meltingPoint)
+    {
         this.meltingPoint_K = meltingPoint;
     }
 
-    public double getBoilingPoint() {
+    public double getBoilingPoint()
+    {
         return boilingPoint_K;
     }
 
-    public void setBoilingPoint(double boilingPoint) {
+    public void setBoilingPoint(double boilingPoint)
+    {
         this.boilingPoint_K = boilingPoint;
     }
 
-    public double getFusionHeat() {
+    public double getFusionHeat()
+    {
         return fusionHeat_kj;
     }
 
-    public void setFusionHeat(double fusionHeat) {
+    public void setFusionHeat(double fusionHeat)
+    {
         this.fusionHeat_kj = fusionHeat;
     }
 
-    public double getVaporizationHeat() {
+    public double getVaporizationHeat()
+    {
         return vaporizationHeat_kj;
     }
 
-    public void setVaporizationHeat(double vaporizationHeat) {
+    public void setVaporizationHeat(double vaporizationHeat)
+    {
         this.vaporizationHeat_kj = vaporizationHeat;
     }
 
     @Override
-    public String toString() {
-        return super.toString()+"\n\tCompoundProperties{" + "composition=" + composition + '}';
+    public String toString()
+    {
+        return super.toString() + "\n\tCompoundProperties{" + "composition=" + composition + '}';
     }
 }
