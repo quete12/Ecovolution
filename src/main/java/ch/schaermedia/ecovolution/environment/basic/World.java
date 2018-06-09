@@ -22,6 +22,7 @@ public class World {
     private final int spreadRange;
 
     private final TileGenerator tileGenerator;
+    private final int numberOfMixes;
 
     private double worldTemeprature;
 
@@ -34,6 +35,7 @@ public class World {
         this.spreadRange = spreadRange;
         this.tileGenerator = tileGenerator;
         this.grid = new Tile[width][height];
+        this.numberOfMixes = width*height*3;
         init();
     }
 
@@ -68,17 +70,15 @@ public class World {
             }
         }
         double temperatureSum = 0;
-        int counter = 0;
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
                 grid[x][y].update();
                 temperatureSum += grid[x][y].getTemperature();
-                counter ++;
             }
         }
-        worldTemeprature = temperatureSum / counter;
+        worldTemeprature = temperatureSum / numberOfMixes;
     }
 
     public double getWorldTemeprature()

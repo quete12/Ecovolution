@@ -47,7 +47,6 @@ public class Compound {
         {
             //TODO: add proper error handling
             //Maybe even allow removeing energy this way ??
-            System.out.println("Negative Energy add!!");
             throw new RuntimeException("Negative Energy Add!");
         }
         energyBuffer_kj += add_kj;
@@ -63,7 +62,6 @@ public class Compound {
         {
             //TODO: add proper error handling
             //Maybe even allow removeing moles this way ??
-            System.out.println("Negative Moles add!!");
             throw new RuntimeException("Negative Moles Add!");
         }
         amountBuffer_mol += add_mol;

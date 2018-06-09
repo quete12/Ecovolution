@@ -9,6 +9,7 @@ import ch.schaermedia.ecovolution.environment.basic.Tile;
 import ch.schaermedia.ecovolution.environment.basic.TileGenerator;
 import ch.schaermedia.ecovolution.environment.basic.World;
 import ch.schaermedia.ecovolution.environment.chem.ChemUtilities;
+import ch.schaermedia.ecovolution.environment.chem.Phase;
 import ch.schaermedia.ecovolution.representation.TileRenderer;
 import ch.schaermedia.ecovolution.representation.WorldRenderer;
 import java.io.FileNotFoundException;
@@ -23,6 +24,12 @@ import processing.core.PGraphics;
  */
 public class Sim extends PApplet {
 
+    //TODO: move Configuration!
+    private static final int WORLD_WIDTH = 50;
+    private static final int WORLD_HEIGHT = 50;
+    private static final int SPREAD_RANGE = 3;
+    private static final int FRAMERATE = 60;
+
     private World world;
     private WorldRenderer[][] renderers;
 
@@ -36,7 +43,11 @@ public class Sim extends PApplet {
     public void draw()
     {
         world.update();
-        world.getGrid()[1][1].getMixAtLayer(0).addEnergy(10000000d);
+        world.getGrid()[0][1].getMixAtLayer(0).addEnergy(1000000d);
+        world.getGrid()[1][1].getMixAtLayer(0).addEnergy(1000000d);
+        world.getGrid()[2][1].getMixAtLayer(0).addEnergy(1000000d);
+        world.getGrid()[1][0].getMixAtLayer(0).addEnergy(1000000d);
+        world.getGrid()[1][2].getMixAtLayer(0).addEnergy(1000000d);
         System.out.println("WorldTemp: " + world.getWorldTemeprature());
         background(255);
         for (int i = 0; i < renderers.length; i++)
@@ -90,7 +101,7 @@ public class Sim extends PApplet {
     {
         surface.setResizable(true);
         surface.setTitle("Evolution Simulation");
-        surface.setFrameRate(60);
+        surface.setFrameRate(FRAMERATE);
     }
 
     public static void main(String[] args)
@@ -100,7 +111,7 @@ public class Sim extends PApplet {
 
     private void worldSetup()
     {
-        world = new World(50, 50, 3, new TGenerator());
+        world = new World(WORLD_WIDTH, WORLD_HEIGHT, SPREAD_RANGE, new TGenerator());
     }
 
     private class TGenerator implements TileGenerator {
@@ -109,7 +120,7 @@ public class Sim extends PApplet {
         public Tile generate(int x, int y, float size)
         {
             Tile tile = new Tile(size, size, x, y);
-            tile.getMixAtLayer(0).add("CO2", 0, 10000, 150);
+            tile.getMixAtLayer(0).add("CO2", Phase.SOLID.idx, 3000, 1500);
             return tile;
         }
 

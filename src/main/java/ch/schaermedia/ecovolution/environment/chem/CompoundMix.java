@@ -14,6 +14,7 @@ import java.util.Map;
  * @author Quentin
  */
 public class CompoundMix {
+
     //Equivalent to 1 Atm
     public static final double STATIC_PRESSURE_kPa = 101.325;
     //10 * 10 * 100
@@ -28,6 +29,9 @@ public class CompoundMix {
     private double amount_mol;
     private double volume_L;
     private double pressure_kPa;
+
+    private int compoundCount;
+
     //TODO find a way to prevent negative temperature since this could really screw up other calculations (resulting in nevative volume, pressure etc)
     private double temperature_K;
 
@@ -41,7 +45,8 @@ public class CompoundMix {
 
     public void spread(List<CompoundMix> layer, CompoundMix higher, CompoundMix lower, int range)
     {
-        if(amount_mol == 0){
+        if (amount_mol == 0)
+        {
             return;
         }
         boolean hasLower = lower != null;
@@ -60,7 +65,8 @@ public class CompoundMix {
         spread(layer, side * side);
     }
 
-    public Compound[] getPhasesByCode(String code){
+    public Compound[] getPhasesByCode(String code)
+    {
         return mix.get(code);
     }
 
@@ -161,9 +167,9 @@ public class CompoundMix {
             return 0;
         }
         //TODO: Test if using 100% will result in flickering.
-        if (percentage > 1.0)
+        if (percentage > .9)
         {
-            percentage = 1.0;
+            percentage = .9;
             //to safe CPU cycles: add the complete Compound here and return
         }
         spreadByPercentage(lower, percentage);
@@ -185,9 +191,9 @@ public class CompoundMix {
         double molesOverVolume = molesOverVolume(currentVolume);
         double percentage = molesOverVolume / amount_mol;
         //TODO: Test if using 100% will result in flickering.
-        if (percentage > 1.0)
+        if (percentage > .9)
         {
-            percentage = 1.0;
+            percentage = .9;
         }
         spreadByPercentage(higher, percentage);
         return percentage;
@@ -217,7 +223,8 @@ public class CompoundMix {
         heatCapacitySum = 0;
         volume_L = 0;
         pressure_kPa = 0;
-        int compounds = 0;
+
+        compoundCount = 0;
         double temperatureSum = 0;
         for (Compound[] cl : mix.values())
         {
@@ -248,11 +255,11 @@ public class CompoundMix {
                 pressure_kPa += compound.pressure_kPa(STATIC_VOLUME_L);
 
                 temperatureSum += compound.getTemperature_K();
-                compounds++;
+                compoundCount++;
             }
         }
         //for now we average the temperature of all individual compounds to get the mixture temperature
-        temperature_K = (compounds > 0) ? temperatureSum / compounds : 0;
+        temperature_K = (compoundCount > 0) ? temperatureSum / compoundCount : 0;
     }
 
     public double molesToPressurize()
