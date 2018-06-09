@@ -9,6 +9,7 @@ import ch.schaermedia.ecovolution.environment.basic.Tile;
 import ch.schaermedia.ecovolution.environment.basic.TileGenerator;
 import ch.schaermedia.ecovolution.environment.basic.World;
 import ch.schaermedia.ecovolution.environment.chem.ChemUtilities;
+import ch.schaermedia.ecovolution.representation.TileRenderer;
 import ch.schaermedia.ecovolution.representation.WorldRenderer;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
@@ -23,12 +24,12 @@ import processing.core.PGraphics;
 public class Sim extends PApplet {
 
     private World world;
-    private WorldRenderer renderer;
+    private WorldRenderer[][] renderers;
 
     @Override
     public void settings()
     {
-        size(1200, 800, P2D);
+        size(1800, 1000, P2D);
     }
 
     @Override
@@ -38,10 +39,17 @@ public class Sim extends PApplet {
         world.getGrid()[1][1].getMixAtLayer(0).addEnergy(10000000d);
         System.out.println("WorldTemp: " + world.getWorldTemeprature());
         background(255);
-        PGraphics graph = createGraphics((int) (world.getWidth() * World.TILE_SIZE), (int) (world.getHeight() * World.TILE_SIZE), P2D);
-        renderer.render(world, graph);
-        scale(2);
-        image(graph, 0, 0);
+        for (int i = 0; i < renderers.length; i++)
+        {
+            WorldRenderer[] rendererArray = renderers[i];
+            for (int j = 0; j < rendererArray.length; j++)
+            {
+                WorldRenderer renderer = renderers[i][j];
+                PGraphics graph = createGraphics((int) (world.getWidth() * World.TILE_SIZE), (int) (world.getHeight() * World.TILE_SIZE), P2D);
+                renderer.render(world, graph);
+                image(graph, j * graph.width, i * graph.height);
+            }
+        }
     }
 
     @Override
@@ -58,7 +66,8 @@ public class Sim extends PApplet {
         try
         {
             ChemUtilities.readElements("res/Chemics.json");
-        } catch (FileNotFoundException ex)
+        }
+        catch (FileNotFoundException ex)
         {
             Logger.getLogger(Sim.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -66,7 +75,15 @@ public class Sim extends PApplet {
 
     private void rendererSetup()
     {
-        renderer = new WorldRenderer();
+        renderers = new WorldRenderer[2][3];
+        for (int i = 0; i < renderers[0].length; i++)
+        {
+            renderers[0][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.VOLUME));
+        }
+        for (int i = 0; i < renderers[1].length; i++)
+        {
+            renderers[1][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE));
+        }
     }
 
     private void windowSetup()
@@ -92,7 +109,7 @@ public class Sim extends PApplet {
         public Tile generate(int x, int y, float size)
         {
             Tile tile = new Tile(size, size, x, y);
-            tile.getMixAtLayer(0).add("CO2", 0, 3000, 150);
+            tile.getMixAtLayer(0).add("CO2", 0, 10000, 150);
             return tile;
         }
 

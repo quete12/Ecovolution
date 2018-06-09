@@ -16,34 +16,75 @@ import processing.core.PGraphics;
  */
 public class TileRenderer {
 
+    public enum ShowDetail {
+        PHASE,
+        TEMPERATURE,
+        VOLUME;
+    }
+
+    private final int layer;
+    private final ShowDetail showDetail;
+
+    public TileRenderer()
+    {
+        layer = 0;
+        showDetail = ShowDetail.PHASE;
+    }
+
+    public TileRenderer(int layer, ShowDetail showDetail)
+    {
+        this.layer = layer;
+        this.showDetail = showDetail;
+    }
+
     public void render(Tile tile, PGraphics g)
     {
         g.noStroke();
-        CompoundMix mix = tile.getMixAtLayer(1);
-        renderCo2Phase(mix, g);
+        CompoundMix mix = tile.getMixAtLayer(layer);
+        switch (showDetail)
+        {
+            case PHASE:
+                renderCo2Phase(mix, g);
+                break;
+            case TEMPERATURE:
+                renderTemperature(mix, g);
+                break;
+            case VOLUME:
+                renderVolumeGrayScale(mix, g);
+                break;
+            default:
+                throw new AssertionError(showDetail.name());
+
+        }
         g.rect(tile.getX() * tile.getWidth(), tile.getY() * tile.getHeight(), tile.getWidth(), tile.getHeight());
     }
 
-    private void renderCo2Phase(CompoundMix mix, PGraphics g){
-        if(mix == null){
+    private void renderCo2Phase(CompoundMix mix, PGraphics g)
+    {
+        if (mix == null)
+        {
             g.fill(0);
             return;
         }
         Compound[] phasesByCode = mix.getPhasesByCode("CO2");
-        if(phasesByCode == null){
+        if (phasesByCode == null)
+        {
             g.fill(0);
             return;
         }
         float red = 0;
         float green = 0;
         float blue = 0;
-        if(phasesByCode[0] != null && phasesByCode[0].getAmount_mol() > 0){
+        if (phasesByCode[0] != null && phasesByCode[0].getAmount_mol() > 0)
+        {
             green = 255;
         }
-        if(phasesByCode[1] != null && phasesByCode[1].getAmount_mol() > 0){
+        if (phasesByCode[1] != null && phasesByCode[1].getAmount_mol() > 0)
+        {
             blue = 255;
         }
-        if(phasesByCode[2] != null && phasesByCode[2].getAmount_mol() > 0){
+        if (phasesByCode[2] != null && phasesByCode[2].getAmount_mol() > 0)
+        {
             red = 255;
         }
         g.fill(red, green, blue);
@@ -52,11 +93,13 @@ public class TileRenderer {
     private void renderTemperature(CompoundMix mix, PGraphics g)
     {
         double temperature_K = mix.getTemperature_K();
-        if(Double.isNaN(temperature_K)){
+        if (Double.isNaN(temperature_K))
+        {
             System.out.println("INVALID Temperature");
         }
         double percent = temperature_K / 500;
-        if(percent>1.0){
+        if (percent > 1.0)
+        {
             percent = 1.0;
         }
         g.fill((float) percent * 255.0f, 0, 0);

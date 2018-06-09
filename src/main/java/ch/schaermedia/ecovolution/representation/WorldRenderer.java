@@ -22,6 +22,11 @@ public class WorldRenderer {
         this.tileRenderer = new TileRenderer();
     }
 
+    public WorldRenderer(TileRenderer tileRenderer)
+    {
+        this.tileRenderer = tileRenderer;
+    }
+
     public void render(World world, PGraphics g)
     {
         g.beginDraw();
