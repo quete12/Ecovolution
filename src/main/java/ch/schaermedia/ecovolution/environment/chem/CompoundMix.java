@@ -18,7 +18,7 @@ public class CompoundMix {
     //Equivalent to 1 Atm
     public static final double STATIC_PRESSURE_kPa = 101.325;
     //10 * 10 * 100
-    public static final double STATIC_VOLUME_L = 10000;
+    public static final double STATIC_VOLUME_L = 100000;
 
     // Map<code, Compound[phase_idx]>
     private final Map<String, Compound[]> mix;

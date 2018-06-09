@@ -43,11 +43,14 @@ public class Sim extends PApplet {
     public void draw()
     {
         world.update();
-        world.getGrid()[0][1].getMixAtLayer(0).addEnergy(1000000d);
-        world.getGrid()[1][1].getMixAtLayer(0).addEnergy(1000000d);
-        world.getGrid()[2][1].getMixAtLayer(0).addEnergy(1000000d);
-        world.getGrid()[1][0].getMixAtLayer(0).addEnergy(1000000d);
-        world.getGrid()[1][2].getMixAtLayer(0).addEnergy(1000000d);
+        if (world.getWorldTemeprature() < 400)
+        {
+            world.getGrid()[0][1].getMixAtLayer(0).addEnergy(10000000d);
+            world.getGrid()[1][1].getMixAtLayer(0).addEnergy(50000000d);
+            world.getGrid()[2][1].getMixAtLayer(0).addEnergy(10000000d);
+            world.getGrid()[1][0].getMixAtLayer(0).addEnergy(10000000d);
+            world.getGrid()[1][2].getMixAtLayer(0).addEnergy(10000000d);
+        }
         System.out.println("WorldTemp: " + world.getWorldTemeprature());
         background(255);
         for (int i = 0; i < renderers.length; i++)
@@ -120,7 +123,7 @@ public class Sim extends PApplet {
         public Tile generate(int x, int y, float size)
         {
             Tile tile = new Tile(size, size, x, y);
-            tile.getMixAtLayer(0).add("CO2", Phase.SOLID.idx, 3000, 1500);
+            tile.getMixAtLayer(0).add("H2O", Phase.SOLID.idx, 3000, 15000);
             return tile;
         }
 

@@ -44,7 +44,7 @@ public class TileRenderer {
         switch (showDetail)
         {
             case PHASE:
-                renderCo2Phase(mix, g);
+                renderPhase("H2O", mix, g);
                 break;
             case TEMPERATURE:
                 renderTemperature(mix, g);
@@ -59,33 +59,42 @@ public class TileRenderer {
         g.rect(tile.getX() * tile.getWidth(), tile.getY() * tile.getHeight(), tile.getWidth(), tile.getHeight());
     }
 
-    private void renderCo2Phase(CompoundMix mix, PGraphics g)
+    private void renderPhase(String code, CompoundMix mix, PGraphics g)
     {
         if (mix == null)
         {
             g.fill(0);
             return;
         }
-        Compound[] phasesByCode = mix.getPhasesByCode("CO2");
-        if (phasesByCode == null)
+        Compound[] phase = mix.getPhasesByCode(code);
+        if (phase == null)
         {
             g.fill(0);
             return;
         }
+        double total_mol = 0;
+        for (Compound compound : phase)
+        {
+            if (compound == null)
+            {
+                continue;
+            }
+            total_mol += compound.getAmount_mol();
+        }
         float red = 0;
         float green = 0;
         float blue = 0;
-        if (phasesByCode[0] != null && phasesByCode[0].getAmount_mol() > 0)
+        if (phase[0] != null && phase[0].getAmount_mol() > 0)
         {
-            green = 255;
+            green = (float)(phase[0].getAmount_mol() / total_mol) * 255;
         }
-        if (phasesByCode[1] != null && phasesByCode[1].getAmount_mol() > 0)
+        if (phase[1] != null && phase[1].getAmount_mol() > 0)
         {
-            blue = 255;
+            blue = (float)(phase[1].getAmount_mol() / total_mol) * 255;
         }
-        if (phasesByCode[2] != null && phasesByCode[2].getAmount_mol() > 0)
+        if (phase[2] != null && phase[2].getAmount_mol() > 0)
         {
-            red = 255;
+            red = (float)(phase[2].getAmount_mol() / total_mol) * 255;
         }
         g.fill(red, green, blue);
     }
