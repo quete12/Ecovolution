@@ -183,9 +183,6 @@ public class CompoundMix {
             return 0;
         }
         double molesOverVolume = molesOverVolume(currentVolume);
-        if(Double.isNaN(molesOverVolume)){
-            System.out.println("NAN");
-        }
         double percentage = molesOverVolume / amount_mol;
         //TODO: Test if using 100% will result in flickering.
         if (percentage > 1.0)
@@ -251,9 +248,6 @@ public class CompoundMix {
                 pressure_kPa += compound.pressure_kPa(STATIC_VOLUME_L);
 
                 temperatureSum += compound.getTemperature_K();
-                if(Double.isNaN(volume_L)){
-                    System.out.println("FIXME!!!!!");
-                }
                 compounds++;
             }
         }

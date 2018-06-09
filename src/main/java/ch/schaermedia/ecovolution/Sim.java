@@ -36,6 +36,7 @@ public class Sim extends PApplet {
     {
         world.update();
         world.getGrid()[1][1].getMixAtLayer(0).addEnergy(10000000d);
+        System.out.println("WorldTemp: " + world.getWorldTemeprature());
         background(255);
         PGraphics graph = createGraphics((int) (world.getWidth() * World.TILE_SIZE), (int) (world.getHeight() * World.TILE_SIZE), P2D);
         renderer.render(world, graph);

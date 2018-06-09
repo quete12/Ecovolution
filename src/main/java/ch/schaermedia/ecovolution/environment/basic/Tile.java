@@ -25,6 +25,8 @@ public class Tile {
 
     private final CompoundMix[] layers;
 
+    private double temperature;
+
     public Tile(float width, float height, int x, int y)
     {
         this.width = width;
@@ -60,10 +62,13 @@ public class Tile {
 
     public void update()
     {
+        double temperatureSum = 0;
         for (CompoundMix layer : layers)
         {
             layer.update();
+            temperatureSum += layer.getTemperature_K();
         }
+        temperature = temperatureSum / layers.length;
     }
 
     public CompoundMix[] getLayers()
@@ -74,6 +79,11 @@ public class Tile {
     public CompoundMix getMixAtLayer(int layer)
     {
         return layers[layer];
+    }
+
+    public double getTemperature()
+    {
+        return temperature;
     }
 
     public float getWidth()

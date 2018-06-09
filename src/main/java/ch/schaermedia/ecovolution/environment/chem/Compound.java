@@ -29,19 +29,11 @@ public class Compound {
 
     public double volume_L(double pressure_kPa)
     {
-        if (Double.isNaN(pressure_kPa))
-        {
-            System.out.println("NAN");
-        }
         return ChemUtilities.volume_L(pressure_kPa, amount_mol, temperature_K);
     }
 
     public double pressure_kPa(double volume_L)
     {
-        if (Double.isNaN(volume_L))
-        {
-            System.out.println("NAN");
-        }
         return ChemUtilities.pressure_kPa(volume_L, amount_mol, temperature_K);
     }
 
@@ -56,7 +48,7 @@ public class Compound {
             //TODO: add proper error handling
             //Maybe even allow removeing energy this way ??
             System.out.println("Negative Energy add!!");
-            return;
+            throw new RuntimeException("Negative Energy Add!");
         }
         energyBuffer_kj += add_kj;
     }
@@ -87,10 +79,6 @@ public class Compound {
     {
         //maybe we should consider the buffer in this calculation even though it sould be 0 by the time this method gets called, just to avoid negative values
         double remove = amount_mol * percentage;
-        if (Double.isNaN(remove))
-        {
-            throw new RuntimeException("invalid remove!");
-        }
         amount_mol -= remove;
         return remove;
     }

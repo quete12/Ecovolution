@@ -23,6 +23,8 @@ public class World {
 
     private final TileGenerator tileGenerator;
 
+    private double worldTemeprature;
+
     private Tile[][] grid;
 
     public World(int width, int height, int spreadRange, TileGenerator tileGenerator)
@@ -65,13 +67,23 @@ public class World {
                 grid[x][y].calculate(getNeighbours(spreadRange, x, y), spreadRange);
             }
         }
+        double temperatureSum = 0;
+        int counter = 0;
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
                 grid[x][y].update();
+                temperatureSum += grid[x][y].getTemperature();
+                counter ++;
             }
         }
+        worldTemeprature = temperatureSum / counter;
+    }
+
+    public double getWorldTemeprature()
+    {
+        return worldTemeprature;
     }
 
     private List<Tile> getNeighbours(int range, int x, int y)
