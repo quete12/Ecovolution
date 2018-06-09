@@ -39,19 +39,31 @@ public class Sim extends PApplet {
         size(1800, 1000, P2D);
     }
 
+    private double prevTemp;
+
     @Override
     public void draw()
     {
         world.update();
+        double temperature = world.getWorldTemeprature();
         if (world.getWorldTemeprature() < 400)
         {
-            world.getGrid()[0][1].getMixAtLayer(0).addEnergy(10000000d);
-            world.getGrid()[1][1].getMixAtLayer(0).addEnergy(50000000d);
-            world.getGrid()[2][1].getMixAtLayer(0).addEnergy(10000000d);
-            world.getGrid()[1][0].getMixAtLayer(0).addEnergy(10000000d);
-            world.getGrid()[1][2].getMixAtLayer(0).addEnergy(10000000d);
+            int x = 20;
+            int y = 20;
+            for (int i = -SPREAD_RANGE; i <= SPREAD_RANGE; i++)
+            {
+                for (int j = -SPREAD_RANGE; j <= SPREAD_RANGE; j++)
+                {
+                    world.getGrid()[x + i][y + j].getMixAtLayer(0).addEnergy(5000d);
+                }
+            }
         }
-        System.out.println("WorldTemp: " + world.getWorldTemeprature());
+        System.out.println("WorldTemp: " + temperature);
+        if (temperature - prevTemp > 100)
+        {
+            System.out.println("Huge Temp Diff!!");
+        }
+        prevTemp = temperature;
         background(255);
         scale(0.5f);
         for (int i = 0; i < renderers.length; i++)
@@ -124,7 +136,9 @@ public class Sim extends PApplet {
         public Tile generate(int x, int y, float size)
         {
             Tile tile = new Tile(size, size, x, y);
-            tile.getMixAtLayer(0).add("H2O", Phase.SOLID.idx, 3000, 15000);
+            tile.getMixAtLayer(0).add("H2O", Phase.SOLID.idx, 1000, 15000);
+            tile.getMixAtLayer(0).add("O2", Phase.SOLID.idx, 2000, 15000);
+            tile.getMixAtLayer(0).add("CO2", Phase.SOLID.idx, 2000, 15000);
             return tile;
         }
 

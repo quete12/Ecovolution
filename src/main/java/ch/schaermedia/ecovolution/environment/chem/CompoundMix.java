@@ -80,7 +80,7 @@ public class CompoundMix {
                 {
                     continue;
                 }
-                double percent = compound.getSpecificHeatCapacity() / heatCapacitySum;
+                double percent = compound.getTotalHeatCapacity()/ heatCapacitySum;
                 compound.addEnergy(energy_kj * percent);
             }
         }
