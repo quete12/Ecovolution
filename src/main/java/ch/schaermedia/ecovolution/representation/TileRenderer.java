@@ -58,7 +58,6 @@ public class TileRenderer {
         }
         g.rect(tile.getX() * tile.getWidth(), tile.getY() * tile.getHeight(), tile.getWidth(), tile.getHeight());
     }
-
     private void renderPhase(String code, CompoundMix mix, PGraphics g)
     {
         if (mix == null)

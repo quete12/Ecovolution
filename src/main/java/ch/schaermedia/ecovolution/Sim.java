@@ -53,6 +53,7 @@ public class Sim extends PApplet {
         }
         System.out.println("WorldTemp: " + world.getWorldTemeprature());
         background(255);
+        scale(0.5f);
         for (int i = 0; i < renderers.length; i++)
         {
             WorldRenderer[] rendererArray = renderers[i];
@@ -61,7 +62,7 @@ public class Sim extends PApplet {
                 WorldRenderer renderer = renderers[i][j];
                 PGraphics graph = createGraphics((int) (world.getWidth() * World.TILE_SIZE), (int) (world.getHeight() * World.TILE_SIZE), P2D);
                 renderer.render(world, graph);
-                image(graph, j * graph.width, i * graph.height);
+                image(graph, j * graph.width + j * World.TILE_SIZE, i * graph.height + i * World.TILE_SIZE);
             }
         }
     }
