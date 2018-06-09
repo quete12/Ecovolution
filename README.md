@@ -8,6 +8,12 @@ Inspired by evolv.io this should take it a step further and simulate in addition
 - Java 1.8
 - Maven
 
+## Run
+
+Building with: `mvn package`
+
+Run using `java -cp target/Ecovolution-1.0-SNAPSHOT.jar ch.schaermedia.ecovolution.Sim`
+
 ## Using
 
 - Processing core (https://processing.org/) (https://mvnrepository.com/artifact/org.processing/core/3.3.7)
