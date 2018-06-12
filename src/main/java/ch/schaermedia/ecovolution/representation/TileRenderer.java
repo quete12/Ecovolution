@@ -24,17 +24,29 @@ public class TileRenderer {
 
     private final int layer;
     private final ShowDetail showDetail;
+    private final String compoundCode;
 
     public TileRenderer()
     {
-        layer = 0;
-        showDetail = ShowDetail.PHASE;
+        this.layer = 0;
+        this.showDetail = ShowDetail.VOLUME;
+        this.compoundCode = null;
     }
-
     public TileRenderer(int layer, ShowDetail showDetail)
     {
         this.layer = layer;
         this.showDetail = showDetail;
+        if(showDetail == ShowDetail.PHASE){
+            throw new RuntimeException("No Argument for compound code provided for rendering Phase!");
+        }
+        this.compoundCode = null;
+    }
+
+    public TileRenderer(int layer, ShowDetail showDetail, String compoundCode)
+    {
+        this.layer = layer;
+        this.showDetail = showDetail;
+        this.compoundCode = compoundCode;
     }
 
     public void render(Tile tile, PGraphics g)
@@ -44,7 +56,7 @@ public class TileRenderer {
         switch (showDetail)
         {
             case PHASE:
-                renderPhase("H2O", mix, g);
+                renderPhase(compoundCode, mix, g);
                 break;
             case TEMPERATURE:
                 renderTemperature(mix, g);

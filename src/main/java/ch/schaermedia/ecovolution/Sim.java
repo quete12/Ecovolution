@@ -36,7 +36,7 @@ public class Sim extends PApplet {
     @Override
     public void settings()
     {
-        size(1800, 1000, P2D);
+        size(1900, 1000, P2D);
     }
 
     private double prevTemp;
@@ -48,13 +48,14 @@ public class Sim extends PApplet {
         double temperature = world.getWorldTemeprature();
         if (world.getWorldTemeprature() < 400)
         {
-            int x = 20;
-            int y = 20;
-            for (int i = -SPREAD_RANGE; i <= SPREAD_RANGE; i++)
+            int x = 10;
+            int y = 10;
+            int range = 2;
+            for (int i = -range; i <= range; i++)
             {
-                for (int j = -SPREAD_RANGE; j <= SPREAD_RANGE; j++)
+                for (int j = -range; j <= range; j++)
                 {
-                    world.getGrid()[x + i][y + j].getMixAtLayer(0).addEnergy(5000d);
+                    world.getGrid()[x + i][y + j].getMixAtLayer(0).addEnergy(1000d);
                 }
             }
         }
@@ -102,14 +103,22 @@ public class Sim extends PApplet {
 
     private void rendererSetup()
     {
-        renderers = new WorldRenderer[2][3];
+        renderers = new WorldRenderer[4][3];
         for (int i = 0; i < renderers[0].length; i++)
         {
             renderers[0][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.VOLUME));
         }
         for (int i = 0; i < renderers[1].length; i++)
         {
-            renderers[1][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE));
+            renderers[1][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE, "H2O"));
+        }
+        for (int i = 0; i < renderers[2].length; i++)
+        {
+            renderers[2][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE, "O2"));
+        }
+        for (int i = 0; i < renderers[3].length; i++)
+        {
+            renderers[3][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE, "CO2"));
         }
     }
 
