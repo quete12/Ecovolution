@@ -9,7 +9,11 @@
             "meltingPoint":13.99,
             "boilingPoint":20.271,
             "fusionHeat":0.117,
-            "vaporizationHeat":0.904
+            "vaporizationHeat":0.904,
+            "triplePointHeat":0,
+            "triplePointPressure":0,
+            "criticalPointHeat":0,
+            "criticalPointPressure":0
         },
         {
             "name":"Oxygen",
@@ -20,7 +24,11 @@
             "meltingPoint":54.36,
             "boilingPoint":90.188,
             "fusionHeat":0.444,
-            "vaporizationHeat":6.820
+            "vaporizationHeat":6.820,
+            "triplePointHeat":0,
+            "triplePointPressure":0,
+            "criticalPointHeat":0,
+            "criticalPointPressure":0
         },
         {
             "name":"Carbon",
@@ -31,7 +39,11 @@
             "meltingPoint":3914.9,
             "boilingPoint":3915,
             "fusionHeat":0,
-            "vaporizationHeat":117.000
+            "vaporizationHeat":117.000,
+            "triplePointHeat":0,
+            "triplePointPressure":0,
+            "criticalPointHeat":0,
+            "criticalPointPressure":0
         }
     ],
     "compounds":[
@@ -43,7 +55,11 @@
             "meltingPoint":13.99,
             "boilingPoint":20.271,
             "fusionHeat":0.117,
-            "vaporizationHeat":0.904
+            "vaporizationHeat":0.904,
+            "triplePointHeat":13.8033,
+            "triplePointPressure":7.041,
+            "criticalPointHeat":32.938,
+            "criticalPointPressure":1285.8
         },
         {
             "name":"Oxygen",
@@ -53,7 +69,11 @@
             "meltingPoint":54.36,
             "boilingPoint":90.188,
             "fusionHeat":0.444,
-            "vaporizationHeat":6.820
+            "vaporizationHeat":6.820,
+            "triplePointHeat":54.361,
+            "triplePointPressure":0.1463,
+            "criticalPointHeat":154.581,
+            "criticalPointPressure":5043
         },
         {
             "name":"Ozone",
@@ -62,8 +82,12 @@
             "specificHeatCapacity":0.03922,
             "meltingPoint":81,
             "boilingPoint":161,
-            "fusionHeat":0,
-            "vaporizationHeat":0
+            "fusionHeat":0.444,
+            "vaporizationHeat":6.820,
+            "triplePointHeat":54.361,
+            "triplePointPressure":0.1463,
+            "criticalPointHeat":154.581,
+            "criticalPointPressure":5043
         },
         {
             "name":"Water",
@@ -73,17 +97,25 @@
             "meltingPoint":273.15,
             "boilingPoint":373.13,
             "fusionHeat":6.020,
-            "vaporizationHeat":40.650
+            "vaporizationHeat":40.650,
+            "triplePointHeat":273.16,
+            "triplePointPressure":0.611,
+            "criticalPointHeat":647,
+            "criticalPointPressure":22064
         },
         {
             "name":"Carbon dioxide",
             "symbol":"CO2",
             "phase":"gas",
             "specificHeatCapacity":0.037135,
-            "meltingPoint":216.5,
+            "meltingPoint":216.6,
             "boilingPoint":216.6,
             "fusionHeat":8.347,
-            "vaporizationHeat":15.326
+            "vaporizationHeat":15.326,
+            "triplePointHeat":217,
+            "triplePointPressure":517,
+            "criticalPointHeat":304.25,
+            "criticalPointPressure":7380
         }
     ],
     "reactions":[

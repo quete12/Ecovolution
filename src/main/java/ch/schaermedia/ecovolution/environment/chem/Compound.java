@@ -136,6 +136,40 @@ public class Compound {
         updatePhase();
     }
 
+    public double energy_kj_AtTeperature(double targetTemperature_K)
+    {
+        double energy = 0;
+        if (targetTemperature_K > properties.getMeltingPoint_K())
+        {
+            energy += (properties.getFusionHeat_kj()* amount_mol);
+        }
+        if (targetTemperature_K > properties.getBoilingPoint_K())
+        {
+            energy += (properties.getVaporizationHeat_kj()* amount_mol);
+        }
+        energy += (targetTemperature_K * properties.specificHeatCapacity_kj_mol_K * amount_mol);
+        return energy;
+    }
+    /**
+     *
+     * @param targetTemperature_K
+     * @return the amount of energy to heat up this compount from 0 Kelvin to given temperature.
+     */
+    public double maxEnergy_kj_AtTeperature(double targetTemperature_K)
+    {
+        double energy = 0;
+        if (targetTemperature_K >= properties.getMeltingPoint_K())
+        {
+            energy += (properties.getFusionHeat_kj()* amount_mol);
+        }
+        if (targetTemperature_K >= properties.getBoilingPoint_K())
+        {
+            energy += (properties.getVaporizationHeat_kj()* amount_mol);
+        }
+        energy += (targetTemperature_K * properties.specificHeatCapacity_kj_mol_K * amount_mol);
+        return energy;
+    }
+
     private void updateTemperature()
     {
         if (energy_kj == 0)
@@ -148,13 +182,13 @@ public class Compound {
             temperature_K = temperature(energy_kj);
         } else if (energy_kj <= energyToMeltingPoint_kj() + energyRequiredToMelt_kj())
         {
-            temperature_K = properties.getMeltingPoint();
+            temperature_K = properties.getMeltingPoint_K();
         } else if (energy_kj <= energyToBoilingPoint_kj())
         {
             temperature_K = temperature(energy_kj - energyRequiredToMelt_kj());
         } else if (energy_kj <= energyToBoilingPoint_kj() + energyRequiredToVaporize_kj())
         {
-            temperature_K = properties.getBoilingPoint();
+            temperature_K = properties.getBoilingPoint_K();
         } else
         {
             temperature_K = temperature(energy_kj - energyRequiredToMelt_kj() - energyRequiredToVaporize_kj());
@@ -163,10 +197,11 @@ public class Compound {
 
     private double temperature(double energyForTemperature_kj)
     {
-        if(amount_mol == 0){
+        if (amount_mol == 0)
+        {
             return 0;
         }
-        return (energyForTemperature_kj / amount_mol) / properties.getSpecificHeatCapacity();
+        return (energyForTemperature_kj / amount_mol) / properties.getSpecificHeatCapacity_kj_mol_K();
     }
 
     private void updatePhase()
@@ -185,24 +220,24 @@ public class Compound {
 
     private double energyToMeltingPoint_kj()
     {
-        return amount_mol * properties.getMeltingPoint() * properties.getSpecificHeatCapacity();
+        return amount_mol * properties.getMeltingPoint_K() * properties.getSpecificHeatCapacity_kj_mol_K();
     }
 
     private double energyRequiredToMelt_kj()
     {
-        return amount_mol * properties.getFusionHeat();
+        return amount_mol * properties.getFusionHeat_kj();
     }
 
     private double energyToBoilingPoint_kj()
     {
-        double energyToBoilingPoint = amount_mol * properties.getBoilingPoint() * properties.getSpecificHeatCapacity();
+        double energyToBoilingPoint = amount_mol * properties.getBoilingPoint_K() * properties.getSpecificHeatCapacity_kj_mol_K();
         double result = energyToBoilingPoint + energyRequiredToMelt_kj();
         return result;
     }
 
     private double energyRequiredToVaporize_kj()
     {
-        return amount_mol * properties.getVaporizationHeat();
+        return amount_mol * properties.getVaporizationHeat_kj();
     }
 
     public double getAmount_mol()
@@ -278,12 +313,12 @@ public class Compound {
 
     public double getSpecificHeatCapacity()
     {
-        return properties.getSpecificHeatCapacity();
+        return properties.getSpecificHeatCapacity_kj_mol_K();
     }
 
     public double getTotalHeatCapacity()
     {
-        return properties.getSpecificHeatCapacity() * amount_mol;
+        return properties.getSpecificHeatCapacity_kj_mol_K() * amount_mol;
     }
 
 }

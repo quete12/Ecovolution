@@ -34,6 +34,11 @@ public class ElementProperties {
     protected double fusionHeat_kj;
     protected double vaporizationHeat_kj;
 
+    protected double triplePointHeat_K;
+    protected double triplePointPressure_kPa;
+    protected double criticalPointHeat_K;
+    protected double criticalPointPressure_kPa;
+
     public ElementProperties()
     {
     }
@@ -48,6 +53,10 @@ public class ElementProperties {
         boilingPoint_K = object.optDouble("boilingPoint");
         fusionHeat_kj = object.optDouble("fusionHeat");
         vaporizationHeat_kj = object.optDouble("vaporizationHeat");
+        triplePointHeat_K = object.optDouble("triplePointHeat");
+        triplePointPressure_kPa = object.optDouble("triplePointPressure");
+        criticalPointHeat_K = object.optDouble("criticalPointHeat");
+        criticalPointPressure_kPa = object.optDouble("criticalPointPressure");
     }
 
     public void map()

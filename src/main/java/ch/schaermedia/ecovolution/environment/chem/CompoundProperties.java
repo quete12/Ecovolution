@@ -47,79 +47,54 @@ public class CompoundProperties extends ElementProperties {
         return name;
     }
 
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
     public String getCode()
     {
         return code;
     }
 
-    public void setCode(String code)
-    {
-        this.code = code;
-    }
-
-    public int getOrderNumber()
-    {
-        return orderNumber;
-    }
-
-    public void setOrderNumber(int orderNumber)
-    {
-        this.orderNumber = orderNumber;
-    }
-
-    public double getSpecificHeatCapacity()
+    public double getSpecificHeatCapacity_kj_mol_K()
     {
         return specificHeatCapacity_kj_mol_K;
     }
 
-    public void setSpecificHeatCapacity(double specificHeatCapacity)
-    {
-        this.specificHeatCapacity_kj_mol_K = specificHeatCapacity;
-    }
-
-    public double getMeltingPoint()
+    public double getMeltingPoint_K()
     {
         return meltingPoint_K;
     }
 
-    public void setMeltingPoint(double meltingPoint)
-    {
-        this.meltingPoint_K = meltingPoint;
-    }
-
-    public double getBoilingPoint()
+    public double getBoilingPoint_K()
     {
         return boilingPoint_K;
     }
 
-    public void setBoilingPoint(double boilingPoint)
-    {
-        this.boilingPoint_K = boilingPoint;
-    }
-
-    public double getFusionHeat()
+    public double getFusionHeat_kj()
     {
         return fusionHeat_kj;
     }
 
-    public void setFusionHeat(double fusionHeat)
-    {
-        this.fusionHeat_kj = fusionHeat;
-    }
-
-    public double getVaporizationHeat()
+    public double getVaporizationHeat_kj()
     {
         return vaporizationHeat_kj;
     }
 
-    public void setVaporizationHeat(double vaporizationHeat)
+    public double getTriplePointHeat_K()
     {
-        this.vaporizationHeat_kj = vaporizationHeat;
+        return triplePointHeat_K;
+    }
+
+    public double getTriplePointPressure_kPa()
+    {
+        return triplePointPressure_kPa;
+    }
+
+    public double getCriticalPointHeat_K()
+    {
+        return criticalPointHeat_K;
+    }
+
+    public double getCriticalPointPressure_kPa()
+    {
+        return criticalPointPressure_kPa;
     }
 
     @Override
