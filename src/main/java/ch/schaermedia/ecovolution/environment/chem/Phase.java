@@ -10,7 +10,7 @@ package ch.schaermedia.ecovolution.environment.chem;
  * @author Quentin
  */
 public enum Phase {
-    SOLID(0), LIQUID(1), GAS(2);
+    SOLID(0), LIQUID(1), GAS(2), SUPERCRITICAL_FLUID(3);
 
     public final int idx;
 

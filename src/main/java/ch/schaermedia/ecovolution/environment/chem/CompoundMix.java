@@ -93,7 +93,7 @@ public class CompoundMix {
         Compound[] compounds = mix.get(code);
         if (compounds == null)
         {
-            compounds = new Compound[3];
+            compounds = new Compound[Phase.values().length];
             mix.put(code, compounds);
         }
         Compound compound = compounds[phase];

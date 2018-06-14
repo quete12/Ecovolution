@@ -5,6 +5,7 @@
  */
 package ch.schaermedia.ecovolution.environment.chem;
 
+import ch.schaermedia.ecovolution.general.LinearFunction;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONObject;
@@ -39,6 +40,10 @@ public class ElementProperties {
     protected double criticalPointHeat_K;
     protected double criticalPointPressure_kPa;
 
+    private LinearFunction sublimationBorder;
+    private LinearFunction meltingBorder;
+    private LinearFunction vaporizationBorder;
+
     public ElementProperties()
     {
     }
@@ -57,6 +62,22 @@ public class ElementProperties {
         triplePointPressure_kPa = object.optDouble("triplePointPressure");
         criticalPointHeat_K = object.optDouble("criticalPointHeat");
         criticalPointPressure_kPa = object.optDouble("criticalPointPressure");
+
+        sublimationBorder = new LinearFunction(
+                0,
+                0,
+                triplePointHeat_K,
+                triplePointPressure_kPa);
+        meltingBorder = new LinearFunction(
+                meltingPoint_K,
+                CompoundMix.STATIC_PRESSURE_kPa,
+                triplePointHeat_K,
+                triplePointPressure_kPa);
+        vaporizationBorder = new LinearFunction(
+                triplePointHeat_K,
+                triplePointPressure_kPa,
+                criticalPointHeat_K,
+                criticalPointPressure_kPa);
     }
 
     public void map()
@@ -68,5 +89,40 @@ public class ElementProperties {
     public String toString()
     {
         return "ElementProperties{" + "name=" + name + ", code=" + code + ", orderNumber=" + orderNumber + ", defaultPhase=" + defaultPhase + ", specificHeatCapacity_kj_mol_K=" + specificHeatCapacity_kj_mol_K + ", meltingPoint_K=" + meltingPoint_K + ", boilingPoint_K=" + boilingPoint_K + ", fusionHeat_kj=" + fusionHeat_kj + ", vaporizationHeat_kj=" + vaporizationHeat_kj + '}';
+    }
+
+    public Phase getPhase(double temperature_K, double pressure_kPa)
+    {
+        if (pressure_kPa > criticalPointPressure_kPa
+                && temperature_K > criticalPointHeat_K)
+        {
+            return Phase.SUPERCRITICAL_FLUID;
+        } else if (sublimationBorder.isPointLeftOrOn(temperature_K, pressure_kPa)
+                && meltingBorder.isPointLeftOrOn(temperature_K, pressure_kPa))
+        {
+            return Phase.SOLID;
+        } else if (!meltingBorder.isPointLeftOrOn(temperature_K, pressure_kPa)
+                && vaporizationBorder.isPointLeftOrOn(temperature_K, pressure_kPa))
+        {
+            return Phase.LIQUID;
+        } else
+        {
+            return Phase.GAS;
+        }
+    }
+
+    public LinearFunction getSublimationBorder()
+    {
+        return sublimationBorder;
+    }
+
+    public LinearFunction getMeltingBorder()
+    {
+        return meltingBorder;
+    }
+
+    public LinearFunction getVaporizationBorder()
+    {
+        return vaporizationBorder;
     }
 }
