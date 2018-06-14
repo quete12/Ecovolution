@@ -52,14 +52,16 @@ public class CompoundMix {
         boolean hasLower = lower != null;
         boolean hasHigher = higher != null;
         double tmp_volume_L = volume_L;
+        double tmp_pressure_kPa = pressure_kPa;
         if (hasLower)
         {
             double spreadPercentage = spreadToLower(lower);
             tmp_volume_L -= tmp_volume_L * spreadPercentage;
+            tmp_pressure_kPa -= tmp_pressure_kPa * spreadPercentage;
         }
         if (hasHigher)
         {
-            spreadToHigher(higher, tmp_volume_L);
+            spreadToHigher(higher, tmp_volume_L, tmp_pressure_kPa);
         }
         int side = 2 * range + 1;
         spread(layer, side * side);
@@ -80,7 +82,7 @@ public class CompoundMix {
                 {
                     continue;
                 }
-                double percent = compound.getTotalHeatCapacity()/ heatCapacitySum;
+                double percent = compound.getTotalHeatCapacity() / heatCapacitySum;
                 compound.addEnergy(energy_kj * percent);
             }
         }
@@ -166,9 +168,9 @@ public class CompoundMix {
         {
             return 0;
         }
-        if (percentage > .9)
+        if (percentage > 1)
         {
-            percentage = .9;
+            percentage = 1;
         }
         spreadByPercentage(lower, percentage);
         return percentage;
@@ -180,17 +182,17 @@ public class CompoundMix {
      *
      * @param higher
      */
-    private double spreadToHigher(CompoundMix higher, double currentVolume)
+    private double spreadToHigher(CompoundMix higher, double currentVolume, double currentPressure)
     {
-        if (currentVolume <= STATIC_VOLUME_L)
+        if (currentVolume <= STATIC_VOLUME_L || currentPressure <= higher.getPressure_kPa())
         {
             return 0;
         }
         double molesOverVolume = molesOverVolume(currentVolume);
         double percentage = molesOverVolume / amount_mol;
-        if (percentage > .9)
+        if (percentage > 1)
         {
-            percentage = .9;
+            percentage = 1;
         }
         spreadByPercentage(higher, percentage);
         return percentage;
