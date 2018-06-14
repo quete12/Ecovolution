@@ -166,11 +166,9 @@ public class CompoundMix {
         {
             return 0;
         }
-        //TODO: Test if using 100% will result in flickering.
         if (percentage > .9)
         {
             percentage = .9;
-            //to safe CPU cycles: add the complete Compound here and return
         }
         spreadByPercentage(lower, percentage);
         return percentage;
@@ -190,7 +188,6 @@ public class CompoundMix {
         }
         double molesOverVolume = molesOverVolume(currentVolume);
         double percentage = molesOverVolume / amount_mol;
-        //TODO: Test if using 100% will result in flickering.
         if (percentage > .9)
         {
             percentage = .9;

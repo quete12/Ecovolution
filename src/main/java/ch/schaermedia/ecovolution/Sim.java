@@ -55,7 +55,7 @@ public class Sim extends PApplet {
             {
                 for (int j = -range; j <= range; j++)
                 {
-                    world.getGrid()[x + i][y + j].getMixAtLayer(0).addEnergy(1000d);
+                    world.getGrid()[x + i][y + j].getMixAtLayer(0).addEnergy(3000d);
                 }
             }
         }

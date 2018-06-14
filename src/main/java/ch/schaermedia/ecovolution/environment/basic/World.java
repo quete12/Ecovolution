@@ -26,7 +26,7 @@ public class World {
 
     private double worldTemeprature;
 
-    private Tile[][] grid;
+    private final Tile[][] grid;
 
     public World(int width, int height, int spreadRange, TileGenerator tileGenerator)
     {
