@@ -9,13 +9,14 @@ import ch.schaermedia.ecovolution.environment.basic.Tile;
 import ch.schaermedia.ecovolution.environment.basic.TileGenerator;
 import ch.schaermedia.ecovolution.environment.basic.World;
 import ch.schaermedia.ecovolution.environment.chem.ChemUtilities;
+import ch.schaermedia.ecovolution.environment.chem.CompoundProperties;
 import ch.schaermedia.ecovolution.environment.chem.Phase;
-import ch.schaermedia.ecovolution.representation.TileRenderer;
-import ch.schaermedia.ecovolution.representation.WorldRenderer;
+import ch.schaermedia.ecovolution.representation.PhaseDiagramRenderer;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import processing.core.PApplet;
+import processing.core.PGraphics;
 
 /**
  *
@@ -30,7 +31,11 @@ public class Test extends PApplet {
     private static final int FRAMERATE = 60;
 
     private World world;
-    private WorldRenderer[][] renderers;
+    private PhaseDiagramRenderer phaseRenderer;
+
+    public Test()
+    {
+    }
 
     @Override
     public void settings()
@@ -39,12 +44,16 @@ public class Test extends PApplet {
     }
 
     private double prevTemp;
+    private PGraphics graphic;
 
     @Override
     public void draw()
     {
+        clear();
+        phaseRenderer.render(graphic);
+        scale(0.5f);
+        image(graphic, 0, 0);
     }
-    
 
     @Override
     public void setup()
@@ -53,6 +62,7 @@ public class Test extends PApplet {
         chemSetup();
         worldSetup();
         rendererSetup();
+        graphic = createGraphics(2000, 2000, P2D);
     }
 
     private void chemSetup()
@@ -69,23 +79,7 @@ public class Test extends PApplet {
 
     private void rendererSetup()
     {
-        renderers = new WorldRenderer[4][3];
-        for (int i = 0; i < renderers[0].length; i++)
-        {
-            renderers[0][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.VOLUME));
-        }
-        for (int i = 0; i < renderers[1].length; i++)
-        {
-            renderers[1][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE, "H2O"));
-        }
-        for (int i = 0; i < renderers[2].length; i++)
-        {
-            renderers[2][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE, "O2"));
-        }
-        for (int i = 0; i < renderers[3].length; i++)
-        {
-            renderers[3][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE, "CO2"));
-        }
+        phaseRenderer = new PhaseDiagramRenderer(CompoundProperties.getPropertiesFromCode("H2O"));
     }
 
     private void windowSetup()
