@@ -73,8 +73,8 @@ public class Sim extends PApplet {
             for (int j = 0; j < rendererArray.length; j++)
             {
                 WorldRenderer renderer = renderers[i][j];
-                PGraphics graph = createGraphics((int) (world.getWidth() * World.TILE_SIZE), (int) (world.getHeight() * World.TILE_SIZE), P2D);
-                renderer.render(world, graph);
+                renderer.render(world);
+                PGraphics graph = renderer.getG();
                 image(graph, j * graph.width + j * World.TILE_SIZE, i * graph.height + i * World.TILE_SIZE);
             }
         }
@@ -106,19 +106,23 @@ public class Sim extends PApplet {
         renderers = new WorldRenderer[4][3];
         for (int i = 0; i < renderers[0].length; i++)
         {
-            renderers[0][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.VOLUME));
+            PGraphics graph = createGraphics((int) (world.getWidth() * World.TILE_SIZE), (int) (world.getHeight() * World.TILE_SIZE), P2D);
+            renderers[0][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.VOLUME), graph);
         }
         for (int i = 0; i < renderers[1].length; i++)
         {
-            renderers[1][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE, "H2O"));
+            PGraphics graph = createGraphics((int) (world.getWidth() * World.TILE_SIZE), (int) (world.getHeight() * World.TILE_SIZE), P2D);
+            renderers[1][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE, "H2O"), graph);
         }
         for (int i = 0; i < renderers[2].length; i++)
         {
-            renderers[2][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE, "O2"));
+            PGraphics graph = createGraphics((int) (world.getWidth() * World.TILE_SIZE), (int) (world.getHeight() * World.TILE_SIZE), P2D);
+            renderers[2][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE, "O2"), graph);
         }
         for (int i = 0; i < renderers[3].length; i++)
         {
-            renderers[3][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE, "CO2"));
+            PGraphics graph = createGraphics((int) (world.getWidth() * World.TILE_SIZE), (int) (world.getHeight() * World.TILE_SIZE), P2D);
+            renderers[3][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE, "CO2"), graph);
         }
     }
 

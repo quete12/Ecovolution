@@ -16,18 +16,15 @@ import processing.core.PGraphics;
 public class WorldRenderer {
 
     private final TileRenderer tileRenderer;
+    private final PGraphics g;
 
-    public WorldRenderer()
-    {
-        this.tileRenderer = new TileRenderer();
-    }
-
-    public WorldRenderer(TileRenderer tileRenderer)
+    public WorldRenderer(TileRenderer tileRenderer,PGraphics g)
     {
         this.tileRenderer = tileRenderer;
+        this.g = g;
     }
 
-    public void render(World world, PGraphics g)
+    public void render(World world)
     {
         g.beginDraw();
         Tile[][] grid = world.getGrid();
@@ -40,4 +37,11 @@ public class WorldRenderer {
         }
         g.endDraw();
     }
+
+    public PGraphics getG()
+    {
+        return g;
+    }
+
+    
 }

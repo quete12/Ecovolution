@@ -32,6 +32,7 @@ public class TileRenderer {
         this.showDetail = ShowDetail.VOLUME;
         this.compoundCode = null;
     }
+
     public TileRenderer(int layer, ShowDetail showDetail)
     {
         this.layer = layer;
@@ -70,6 +71,7 @@ public class TileRenderer {
         }
         g.rect(tile.getX() * tile.getWidth(), tile.getY() * tile.getHeight(), tile.getWidth(), tile.getHeight());
     }
+
     private void renderPhase(String code, CompoundMix mix, PGraphics g)
     {
         if (mix == null)
@@ -97,15 +99,15 @@ public class TileRenderer {
         float blue = 0;
         if (phase[0] != null && phase[0].getAmount_mol() > 0)
         {
-            green = (float)(phase[0].getAmount_mol() / total_mol) * 255;
+            green = (float) (phase[0].getAmount_mol() / total_mol) * 255;
         }
         if (phase[1] != null && phase[1].getAmount_mol() > 0)
         {
-            blue = (float)(phase[1].getAmount_mol() / total_mol) * 255;
+            blue = (float) (phase[1].getAmount_mol() / total_mol) * 255;
         }
         if (phase[2] != null && phase[2].getAmount_mol() > 0)
         {
-            red = (float)(phase[2].getAmount_mol() / total_mol) * 255;
+            red = (float) (phase[2].getAmount_mol() / total_mol) * 255;
         }
         g.fill(red, green, blue);
     }
