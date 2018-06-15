@@ -26,6 +26,16 @@ public class LinearFunction {
         this.varB = varB;
     }
 
+    public LinearFunction shiftLeft(double n){
+        double newB = varB + varA*n;
+        return new LinearFunction(varA, newB);
+    }
+
+    public LinearFunction shiftRight(double n){
+        double newB = varB - varA*n;
+        return new LinearFunction(varA, newB);
+    }
+
     public double y(double x)
     {
         return varA * x + varB;

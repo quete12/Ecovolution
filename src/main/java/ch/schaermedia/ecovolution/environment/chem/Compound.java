@@ -5,6 +5,8 @@
  */
 package ch.schaermedia.ecovolution.environment.chem;
 
+import ch.schaermedia.ecovolution.general.LinearFunction;
+
 /**
  *
  * @author Quentin
@@ -25,6 +27,7 @@ public class Compound {
     {
         this.properties = properties;
         this.phase = Phase.SOLID;
+        initFunctions();
     }
 
     public double volume_L(double pressure_kPa)
@@ -119,21 +122,12 @@ public class Compound {
         return moles;
     }
 
-    /**
-     * imports the energy and moles from internal buffer and recalculates the
-     * temperature and phase for this compound.
-     */
-    public void update()
+    public void importBuffers()
     {
-        //Import buffers
         this.amount_mol += amountBuffer_mol;
         this.energy_kj += energyBuffer_kj;
-        //reset buffers
         amountBuffer_mol = 0;
         energyBuffer_kj = 0;
-        //other procedures
-        updateTemperature();
-        updatePhase();
     }
 
     public double energy_kj_AtTeperature(double targetTemperature_K)
@@ -141,103 +135,133 @@ public class Compound {
         double energy = 0;
         if (targetTemperature_K > properties.getMeltingPoint_K())
         {
-            energy += (properties.getFusionHeat_kj()* amount_mol);
+            energy += (properties.getFusionHeat_kj() * amount_mol);
         }
         if (targetTemperature_K > properties.getBoilingPoint_K())
         {
-            energy += (properties.getVaporizationHeat_kj()* amount_mol);
+            energy += (properties.getVaporizationHeat_kj() * amount_mol);
         }
         energy += (targetTemperature_K * properties.specificHeatCapacity_kj_mol_K * amount_mol);
         return energy;
     }
+
     /**
      *
      * @param targetTemperature_K
-     * @return the amount of energy to heat up this compount from 0 Kelvin to given temperature.
+     * @return the amount of energy to heat up this compount from 0 Kelvin to
+     * given temperature.
      */
     public double maxEnergy_kj_AtTeperature(double targetTemperature_K)
     {
         double energy = 0;
         if (targetTemperature_K >= properties.getMeltingPoint_K())
         {
-            energy += (properties.getFusionHeat_kj()* amount_mol);
+            energy += (properties.getFusionHeat_kj() * amount_mol);
         }
         if (targetTemperature_K >= properties.getBoilingPoint_K())
         {
-            energy += (properties.getVaporizationHeat_kj()* amount_mol);
+            energy += (properties.getVaporizationHeat_kj() * amount_mol);
         }
         energy += (targetTemperature_K * properties.specificHeatCapacity_kj_mol_K * amount_mol);
         return energy;
     }
+    private LinearFunction sublimationMinEnergy;
+    private LinearFunction sublimationMaxEnergy;
+    private LinearFunction meltingMinEnergy;
+    private LinearFunction meltingMaxEnergy;
+    private LinearFunction vaporizationMinEnergy;
+    private LinearFunction vaporizationMaxEnergy;
 
-    private void updateTemperature()
+    private void initFunctions()
     {
-        if (energy_kj == 0)
-        {
+        sublimationMinEnergy = new LinearFunction(
+                0,
+                0,
+                triplePointMinEnergy(),
+                properties.getTriplePointPressure_kPa());
+        double sublimationEnergy = properties.getFusionHeat_kj() + properties.getVaporizationHeat_kj();
+        sublimationMaxEnergy = sublimationMinEnergy.shiftRight(sublimationEnergy);
+
+        meltingMinEnergy = new LinearFunction(
+                energyAtMeltingPoint(),
+                CompoundMix.STATIC_PRESSURE_kPa,
+                triplePointMinEnergy(),
+                properties.getTriplePointPressure_kPa());
+        meltingMaxEnergy = meltingMinEnergy.shiftRight(properties.getFusionHeat_kj());
+
+        vaporizationMinEnergy = new LinearFunction(
+                triplePointMinEnergy(),
+                properties.getTriplePointPressure_kPa(),
+                criticalMinEnergy(),
+                properties.getCriticalPointPressure_kPa());
+        vaporizationMaxEnergy = vaporizationMinEnergy.shiftRight(properties.getVaporizationHeat_kj());
+    }
+
+    public void updateTemperatureAndPhase(double mixturePressure)
+    {
+        updatePhase(mixturePressure);
+        updateTemperature(mixturePressure);
+    }
+
+    private void updateTemperature(double mixturePressure)
+    {
+        if(amount_mol == 0){
             temperature_K = 0;
             return;
         }
-        if (energy_kj <= energyToMeltingPoint_kj())
+        double energy_kj_mol = energy_kj / amount_mol;
+        switch (phase)
         {
-            temperature_K = temperature(energy_kj);
-        } else if (energy_kj <= energyToMeltingPoint_kj() + energyRequiredToMelt_kj())
-        {
-            temperature_K = properties.getMeltingPoint_K();
-        } else if (energy_kj <= energyToBoilingPoint_kj())
-        {
-            temperature_K = temperature(energy_kj - energyRequiredToMelt_kj());
-        } else if (energy_kj <= energyToBoilingPoint_kj() + energyRequiredToVaporize_kj())
-        {
-            temperature_K = properties.getBoilingPoint_K();
-        } else
-        {
-            temperature_K = temperature(energy_kj - energyRequiredToMelt_kj() - energyRequiredToVaporize_kj());
+            case SOLID:
+                if (sublimationMinEnergy.isPointLeftOrOn(energy_kj_mol, mixturePressure)
+                        && meltingMinEnergy.isPointLeftOrOn(energy_kj_mol, mixturePressure))
+                {
+                    temperature_K = (energy_kj / amount_mol) / properties.getSpecificHeatCapacity_kj_mol_K();
+                } else if (mixturePressure > properties.getTriplePointPressure_kPa())
+                {
+                    temperature_K = properties.getMeltingBorder().x(mixturePressure);
+                } else
+                {
+                    temperature_K = properties.getSublimationBorder().x(mixturePressure);
+                }
+                break;
+            case LIQUID:
+                if (vaporizationMinEnergy.isPointLeftOrOn(energy_kj_mol, mixturePressure))
+                {
+                    temperature_K = ((energy_kj / amount_mol) - properties.getFusionHeat_kj()) / properties.getSpecificHeatCapacity_kj_mol_K();
+                } else
+                {
+                    temperature_K = properties.getVaporizationBorder().x(mixturePressure);
+                }
+                break;
+            case GAS:
+            case SUPERCRITICAL_FLUID:
+                temperature_K = ((energy_kj / amount_mol) - properties.getFusionHeat_kj() - properties.getVaporizationHeat_kj()) / properties.getSpecificHeatCapacity_kj_mol_K();
+                break;
+            default:
+                throw new AssertionError(phase.name());
         }
     }
 
-    private double temperature(double energyForTemperature_kj)
+    private void updatePhase(double mixturePressure)
     {
-        if (amount_mol == 0)
+        double energy_kj_mol = energy_kj / amount_mol;
+        if (mixturePressure > properties.getCriticalPointPressure_kPa()
+                && energy_kj_mol > criticalMinEnergy() + properties.getVaporizationHeat_kj())
         {
-            return 0;
-        }
-        return (energyForTemperature_kj / amount_mol) / properties.getSpecificHeatCapacity_kj_mol_K();
-    }
-
-    private void updatePhase()
-    {
-        if (energy_kj < energyToMeltingPoint_kj() + energyRequiredToMelt_kj())
+            phase = Phase.SUPERCRITICAL_FLUID;
+        } else if (sublimationMaxEnergy.isPointLeftOrOn(energy_kj_mol, mixturePressure)
+                && meltingMaxEnergy.isPointLeftOrOn(energy_kj_mol, mixturePressure))
         {
             phase = Phase.SOLID;
-        } else if (energy_kj < energyToBoilingPoint_kj() + energyRequiredToVaporize_kj())
+        } else if (!meltingMaxEnergy.isPointLeftOrOn(energy_kj_mol, mixturePressure)
+                && vaporizationMaxEnergy.isPointLeftOrOn(energy_kj_mol, mixturePressure))
         {
             phase = Phase.LIQUID;
         } else
         {
             phase = Phase.GAS;
         }
-    }
-
-    private double energyToMeltingPoint_kj()
-    {
-        return amount_mol * properties.getMeltingPoint_K() * properties.getSpecificHeatCapacity_kj_mol_K();
-    }
-
-    private double energyRequiredToMelt_kj()
-    {
-        return amount_mol * properties.getFusionHeat_kj();
-    }
-
-    private double energyToBoilingPoint_kj()
-    {
-        double energyToBoilingPoint = amount_mol * properties.getBoilingPoint_K() * properties.getSpecificHeatCapacity_kj_mol_K();
-        double result = energyToBoilingPoint + energyRequiredToMelt_kj();
-        return result;
-    }
-
-    private double energyRequiredToVaporize_kj()
-    {
-        return amount_mol * properties.getVaporizationHeat_kj();
     }
 
     public double getAmount_mol()
@@ -321,4 +345,20 @@ public class Compound {
         return properties.getSpecificHeatCapacity_kj_mol_K() * amount_mol;
     }
 
+    private double energyAtMeltingPoint()
+    {
+        return properties.getMeltingPoint_K() * properties.getSpecificHeatCapacity_kj_mol_K();
+    }
+
+    private double triplePointMinEnergy()
+    {
+        return properties.getTriplePointHeat_K() * properties.getSpecificHeatCapacity_kj_mol_K();
+    }
+
+    private double criticalMinEnergy()
+    {
+        return energyAtMeltingPoint()
+                + properties.getFusionHeat_kj()
+                + properties.getCriticalPointHeat_K() * properties.getSpecificHeatCapacity_kj_mol_K();
+    }
 }

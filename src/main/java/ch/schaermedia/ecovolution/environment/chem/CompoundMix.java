@@ -218,23 +218,23 @@ public class CompoundMix {
 
     public void update()
     {
-        amount_mol = 0;
-        heatCapacitySum = 0;
-        volume_L = 0;
-        pressure_kPa = 0;
+        updateStats();
+        updateTemperatureAndPhaseChanges();
+    }
 
-        compoundCount = 0;
+    private void updateTemperatureAndPhaseChanges()
+    {
         double temperatureSum = 0;
         for (Compound[] cl : mix.values())
         {
             for (int i = 0; i < cl.length; i++)
             {
                 Compound compound = cl[i];
-                if (compound == null)
-                {
+                if(compound == null){
                     continue;
                 }
-                compound.update();
+                compound.updateTemperatureAndPhase(pressure_kPa);
+                temperatureSum += compound.getTemperature_K();
                 int phaseIdx = compound.getPhase().idx;
                 if (phaseIdx != i)
                 {
@@ -247,18 +247,38 @@ public class CompoundMix {
                     }
                     cl[i] = null;
                 }
+            }
+        }
+        temperature_K = (compoundCount > 0) ? temperatureSum / compoundCount : 0;
+    }
+
+    private void updateStats()
+    {
+        amount_mol = 0;
+        heatCapacitySum = 0;
+        volume_L = 0;
+        pressure_kPa = 0;
+
+        compoundCount = 0;
+
+        for (Compound[] cl : mix.values())
+        {
+            for (Compound compound : cl)
+            {
+                if (compound == null)
+                {
+                    continue;
+                }
+                compound.importBuffers();
                 amount_mol += compound.getAmount_mol();
                 heatCapacitySum += compound.getTotalHeatCapacity();
 
                 volume_L += compound.volume_L(STATIC_PRESSURE_kPa);
                 pressure_kPa += compound.pressure_kPa(STATIC_VOLUME_L);
 
-                temperatureSum += compound.getTemperature_K();
                 compoundCount++;
             }
         }
-        //for now we average the temperature of all individual compounds to get the mixture temperature
-        temperature_K = (compoundCount > 0) ? temperatureSum / compoundCount : 0;
     }
 
     public double molesToPressurize()
