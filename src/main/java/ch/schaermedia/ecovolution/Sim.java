@@ -112,17 +112,17 @@ public class Sim extends PApplet {
         for (int i = 0; i < renderers[1].length; i++)
         {
             PGraphics graph = createGraphics((int) (world.getWidth() * World.TILE_SIZE), (int) (world.getHeight() * World.TILE_SIZE), P2D);
-            renderers[1][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE, "H2O"), graph);
+            renderers[1][i] = new WorldRenderer(new TileRenderer(i, "H2O"), graph);
         }
         for (int i = 0; i < renderers[2].length; i++)
         {
             PGraphics graph = createGraphics((int) (world.getWidth() * World.TILE_SIZE), (int) (world.getHeight() * World.TILE_SIZE), P2D);
-            renderers[2][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE, "O2"), graph);
+            renderers[2][i] = new WorldRenderer(new TileRenderer(i, "O2"), graph);
         }
         for (int i = 0; i < renderers[3].length; i++)
         {
             PGraphics graph = createGraphics((int) (world.getWidth() * World.TILE_SIZE), (int) (world.getHeight() * World.TILE_SIZE), P2D);
-            renderers[3][i] = new WorldRenderer(new TileRenderer(i, TileRenderer.ShowDetail.PHASE, "CO2"), graph);
+            renderers[3][i] = new WorldRenderer(new TileRenderer(i, "CO2"), graph);
         }
     }
 

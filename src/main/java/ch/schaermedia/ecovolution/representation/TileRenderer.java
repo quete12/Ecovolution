@@ -37,16 +37,23 @@ public class TileRenderer {
     {
         this.layer = layer;
         this.showDetail = showDetail;
-        if(showDetail == ShowDetail.PHASE){
+        if (showDetail == ShowDetail.PHASE)
+        {
             throw new RuntimeException("No Argument for compound code provided for rendering Phase!");
         }
         this.compoundCode = null;
     }
 
-    public TileRenderer(int layer, ShowDetail showDetail, String compoundCode)
+    /**
+     * Creates a Renderer that renders Phase details
+     *
+     * @param layer
+     * @param compoundCode
+     */
+    public TileRenderer(int layer, String compoundCode)
     {
         this.layer = layer;
-        this.showDetail = showDetail;
+        this.showDetail = ShowDetail.PHASE;
         this.compoundCode = compoundCode;
     }
 

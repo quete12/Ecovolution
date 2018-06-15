@@ -108,11 +108,6 @@ public class CompoundMix {
 
     private void spread(List<CompoundMix> layer, int sqareSize)
     {
-        /*
-        Adding one (represents our Mix).
-        It's important to include this mix in the calculation of average to keep a basevalue in this mix.
-        If we would spread the full value we would get a wierd flickering going on.
-         */
         double percentage = (double) (1.0 / sqareSize);
         double totalSpreadPercentage = percentage * layer.size();
         //to avoid any conflics with previous calculations we invert compound and layer spreading in comparison to spreadByPercentage()
@@ -124,7 +119,7 @@ public class CompoundMix {
                 {
                     continue;
                 }
-                //get the total amount to spread
+
                 double splitMoles = compound.splitMoles(totalSpreadPercentage);
                 double splitEnergy = compound.splitEnergy(totalSpreadPercentage);
                 if (splitMoles < 0)
@@ -132,8 +127,6 @@ public class CompoundMix {
                     System.out.println("x: " + x + " y: " + y + " z: " + z);
                     System.out.println(compound);
                 }
-
-                //devide it to each mix
                 double splitMolesPerMix = splitMoles / layer.size();
                 double splitEnergyPerMix = splitEnergy / layer.size();
 
@@ -176,12 +169,6 @@ public class CompoundMix {
         return percentage;
     }
 
-    /**
-     * If the mixture takes up more volume than StaticVolume excess volume flows
-     * to higher mixture
-     *
-     * @param higher
-     */
     private double spreadToHigher(CompoundMix higher, double currentVolume, double currentPressure)
     {
         if (currentVolume <= STATIC_VOLUME_L || currentPressure <= higher.getPressure_kPa())
@@ -258,7 +245,6 @@ public class CompoundMix {
         heatCapacitySum = 0;
         volume_L = 0;
         pressure_kPa = 0;
-
         compoundCount = 0;
 
         for (Compound[] cl : mix.values())
