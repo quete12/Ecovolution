@@ -59,7 +59,7 @@ public class Sim extends PApplet {
                 }
             }
         }
-        System.out.println("WorldTemp: " + temperature);
+//        System.out.println("WorldTemp: " + temperature);
         if (temperature - prevTemp > 100)
         {
             System.out.println("Huge Temp Diff!!");

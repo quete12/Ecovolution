@@ -5,7 +5,6 @@
  */
 package ch.schaermedia.ecovolution.environment.chem;
 
-import ch.schaermedia.ecovolution.general.LinearFunction;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONObject;
@@ -23,26 +22,25 @@ public class ElementProperties {
         return BY_CODE.get(code);
     }
 
-    protected String name;
-    protected String code;
-    protected int orderNumber;
-    protected Phase defaultPhase;
+    private String name;
+    private String code;
+    private int orderNumber;
+    private Phase defaultPhase;
 
-    protected double specificHeatCapacity_kj_mol_K;
+    private double specificHeatCapacity_kj_mol_K;
 
-    protected double meltingPoint_K;
-    protected double boilingPoint_K;
-    protected double fusionHeat_kj;
-    protected double vaporizationHeat_kj;
+    private double meltingPoint_K;
+    private double boilingPoint_K;
+    private double fusionHeat_kj;
+    private double vaporizationHeat_kj;
 
-    protected double triplePointHeat_K;
-    protected double triplePointPressure_kPa;
-    protected double criticalPointHeat_K;
-    protected double criticalPointPressure_kPa;
+    private double triplePointHeat_K;
+    private double triplePointPressure_kPa;
+    private double criticalPointHeat_K;
+    private double criticalPointPressure_kPa;
 
-    private LinearFunction sublimationBorder;
-    private LinearFunction meltingBorder;
-    private LinearFunction vaporizationBorder;
+    private PhaseDiagram_Temperature_Pressure temperature_Pressure_Diagram;
+    private PhaseDiagram_Energy_Pressure energy_Pressure_Diagram;
 
     public ElementProperties()
     {
@@ -50,6 +48,16 @@ public class ElementProperties {
 
     public ElementProperties(JSONObject object)
     {
+        readProperties(object);
+        initDiagrams();
+    }
+
+    private void initDiagrams(){
+        temperature_Pressure_Diagram = new PhaseDiagram_Temperature_Pressure(this);
+        energy_Pressure_Diagram = new PhaseDiagram_Energy_Pressure(this);
+    }
+
+    private void readProperties(JSONObject object){
         name = object.getString("name");
         code = object.getString("symbol");
         orderNumber = object.optInt("number");
@@ -62,22 +70,6 @@ public class ElementProperties {
         triplePointPressure_kPa = object.optDouble("triplePointPressure");
         criticalPointHeat_K = object.optDouble("criticalPointHeat");
         criticalPointPressure_kPa = object.optDouble("criticalPointPressure");
-
-        sublimationBorder = new LinearFunction(
-                0,
-                0,
-                triplePointHeat_K,
-                triplePointPressure_kPa);
-        meltingBorder = new LinearFunction(
-                meltingPoint_K,
-                CompoundMix.STATIC_PRESSURE_kPa,
-                triplePointHeat_K,
-                triplePointPressure_kPa);
-        vaporizationBorder = new LinearFunction(
-                triplePointHeat_K,
-                triplePointPressure_kPa,
-                criticalPointHeat_K,
-                criticalPointPressure_kPa);
     }
 
     public void map()
@@ -91,38 +83,68 @@ public class ElementProperties {
         return "ElementProperties{" + "name=" + name + ", code=" + code + ", orderNumber=" + orderNumber + ", defaultPhase=" + defaultPhase + ", specificHeatCapacity_kj_mol_K=" + specificHeatCapacity_kj_mol_K + ", meltingPoint_K=" + meltingPoint_K + ", boilingPoint_K=" + boilingPoint_K + ", fusionHeat_kj=" + fusionHeat_kj + ", vaporizationHeat_kj=" + vaporizationHeat_kj + '}';
     }
 
-    public Phase getPhase(double temperature_K, double pressure_kPa)
+    public String getName()
     {
-        if (pressure_kPa > criticalPointPressure_kPa
-                && temperature_K > criticalPointHeat_K)
-        {
-            return Phase.SUPERCRITICAL_FLUID;
-        } else if (sublimationBorder.isPointLeftOrOn(temperature_K, pressure_kPa)
-                && meltingBorder.isPointLeftOrOn(temperature_K, pressure_kPa))
-        {
-            return Phase.SOLID;
-        } else if (!meltingBorder.isPointLeftOrOn(temperature_K, pressure_kPa)
-                && vaporizationBorder.isPointLeftOrOn(temperature_K, pressure_kPa))
-        {
-            return Phase.LIQUID;
-        } else
-        {
-            return Phase.GAS;
-        }
+        return name;
     }
 
-    public LinearFunction getSublimationBorder()
+    public String getCode()
     {
-        return sublimationBorder;
+        return code;
     }
 
-    public LinearFunction getMeltingBorder()
+    public double getSpecificHeatCapacity_kj_mol_K()
     {
-        return meltingBorder;
+        return specificHeatCapacity_kj_mol_K;
     }
 
-    public LinearFunction getVaporizationBorder()
+    public double getMeltingPoint_K()
     {
-        return vaporizationBorder;
+        return meltingPoint_K;
+    }
+
+    public double getBoilingPoint_K()
+    {
+        return boilingPoint_K;
+    }
+
+    public double getFusionHeat_kj()
+    {
+        return fusionHeat_kj;
+    }
+
+    public double getVaporizationHeat_kj()
+    {
+        return vaporizationHeat_kj;
+    }
+
+    public double getTriplePointHeat_K()
+    {
+        return triplePointHeat_K;
+    }
+
+    public double getTriplePointPressure_kPa()
+    {
+        return triplePointPressure_kPa;
+    }
+
+    public double getCriticalPointHeat_K()
+    {
+        return criticalPointHeat_K;
+    }
+
+    public double getCriticalPointPressure_kPa()
+    {
+        return criticalPointPressure_kPa;
+    }
+
+    public PhaseDiagram_Temperature_Pressure getTemperature_Pressure_Diagram()
+    {
+        return temperature_Pressure_Diagram;
+    }
+
+    public PhaseDiagram_Energy_Pressure getEnergy_Pressure_Diagram()
+    {
+        return energy_Pressure_Diagram;
     }
 }

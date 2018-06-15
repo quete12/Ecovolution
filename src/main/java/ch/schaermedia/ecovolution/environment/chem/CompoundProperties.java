@@ -32,69 +32,13 @@ public class CompoundProperties extends ElementProperties {
     public CompoundProperties(JSONObject object)
     {
         super(object);
-        this.composition = new CompoundDecoder(code).getComposition();
+        this.composition = new CompoundDecoder(getCode()).getComposition();
     }
-
 
     @Override
     public void map()
     {
-        BY_CODE.put(code, this);
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public String getCode()
-    {
-        return code;
-    }
-
-    public double getSpecificHeatCapacity_kj_mol_K()
-    {
-        return specificHeatCapacity_kj_mol_K;
-    }
-
-    public double getMeltingPoint_K()
-    {
-        return meltingPoint_K;
-    }
-
-    public double getBoilingPoint_K()
-    {
-        return boilingPoint_K;
-    }
-
-    public double getFusionHeat_kj()
-    {
-        return fusionHeat_kj;
-    }
-
-    public double getVaporizationHeat_kj()
-    {
-        return vaporizationHeat_kj;
-    }
-
-    public double getTriplePointHeat_K()
-    {
-        return triplePointHeat_K;
-    }
-
-    public double getTriplePointPressure_kPa()
-    {
-        return triplePointPressure_kPa;
-    }
-
-    public double getCriticalPointHeat_K()
-    {
-        return criticalPointHeat_K;
-    }
-
-    public double getCriticalPointPressure_kPa()
-    {
-        return criticalPointPressure_kPa;
+        BY_CODE.put(getCode(), this);
     }
 
     @Override

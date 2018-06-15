@@ -24,7 +24,7 @@ public class PhaseDiagramRenderer {
     {
         this.properties = properties;
     }
-
+    //TODO: use diagram classes for rendering!!
     public void render(PGraphics g)
     {
         float tpH = (float) properties.getTriplePointHeat_K() / SCALE_X;
