@@ -5,6 +5,7 @@
  */
 package ch.schaermedia.ecovolution.environment.chem;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ public class CompoundMix {
     public static final double STATIC_VOLUME_L = 100000;
 
     // Map<code, Compound[phase_idx]>
-    private final Map<String, Compound[]> mix;
+    private final Map<String, Compound>[] mix;
 
     private final int x, y, z;
 
@@ -38,7 +39,16 @@ public class CompoundMix {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.mix = new HashMap<>();
+        this.mix = new HashMap[Phase.values().length];
+        initMix();
+    }
+
+    private void initMix()
+    {
+        for (int i = 0; i < mix.length; i++)
+        {
+            mix[i] = new HashMap();
+        }
     }
 
     public void spread(List<CompoundMix> layer, CompoundMix higher, CompoundMix lower, int range)
@@ -67,14 +77,20 @@ public class CompoundMix {
 
     public Compound[] getPhasesByCode(String code)
     {
-        return mix.get(code);
+        Compound[] result = new Compound[mix.length];
+        for (int i = 0; i < mix.length; i++)
+        {
+            result[i] = mix[i].get(code);
+
+        }
+        return result;
     }
 
     public void addEnergy(double energy_kj)
     {
-        for (Compound[] value : mix.values())
+        for (Map<String, Compound> value : mix)
         {
-            for (Compound compound : value)
+            for (Compound compound : value.values())
             {
                 if (compound == null)
                 {
@@ -88,17 +104,12 @@ public class CompoundMix {
 
     public void add(String code, int phase, double amount_mol, double energy_kj)
     {
-        Compound[] compounds = mix.get(code);
-        if (compounds == null)
-        {
-            compounds = new Compound[Phase.values().length];
-            mix.put(code, compounds);
-        }
-        Compound compound = compounds[phase];
+        Map<String, Compound> phaseMix = mix[phase];
+        Compound compound = phaseMix.get(code);
         if (compound == null)
         {
             compound = new Compound(CompoundProperties.getPropertiesFromCode(code));
-            compounds[phase] = compound;
+            phaseMix.put(code, compound);
         }
         compound.addAmount(amount_mol);
         compound.addEnergy(energy_kj);
@@ -109,9 +120,9 @@ public class CompoundMix {
         double percentage = (double) (1.0 / sqareSize);
         double totalSpreadPercentage = percentage * layer.size();
         //to avoid any conflics with previous calculations we invert compound and layer spreading in comparison to spreadByPercentage()
-        for (Compound[] value : mix.values())
+        for (Map<String, Compound> value : mix)
         {
-            for (Compound compound : value)
+            for (Compound compound : value.values())
             {
                 if (compound == null)
                 {
@@ -185,13 +196,13 @@ public class CompoundMix {
 
     private void spreadByPercentage(CompoundMix spreadTo, double percentage)
     {
-        for (Map.Entry<String, Compound[]> entry : mix.entrySet())
+        for (int i = 0; i < mix.length; i++)
         {
-            String key = entry.getKey();
-            Compound[] value = entry.getValue();
-            for (int i = 0; i < value.length; i++)
+            Map<String, Compound> value = mix[i];
+            for (Map.Entry<String, Compound> entry : value.entrySet())
             {
-                Compound compound = value[i];
+                String key = entry.getKey();
+                Compound compound = entry.getValue();
                 if (compound == null)
                 {
                     continue;
@@ -210,29 +221,30 @@ public class CompoundMix {
     private void updateTemperatureAndPhaseChanges()
     {
         double temperatureSum = 0;
-        for (Compound[] cl : mix.values())
+        for (int i = 0; i < mix.length; i++)
         {
-            for (int i = 0; i < cl.length; i++)
+            Map<String, Compound> value = mix[i];
+            List<String> toRemove = new ArrayList();
+            for (Compound compound : value.values())
             {
-                Compound compound = cl[i];
-                if (compound == null)
-                {
-                    continue;
-                }
                 compound.updateTemperatureAndPhase(pressure_kPa);
                 temperatureSum += compound.getTemperature_K();
                 int phaseIdx = compound.getPhase().idx;
                 if (phaseIdx != i)
                 {
-                    if (cl[phaseIdx] == null)
+                    if (mix[phaseIdx].containsKey(compound.getCode()))
                     {
-                        cl[phaseIdx] = compound;
+                        mix[phaseIdx].get(compound.getCode()).importCompound(compound);
                     } else
                     {
-                        cl[phaseIdx].importCompound(compound);
+                        mix[phaseIdx].put(compound.getCode(), compound);
                     }
-                    cl[i] = null;
+                    toRemove.add(compound.getCode());
                 }
+            }
+            for (String string : toRemove)
+            {
+                mix[i].remove(string);
             }
         }
         temperature_K = (compoundCount > 0) ? temperatureSum / compoundCount : 0;
@@ -246,9 +258,9 @@ public class CompoundMix {
         pressure_kPa = 0;
         compoundCount = 0;
 
-        for (Compound[] cl : mix.values())
+        for (Map<String, Compound> value : mix)
         {
-            for (Compound compound : cl)
+            for (Compound compound : value.values())
             {
                 if (compound == null)
                 {
