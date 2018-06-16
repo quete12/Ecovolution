@@ -46,7 +46,7 @@ public class Sim extends PApplet {
     {
         world.update();
         double temperature = world.getWorldTemeprature();
-        if (world.getWorldTemeprature() < 400)
+        if (world.getWorldTemeprature() < 200)
         {
             int x = 10;
             int y = 10;

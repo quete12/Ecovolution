@@ -15,9 +15,7 @@ import java.util.Map;
  */
 public class CompoundMix {
 
-    //Equivalent to 1 Atm
     public static final double STATIC_PRESSURE_kPa = 101.325;
-    //10 * 10 * 100
     public static final double STATIC_VOLUME_L = 100000;
 
     // Map<code, Compound[phase_idx]>
@@ -177,9 +175,9 @@ public class CompoundMix {
         }
         double molesOverVolume = molesOverVolume(currentVolume);
         double percentage = molesOverVolume / amount_mol;
-        if (percentage > 1)
+        if (percentage > .9)
         {
-            percentage = 1;
+            percentage = .9;
         }
         spreadByPercentage(higher, percentage);
         return percentage;
@@ -217,7 +215,8 @@ public class CompoundMix {
             for (int i = 0; i < cl.length; i++)
             {
                 Compound compound = cl[i];
-                if(compound == null){
+                if (compound == null)
+                {
                     continue;
                 }
                 compound.updateTemperatureAndPhase(pressure_kPa);
