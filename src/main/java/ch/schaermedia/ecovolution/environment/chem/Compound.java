@@ -66,6 +66,11 @@ public class Compound {
         }
         amountBuffer_mol += add_mol;
     }
+    
+    public void directImportCompound(Compound com){
+        amount_mol += (com.getAmount_mol() + com.getAmountBuffer_mol());
+        energy_kj += (com.getEnergy_kj() + com.getEnergyBuffer_kj());
+    }
 
     public void importCompound(Compound com)
     {
