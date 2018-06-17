@@ -55,7 +55,7 @@ public class Sim extends PApplet {
             {
                 for (int j = -range; j <= range; j++)
                 {
-                    world.getGrid()[x + i][y + j].getMixAtLayer(0).addEnergy(3000d);
+                    world.getGrid()[x + i][y + j].getMixAtLayer(0).addEnergy(2000d);
                 }
             }
         }
@@ -149,9 +149,9 @@ public class Sim extends PApplet {
         public Tile generate(int x, int y, float size)
         {
             Tile tile = new Tile(size, size, x, y);
-            tile.getMixAtLayer(0).add("H2O", Phase.SOLID.idx, 1000, 15000);
-            tile.getMixAtLayer(0).add("O2", Phase.SOLID.idx, 2000, 15000);
-            tile.getMixAtLayer(0).add("CO2", Phase.SOLID.idx, 2000, 15000);
+            tile.getMixAtLayer(0).add("H2O", Phase.SOLID.idx, 1000, 30000);
+            tile.getMixAtLayer(0).add("O2", Phase.SOLID.idx, 2000, 30000);
+            tile.getMixAtLayer(0).add("CO2", Phase.SOLID.idx, 2000, 30000);
             return tile;
         }
 

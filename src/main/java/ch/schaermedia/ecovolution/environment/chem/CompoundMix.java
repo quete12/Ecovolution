@@ -57,17 +57,20 @@ public class CompoundMix {
         }
         boolean hasLower = lower != null;
         boolean hasHigher = higher != null;
+
         double tmp_volume_L = volume_L;
         double tmp_pressure_kPa = pressure_kPa;
+        double tmp_amount_mol = amount_mol;
         if (hasLower)
         {
-            double spreadPercentage = spreadToLower(lower);
+            double spreadPercentage = spreadToLower(lower, tmp_amount_mol);
             tmp_volume_L -= tmp_volume_L * spreadPercentage;
             tmp_pressure_kPa -= tmp_pressure_kPa * spreadPercentage;
+            tmp_amount_mol -= tmp_amount_mol * spreadPercentage;
         }
         if (hasHigher)
         {
-            spreadToHigher(higher, tmp_volume_L, tmp_pressure_kPa);
+            spreadToHigher(higher, tmp_amount_mol, tmp_volume_L, tmp_pressure_kPa);
         }
         int side = 2 * range + 1;
         spread(layer, side * side);
@@ -86,14 +89,22 @@ public class CompoundMix {
 
     public void addEnergy(double energy_kj)
     {
+        double added = 0;
         for (PhaseMix phaseMix : mix)
         {
             double phasePercentage = phaseMix.getHeatCapacitySum() / heatCapacitySum;
-            if(phasePercentage == 0){
+            if (phasePercentage == 0)
+            {
                 continue;
             }
             double toAdd = energy_kj * phasePercentage;
+            added += toAdd;
             phaseMix.addEnergy(toAdd);
+        }
+
+        if (Math.abs(added - energy_kj) > 0.00001)
+        {
+            throw new RuntimeException("Lost Energy while adding! added: " + added + " expected: " + energy_kj);
         }
     }
 
@@ -123,7 +134,7 @@ public class CompoundMix {
      *
      * @param lower
      */
-    private double spreadToLower(CompoundMix lower)
+    private double spreadToLower(CompoundMix lower, double tmpAmount)
     {
         if (lower.getPressure_kPa() >= STATIC_PRESSURE_kPa)
         {
@@ -135,7 +146,7 @@ public class CompoundMix {
 
         //Untill beforementionned features are implemented: spread a percentage of each compound and phase
         double molesToPressurize = lower.molesToPressurize();
-        double percentage = molesToPressurize / amount_mol;
+        double percentage = molesToPressurize / tmpAmount;
         if (percentage <= 0)
         {
             return 0;
@@ -148,17 +159,17 @@ public class CompoundMix {
         return percentage;
     }
 
-    private double spreadToHigher(CompoundMix higher, double currentVolume, double currentPressure)
+    private double spreadToHigher(CompoundMix higher, double tmpAmount, double currentVolume, double currentPressure)
     {
         if (currentVolume <= STATIC_VOLUME_L || currentPressure <= higher.getPressure_kPa())
         {
             return 0;
         }
         double molesOverVolume = molesOverVolume(currentVolume);
-        double percentage = molesOverVolume / amount_mol;
-        if (percentage > .9)
+        double percentage = molesOverVolume / tmpAmount;
+        if (percentage > .25)
         {
-            percentage = .9;
+            percentage = .25;
         }
         spreadByPercentage(higher, percentage);
         return percentage;
@@ -169,7 +180,12 @@ public class CompoundMix {
         for (PhaseMix phaseMix : mix)
         {
             PhaseMix toMix = spreadTo.getMixForPhase(phaseMix.getPhase().idx);
+            try{
             phaseMix.spread(toMix, percentage);
+            }catch(RuntimeException ex){
+                System.out.println("Pos: " + x + " " + y + " " + z);
+                throw ex;
+            }
         }
     }
 
@@ -177,6 +193,7 @@ public class CompoundMix {
     {
         updateStats();
         updateTemperatureAndPhaseChanges();
+        updateStats();
     }
 
     private List<Compound>[] sortByPhase(List<Compound> unsorted)
@@ -201,9 +218,11 @@ public class CompoundMix {
         for (PhaseMix phaseMix : mix)
         {
             phaseMix.updateTemperature(pressure_kPa);
+            temperatureSum += phaseMix.getTemperature_K();
             List<Compound> compounds = phaseMix.getAndRemoveCompoundsOnPhaseChange();
             changedCompounds.addAll(compounds);
         }
+        temperature_K = (compoundCount > 0) ? temperatureSum / compoundCount : 0;
         List<Compound>[] sorted = sortByPhase(changedCompounds);
         for (int i = 0; i < sorted.length; i++)
         {
@@ -215,7 +234,6 @@ public class CompoundMix {
             }
             mix[i].importCompounds(compounds);
         }
-        temperature_K = (compoundCount > 0) ? temperatureSum / compoundCount : 0;
     }
 
     private void updateStats()

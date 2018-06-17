@@ -101,10 +101,6 @@ public class PhaseMix {
         pressure_kPa = 0;
         for (Compound compound : composition.values())
         {
-            if (compound == null)
-            {
-                continue;
-            }
             compound.importBuffers();
             amount_mol += compound.getAmount_mol();
             heatCapacitySum += compound.getTotalHeatCapacity();
@@ -116,15 +112,32 @@ public class PhaseMix {
 
     public void spread(PhaseMix spreadTo, double percentage)
     {
+        if (percentage > 1)
+        {
+            throw new RuntimeException("Spread over 100%");
+        }
+        if (amount_mol == 0)
+        {
+            return;
+        }
+        double spreadTotal = 0;
+        double expected = amount_mol * percentage;
+        double actualAmount = 0;
         for (Map.Entry<String, Compound> entry : composition.entrySet())
         {
             String key = entry.getKey();
             Compound compound = entry.getValue();
-            if (compound == null)
-            {
-                continue;
-            }
-            spreadTo.add(key, compound.splitDirectMoles(percentage), compound.splitDirectEnergy(percentage));
+            actualAmount += compound.getAmount_mol();
+            double splitMoles = compound.splitDirectMoles(percentage);
+            spreadTotal += splitMoles;
+            double splitEnergy = compound.splitDirectEnergy(percentage);
+            spreadTo.add(key, splitMoles, splitEnergy);
+        }
+        if (Math.abs(expected - spreadTotal) > 0.05)
+        {
+            System.out.println("Effective: " + spreadTotal + " expected: " + expected);
+            System.out.println("Temperature: " + temperature_K + " actual Moles: " + actualAmount + " theoretical Moles: " + amount_mol);
+            throw new RuntimeException("Spread Difference");
         }
     }
 
@@ -133,11 +146,6 @@ public class PhaseMix {
         double totalSpreadPercentage = percentage * layer.size();
         for (Compound compound : composition.values())
         {
-            if (compound == null)
-            {
-                continue;
-            }
-
             double splitMoles = compound.splitMoles(totalSpreadPercentage);
             double splitEnergy = compound.splitEnergy(totalSpreadPercentage);
 
@@ -204,5 +212,10 @@ public class PhaseMix {
     public double getPressure_kPa()
     {
         return pressure_kPa;
+    }
+
+    public double getTemperature_K()
+    {
+        return temperature_K;
     }
 }
