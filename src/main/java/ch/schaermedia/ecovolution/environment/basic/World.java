@@ -5,9 +5,6 @@
  */
 package ch.schaermedia.ecovolution.environment.basic;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  *
  * @author Quentin
@@ -35,7 +32,7 @@ public class World {
         this.spreadRange = spreadRange;
         this.tileGenerator = tileGenerator;
         this.grid = new Tile[width][height];
-        this.numberOfMixes = width*height*3;
+        this.numberOfMixes = width * height * 3;
         init();
     }
 
@@ -51,6 +48,12 @@ public class World {
 
     private void init()
     {
+        generateTiles();
+        setNeighbours();
+    }
+
+    private void generateTiles()
+    {
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -60,25 +63,83 @@ public class World {
         }
     }
 
-    public void update()
+    private void setNeighbours()
     {
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                grid[x][y].calculate(getNeighbours(spreadRange, x, y), spreadRange);
+                addNeighbours(spreadRange, x, y);
             }
         }
+    }
+
+    private void spreadToLower()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                //Spread to Lower
+            }
+        }
+    }
+
+    private void refreshStats()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                //refresh stats
+            }
+        }
+    }
+
+    private void spreadToHigher()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                //spread to higher
+            }
+        }
+    }
+
+    private void spreadHorizontal()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                //spread horizontal
+            }
+        }
+    }
+
+    private void updateStats()
+    {
         double temperatureSum = 0;
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                grid[x][y].update();
+                //update stats
                 temperatureSum += grid[x][y].getTemperature();
             }
         }
         worldTemeprature = temperatureSum / numberOfMixes;
+    }
+
+    public void update()
+    {
+        spreadToLower();
+        refreshStats();
+        spreadToHigher();
+        refreshStats();
+        spreadHorizontal();
+        updateStats();
     }
 
     public double getWorldTemeprature()
@@ -86,9 +147,8 @@ public class World {
         return worldTemeprature;
     }
 
-    private List<Tile> getNeighbours(int range, int x, int y)
+    private void addNeighbours(int range, int x, int y)
     {
-        List<Tile> neighbours = new ArrayList<>();
         for (int i = -range; i <= range; i++)
         {
             int myX = x + i;
@@ -107,10 +167,9 @@ public class World {
                 {
                     continue;
                 }
-                neighbours.add(grid[myX][myY]);
+                grid[x][y].addAsNeighbour(grid[myX][myY]);
             }
         }
-        return neighbours;
     }
 
     public Tile[][] getGrid()

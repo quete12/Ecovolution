@@ -29,6 +29,11 @@ public class PhaseMix {
 
     private final Map<String, Compound> composition;
 
+    private PhaseMix higher;
+    private PhaseMix lower;
+
+    private List<PhaseMix> neighbours;
+
     public PhaseMix(Phase phase)
     {
         this.phase = phase;
@@ -110,55 +115,6 @@ public class PhaseMix {
         }
     }
 
-    public void spread(PhaseMix spreadTo, double percentage)
-    {
-        if (percentage > 1)
-        {
-            throw new RuntimeException("Spread over 100%");
-        }
-        if (amount_mol == 0)
-        {
-            return;
-        }
-        double spreadTotal = 0;
-        double expected = amount_mol * percentage;
-        double actualAmount = 0;
-        for (Map.Entry<String, Compound> entry : composition.entrySet())
-        {
-            String key = entry.getKey();
-            Compound compound = entry.getValue();
-            actualAmount += compound.getAmount_mol();
-            double splitMoles = compound.splitDirectMoles(percentage);
-            spreadTotal += splitMoles;
-            double splitEnergy = compound.splitDirectEnergy(percentage);
-            spreadTo.add(key, splitMoles, splitEnergy);
-        }
-        if (Math.abs(expected - spreadTotal) > 0.05)
-        {
-            System.out.println("Effective: " + spreadTotal + " expected: " + expected);
-            System.out.println("Temperature: " + temperature_K + " actual Moles: " + actualAmount + " theoretical Moles: " + amount_mol);
-            throw new RuntimeException("Spread Difference");
-        }
-    }
-
-    public void spread(List<PhaseMix> layer, double percentage)
-    {
-        double totalSpreadPercentage = percentage * layer.size();
-        for (Compound compound : composition.values())
-        {
-            double splitMoles = compound.splitMoles(totalSpreadPercentage);
-            double splitEnergy = compound.splitEnergy(totalSpreadPercentage);
-
-            double splitMolesPerMix = splitMoles / layer.size();
-            double splitEnergyPerMix = splitEnergy / layer.size();
-
-            for (PhaseMix phaseMix : layer)
-            {
-                phaseMix.add(compound.getCode(), splitMolesPerMix, splitEnergyPerMix);
-            }
-        }
-    }
-
     public void add(String code, double amount_mol, double energy_kj)
     {
         Compound compound = composition.get(code);
@@ -182,6 +138,16 @@ public class PhaseMix {
             double percent = compound.getTotalHeatCapacity() / heatCapacitySum;
             compound.addEnergy(energy_kj * percent);
         }
+    }
+
+    public boolean hasHigher()
+    {
+        return higher != null;
+    }
+
+    public boolean hasLower()
+    {
+        return lower != null;
     }
 
     public Compound getCompound(String code)
@@ -217,5 +183,19 @@ public class PhaseMix {
     public double getTemperature_K()
     {
         return temperature_K;
+    }
+
+    public void setHigher(PhaseMix higher)
+    {
+        this.higher = higher;
+    }
+
+    public void setLower(PhaseMix lower)
+    {
+        this.lower = lower;
+    }
+
+    public void addAsNeighbour(PhaseMix phaseMix){
+        this.neighbours.add(this);
     }
 }

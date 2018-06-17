@@ -6,8 +6,6 @@
 package ch.schaermedia.ecovolution.environment.basic;
 
 import ch.schaermedia.ecovolution.environment.chem.CompoundMix;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -37,38 +35,19 @@ public class Tile {
         init();
     }
 
+    public void addAsNeighbour(Tile neighbour){
+        for (CompoundMix layer : layers)
+        {
+            layer.addAsNeibour(neighbour.getMixAtLayer(layer.getZ()));
+        }
+    }
+
     private void init()
     {
         for (int i = 0; i < layers.length; i++)
         {
             layers[i] = new CompoundMix(x, y, i);
         }
-    }
-
-    public void calculate(List<Tile> tiles, int range)
-    {
-        for (int i = 0; i < layers.length; i++)
-        {
-            List<CompoundMix> neighbours = new ArrayList<>();
-            for (Tile tile : tiles)
-            {
-                neighbours.add(tile.getMixAtLayer(i));
-            }
-            CompoundMix higher = i < layers.length - 1 ? layers[i + 1] : null;
-            CompoundMix lower = i > 0 ? layers[i - 1] : null;
-            layers[i].spread(neighbours, higher, lower, range);
-        }
-    }
-
-    public void update()
-    {
-        double temperatureSum = 0;
-        for (CompoundMix layer : layers)
-        {
-            layer.update();
-            temperatureSum += layer.getTemperature_K();
-        }
-        temperature = temperatureSum / layers.length;
     }
 
     public CompoundMix[] getLayers()

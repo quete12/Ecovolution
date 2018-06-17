@@ -41,39 +41,19 @@ public class CompoundMix {
         initMix();
     }
 
+    public void addAsNeibour(CompoundMix neighbour){
+        for (PhaseMix phaseMix : mix)
+        {
+            phaseMix.addAsNeighbour(neighbour.getMixForPhase(phaseMix.getPhase().idx));
+        }
+    }
+
     private void initMix()
     {
         for (Phase value : Phase.values())
         {
             mix[value.idx] = new PhaseMix(value);
         }
-    }
-
-    public void spread(List<CompoundMix> layer, CompoundMix higher, CompoundMix lower, int range)
-    {
-        if (amount_mol == 0)
-        {
-            return;
-        }
-        boolean hasLower = lower != null;
-        boolean hasHigher = higher != null;
-
-        double tmp_volume_L = volume_L;
-        double tmp_pressure_kPa = pressure_kPa;
-        double tmp_amount_mol = amount_mol;
-        if (hasLower)
-        {
-            double spreadPercentage = spreadToLower(lower, tmp_amount_mol);
-            tmp_volume_L -= tmp_volume_L * spreadPercentage;
-            tmp_pressure_kPa -= tmp_pressure_kPa * spreadPercentage;
-            tmp_amount_mol -= tmp_amount_mol * spreadPercentage;
-        }
-        if (hasHigher)
-        {
-            spreadToHigher(higher, tmp_amount_mol, tmp_volume_L, tmp_pressure_kPa);
-        }
-        int side = 2 * range + 1;
-        spread(layer, side * side);
     }
 
     public Compound[] getPhasesByCode(String code)
@@ -111,82 +91,6 @@ public class CompoundMix {
     public void add(String code, int phase, double amount_mol, double energy_kj)
     {
         mix[phase].add(code, amount_mol, energy_kj);
-    }
-
-    private void spread(List<CompoundMix> layer, int sqareSize)
-    {
-        double percentage = (double) (1.0 / sqareSize);
-        for (PhaseMix phaseMix : mix)
-        {
-            int phase_idx = phaseMix.getPhase().idx;
-            List<PhaseMix> phases = new ArrayList<>();
-            for (CompoundMix compoundMix : layer)
-            {
-                phases.add(compoundMix.getMixForPhase(phase_idx));
-            }
-            phaseMix.spread(phases, percentage);
-        }
-    }
-
-    /**
-     * Tries to fill the lower mix untill lower mix has reached StaticPressure
-     * (1 atm)
-     *
-     * @param lower
-     */
-    private double spreadToLower(CompoundMix lower, double tmpAmount)
-    {
-        if (lower.getPressure_kPa() >= STATIC_PRESSURE_kPa)
-        {
-            return 0;
-        }
-        //TODO: solids fall down
-        //TODO: liquids rain down
-        //TODO: if there is still space in mix below fill with Gases
-
-        //Untill beforementionned features are implemented: spread a percentage of each compound and phase
-        double molesToPressurize = lower.molesToPressurize();
-        double percentage = molesToPressurize / tmpAmount;
-        if (percentage <= 0)
-        {
-            return 0;
-        }
-        if (percentage > 1)
-        {
-            percentage = 1;
-        }
-        spreadByPercentage(lower, percentage);
-        return percentage;
-    }
-
-    private double spreadToHigher(CompoundMix higher, double tmpAmount, double currentVolume, double currentPressure)
-    {
-        if (currentVolume <= STATIC_VOLUME_L || currentPressure <= higher.getPressure_kPa())
-        {
-            return 0;
-        }
-        double molesOverVolume = molesOverVolume(currentVolume);
-        double percentage = molesOverVolume / tmpAmount;
-        if (percentage > .25)
-        {
-            percentage = .25;
-        }
-        spreadByPercentage(higher, percentage);
-        return percentage;
-    }
-
-    private void spreadByPercentage(CompoundMix spreadTo, double percentage)
-    {
-        for (PhaseMix phaseMix : mix)
-        {
-            PhaseMix toMix = spreadTo.getMixForPhase(phaseMix.getPhase().idx);
-            try{
-            phaseMix.spread(toMix, percentage);
-            }catch(RuntimeException ex){
-                System.out.println("Pos: " + x + " " + y + " " + z);
-                throw ex;
-            }
-        }
     }
 
     public void update()
@@ -301,6 +205,21 @@ public class CompoundMix {
     public double getTemperature_K()
     {
         return temperature_K;
+    }
+
+    public int getX()
+    {
+        return x;
+    }
+
+    public int getY()
+    {
+        return y;
+    }
+
+    public int getZ()
+    {
+        return z;
     }
 
 }
