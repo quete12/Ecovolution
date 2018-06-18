@@ -27,17 +27,16 @@ public class PhaseMix {
 
     private double temperature_K;
 
+    private final int horizontalSpreadSize;
     private final Map<String, Compound> composition;
+    private final List<PhaseMix> neighbours;
 
-    private PhaseMix higher;
-    private PhaseMix lower;
-
-    private List<PhaseMix> neighbours;
-
-    public PhaseMix(Phase phase)
+    public PhaseMix(Phase phase, int horizontalSpreadSize)
     {
         this.phase = phase;
+        this.horizontalSpreadSize = horizontalSpreadSize;
         this.composition = new HashMap<>();
+        this.neighbours = new ArrayList<>(horizontalSpreadSize);
     }
 
     public int numberOfCompounds()
@@ -73,25 +72,24 @@ public class PhaseMix {
 
     public void importCompound(Compound compound)
     {
-        //TODO: check if compound really belongs to this Phase
         if (composition.containsKey(compound.getCode()))
         {
             Compound existing = composition.get(compound.getCode());
-            existing.directImportCompound(compound);
+            existing.importCompound(compound);
         } else
         {
             composition.put(compound.getCode(), compound);
         }
     }
 
-    public void updateTemperature(double totalPressure_kPa)
+    public void updateTemperatureAndPhase(double totalPressure_kPa)
     {
         double temperatureSum = 0;
-        for (Compound compound : composition.values())
+        temperatureSum = composition.values().stream().map((compound) ->
         {
             compound.updateTemperatureAndPhase(totalPressure_kPa);
-            temperatureSum += compound.getTemperature_K();
-        }
+            return compound;
+        }).map((compound) -> compound.getTemperature_K()).reduce(temperatureSum, (accumulator, _item) -> accumulator + _item);
         temperature_K = (!composition.isEmpty()) ? temperatureSum / composition.size() : 0;
     }
 
@@ -140,14 +138,23 @@ public class PhaseMix {
         }
     }
 
-    public boolean hasHigher()
+    public void spreadPercentage(PhaseMix spreadTo, double precentage)
     {
-        return higher != null;
+        composition.values().forEach((value) ->
+        {
+            double splitEnergy = value.splitEnergy(precentage);
+            double splitMoles = value.splitMoles(precentage);
+            spreadTo.add(value.getCode(), splitMoles, splitEnergy);
+        });
     }
 
-    public boolean hasLower()
+    public void spreadHorizontal()
     {
-        return lower != null;
+        double percentage = 1.0 / horizontalSpreadSize;
+        for (PhaseMix neighbour : neighbours)
+        {
+            spreadPercentage(neighbour, percentage);
+        }
     }
 
     public Compound getCompound(String code)
@@ -185,17 +192,8 @@ public class PhaseMix {
         return temperature_K;
     }
 
-    public void setHigher(PhaseMix higher)
+    public void addAsNeighbour(PhaseMix phaseMix)
     {
-        this.higher = higher;
-    }
-
-    public void setLower(PhaseMix lower)
-    {
-        this.lower = lower;
-    }
-
-    public void addAsNeighbour(PhaseMix phaseMix){
-        this.neighbours.add(this);
+        this.neighbours.add(phaseMix);
     }
 }

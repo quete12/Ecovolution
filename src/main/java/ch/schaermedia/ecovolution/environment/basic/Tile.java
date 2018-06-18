@@ -25,29 +25,105 @@ public class Tile {
 
     private double temperature;
 
-    public Tile(float width, float height, int x, int y)
+    public Tile(float width, float height, int x, int y,int horizontalSpreadSize)
     {
         this.width = width;
         this.height = height;
         this.x = x;
         this.y = y;
         this.layers = new CompoundMix[NUMBER_OF_ATMOSPHERELAYERS];
-        init();
+        init(horizontalSpreadSize);
     }
 
-    public void addAsNeighbour(Tile neighbour){
-        for (CompoundMix layer : layers)
-        {
-            layer.addAsNeibour(neighbour.getMixAtLayer(layer.getZ()));
-        }
-    }
-
-    private void init()
+    private void init(int horizontalSpreadSize)
     {
         for (int i = 0; i < layers.length; i++)
         {
-            layers[i] = new CompoundMix(x, y, i);
+            layers[i] = new CompoundMix(x, y, i,horizontalSpreadSize);
         }
+        for (int i = 0; i < layers.length; i++)
+        {
+            CompoundMix layer = layers[i];
+            if (i > 0)
+            {
+                layer.setLower(getMixAtLayer(i - 1));
+            }
+            if (i < layers.length - 1)
+            {
+                layer.setHigher(getMixAtLayer(i + 1));
+            }
+        }
+    }
+
+    public void addAsNeighbour(Tile neighbour)
+    {
+        for (CompoundMix layer : layers)
+        {
+            int z = layer.getZ();
+            layer.addAsNeibour(neighbour.getMixAtLayer(z));
+        }
+    }
+
+    public void spreadHorizontal()
+    {
+        for (CompoundMix layer : layers)
+        {
+            layer.spreadHorizontal();
+        }
+    }
+
+    public void spreadToLower()
+    {
+        for (CompoundMix layer : layers)
+        {
+            int layerIdx = layer.getZ();
+            if (layerIdx == 0)
+            {
+                continue;
+            }
+            if (layer.getAmount_mol() == 0)
+            {
+                continue;
+            }
+            layer.spreadToLower();
+        }
+    }
+
+    public void spreadToHigher()
+    {
+
+        for (CompoundMix layer : layers)
+        {
+            int layerIdx = layer.getZ();
+            if (layerIdx == layers.length - 1)
+            {
+                continue;
+            }
+            if (layer.getAmount_mol() == 0)
+            {
+                continue;
+            }
+            layer.spreadToHigher();
+        }
+    }
+
+    public void updateStats()
+    {
+        for (CompoundMix layer : layers)
+        {
+            layer.updateStats();
+        }
+    }
+
+    public void updateTemperautreAndPhase()
+    {
+        double temperatureSum = 0;
+        for (CompoundMix layer : layers)
+        {
+            layer.updateTemperatureAndPhaseChanges();
+            temperatureSum += layer.getTemperature_K();
+        }
+        temperature = temperatureSum / layers.length;
     }
 
     public CompoundMix[] getLayers()

@@ -37,7 +37,7 @@ public class Compound {
         return ChemUtilities.pressure_kPa(volume_L, amount_mol, temperature_K);
     }
 
-    public void addEnergy(double add_kj)
+    public synchronized void addEnergy(double add_kj)
     {
         if (Double.isNaN(add_kj))
         {
@@ -45,14 +45,12 @@ public class Compound {
         }
         if (add_kj < 0)
         {
-            //TODO: add proper error handling
-            //Maybe even allow removeing energy this way ??
             throw new RuntimeException("Negative Energy Add!");
         }
         energyBuffer_kj += add_kj;
     }
 
-    public void addAmount(double add_mol)
+    public synchronized void addAmount(double add_mol)
     {
         if (Double.isNaN(add_mol))
         {
@@ -60,38 +58,15 @@ public class Compound {
         }
         if (add_mol < 0)
         {
-            //TODO: add proper error handling
-            //Maybe even allow removeing moles this way ??
             throw new RuntimeException("Negative Moles Add!");
         }
         amountBuffer_mol += add_mol;
-    }
-    
-    public void directImportCompound(Compound com){
-        amount_mol += (com.getAmount_mol() + com.getAmountBuffer_mol());
-        energy_kj += (com.getEnergy_kj() + com.getEnergyBuffer_kj());
     }
 
     public void importCompound(Compound com)
     {
         amountBuffer_mol += (com.getAmount_mol() + com.getAmountBuffer_mol());
         energyBuffer_kj += (com.getEnergy_kj() + com.getEnergyBuffer_kj());
-    }
-
-    public double splitDirectMoles(double percentage)
-    {
-        //maybe we should consider the buffer in this calculation even though it sould be 0 by the time this method gets called, just to avoid negative values
-        double remove = amount_mol * percentage;
-        amount_mol -= remove;
-        return remove;
-    }
-
-    public double splitDirectEnergy(double percentage)
-    {
-        //maybe we should consider the buffer in this calculation even though it sould be 0 by the time this method gets called, just to avoid negative values
-        double remove = energy_kj * percentage;
-        energy_kj -= remove;
-        return remove;
     }
 
     public double splitMoles(double percentage)
@@ -106,22 +81,6 @@ public class Compound {
         double remove = energy_kj * percentage;
         energyBuffer_kj -= remove;
         return remove;
-    }
-
-    public double removeAmount(double moles)
-    {
-        double tmp_amount = amount_mol + amountBuffer_mol - moles;
-        if (tmp_amount < 0)
-        {
-            double diff = moles - (amount_mol + amountBuffer_mol);
-            if (diff < 0)
-            {
-                return 0;
-            }
-            amountBuffer_mol -= diff;
-            return diff;
-        }
-        return moles;
     }
 
     public void importBuffers()
