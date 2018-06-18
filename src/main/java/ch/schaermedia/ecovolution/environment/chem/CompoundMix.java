@@ -132,9 +132,9 @@ public class CompoundMix {
                 continue;
             }
             double percentage = toSpread / phaseMix.getAmount_mol();
-            if (percentage > 1)
+            if (percentage > 0.5)
             {
-                percentage = 1;
+                percentage = 0.5;
             }
             PhaseMix lowerPhaseMix = lower.getMixForPhase(i);
             phaseMix.spreadPercentage(lowerPhaseMix, percentage);
@@ -169,9 +169,9 @@ public class CompoundMix {
                 continue;
             }
             double percentage = toSpread / phaseMix.getAmount_mol();
-            if (percentage > 0.9)
+            if (percentage > 0.5)
             {
-                percentage = 0.9;
+                percentage = 0.5;
             }
             PhaseMix higherPhaseMix = higher.getMixForPhase(i);
             phaseMix.spreadPercentage(higherPhaseMix, percentage);

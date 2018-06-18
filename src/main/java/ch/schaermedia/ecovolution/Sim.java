@@ -25,8 +25,8 @@ import processing.core.PGraphics;
 public class Sim extends PApplet {
 
     //TODO: move Configuration!
-    private static final int WORLD_WIDTH = 50;
-    private static final int WORLD_HEIGHT = 50;
+    private static final int WORLD_WIDTH = 30;
+    private static final int WORLD_HEIGHT = 30;
     private static final int SPREAD_RANGE = 3;
     private static final int FRAMERATE = 60;
 
