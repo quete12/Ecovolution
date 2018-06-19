@@ -71,4 +71,10 @@ public class LinearFunction {
     {
         return (p2Y - p1Y) / (p2X - p1X);
     }
+
+    @Override
+    public String toString()
+    {
+        return "f(x) = " + varA + "x + " + varB;
+    }
 }
