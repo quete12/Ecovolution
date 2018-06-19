@@ -5,7 +5,7 @@
  */
 package ch.schaermedia.ecovolution.environment.chem;
 
-import ch.schaermedia.ecovolution.general.LinearFunction;
+import ch.schaermedia.ecovolution.general.math.LinearFunction;
 
 /**
  *

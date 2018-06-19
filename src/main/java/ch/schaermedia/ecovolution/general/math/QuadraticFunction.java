@@ -9,7 +9,7 @@ package ch.schaermedia.ecovolution.general.math;
  *
  * @author Quentin
  */
-public class QuadraticFunction {
+public class QuadraticFunction implements Function{
 
     private double a;
     private double b;
@@ -25,6 +25,13 @@ public class QuadraticFunction {
         return a * x * x + b * x + c;
     }
 
+    public double x(double y)
+    {
+        double newC = c -y;
+        double discriminant = Math.sqrt(b * b - 4 * a * newC);
+        return (-b + discriminant) / 2 * a;
+    }
+
     //Cramer's rule
     private void fitVars(double x1, double y1, double x2, double y2, double x3, double y3)
     {
@@ -36,7 +43,6 @@ public class QuadraticFunction {
         {
             y1, y2, y3
         };
-        //f(x) = ax^2+bx+c
         double[][] matD = matD(xs);
         double D = calcD(matD);
 
@@ -110,6 +116,21 @@ public class QuadraticFunction {
 
         double d = v1 - v2 + v3;
         return d;
+    }
+
+    public double getA()
+    {
+        return a;
+    }
+
+    public double getB()
+    {
+        return b;
+    }
+
+    public double getC()
+    {
+        return c;
     }
 
 }

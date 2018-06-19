@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ch.schaermedia.ecovolution.general;
+package ch.schaermedia.ecovolution.general.math;
 
 /**
  *
  * @author Quentin
  */
-public class LinearFunction {
+public class LinearFunction implements Function{
 
     private final double varA;
     private final double varB;
