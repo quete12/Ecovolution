@@ -32,16 +32,28 @@ public class QuadraticFunctionTest {
         double x = -1.0;
         double expResult = 1.0;
         double result = standradPosFunction.y(x);
-        System.out.println("f("+x+") = " + result);
+        System.out.println("f(" + x + ") = " + result);
         assertEquals(expResult, result, 0.0);
     }
+
+    @Test
+    public void testUnorderedInitialization()
+    {
+        double x = -1.0;
+        double expResult = 2.0;
+        QuadraticFunction instance = new QuadraticFunction(0, 0, 1, 2, -1, 2);
+        double result = instance.y(x);
+        System.out.println("f(" + x + ") = " + result);
+        assertEquals(expResult, result, 0.0);
+    }
+
     @Test
     public void testPosY2()
     {
         double x = 2.0;
         double expResult = 4.0;
         double result = standradPosFunction.y(x);
-        System.out.println("f("+x+") = " + result);
+        System.out.println("f(" + x + ") = " + result);
         assertEquals(expResult, result, 0.0);
     }
 

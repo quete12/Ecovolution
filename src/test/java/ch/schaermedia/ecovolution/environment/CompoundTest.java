@@ -5,9 +5,9 @@
  */
 package ch.schaermedia.ecovolution.environment;
 
-import ch.schaermedia.ecovolution.environment.chem.CompoundProperties;
-import ch.schaermedia.ecovolution.environment.chem.Compound;
 import ch.schaermedia.ecovolution.environment.chem.ChemUtilities;
+import ch.schaermedia.ecovolution.environment.chem.Compound;
+import ch.schaermedia.ecovolution.environment.chem.CompoundProperties;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,7 +38,7 @@ public class CompoundTest {
         double expResult = 0.0;
         for (int i = 0; i < 25; i++) {
         double result = instance.getTemperature_K();
-        instance.addEnergy(200);
+        instance.addEnergy(2000);
             System.out.println("Temperature: " + result + " phase: " + instance.getPhase());
         }
         //assertEquals(expResult, result, 0.0);

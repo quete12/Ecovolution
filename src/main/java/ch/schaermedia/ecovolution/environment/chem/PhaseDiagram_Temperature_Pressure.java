@@ -48,12 +48,12 @@ public class PhaseDiagram_Temperature_Pressure {
                 && temperature_K > properties.getCriticalPointHeat_K())
         {
             return Phase.SUPERCRITICAL_FLUID;
-        } else if (sublimationBorder.isPointLeftOrOn(temperature_K, pressure_kPa)
-                && meltingBorder.isPointLeftOrOn(temperature_K, pressure_kPa))
+        } else if (sublimationBorder.isPointOnOrLeft(temperature_K, pressure_kPa)
+                && meltingBorder.isPointOnOrLeft(temperature_K, pressure_kPa))
         {
             return Phase.SOLID;
-        } else if (!meltingBorder.isPointLeftOrOn(temperature_K, pressure_kPa)
-                && vaporizationBorder.isPointLeftOrOn(temperature_K, pressure_kPa))
+        } else if (!meltingBorder.isPointOnOrLeft(temperature_K, pressure_kPa)
+                && vaporizationBorder.isPointOnOrLeft(temperature_K, pressure_kPa))
         {
             return Phase.LIQUID;
         } else

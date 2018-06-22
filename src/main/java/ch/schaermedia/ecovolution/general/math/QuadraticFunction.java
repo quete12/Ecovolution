@@ -9,7 +9,7 @@ package ch.schaermedia.ecovolution.general.math;
  *
  * @author Quentin
  */
-public class QuadraticFunction implements Function{
+public class QuadraticFunction implements Function {
 
     private double a;
     private double b;
@@ -27,7 +27,7 @@ public class QuadraticFunction implements Function{
 
     public double x(double y)
     {
-        double newC = c -y;
+        double newC = c - y;
         double discriminant = Math.sqrt(b * b - 4 * a * newC);
         return (-b + discriminant) / 2 * a;
     }
@@ -131,6 +131,11 @@ public class QuadraticFunction implements Function{
     public double getC()
     {
         return c;
+    }
+    @Override
+    public boolean isPositive()
+    {
+        return a > 0;
     }
 
 }

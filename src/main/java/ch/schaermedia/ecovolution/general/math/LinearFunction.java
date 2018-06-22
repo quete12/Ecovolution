@@ -54,7 +54,7 @@ public class LinearFunction implements Function{
         }
     }
 
-    public boolean isPointLeftOrOn(double px, double py){
+    public boolean isPointOnOrOver(double px, double py){
         if(varA>0){
             return y(px)<=py;
         }else{
@@ -76,5 +76,11 @@ public class LinearFunction implements Function{
     public String toString()
     {
         return "f(x) = " + varA + "x + " + varB;
+    }
+
+    @Override
+    public boolean isPositive()
+    {
+        return varA > 0;
     }
 }
