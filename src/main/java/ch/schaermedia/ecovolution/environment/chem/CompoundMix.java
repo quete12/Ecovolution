@@ -194,13 +194,17 @@ public class CompoundMix {
         return results;
     }
 
-    public void updateTemperatureAndPhaseChanges()
+    public void updateTemperatureAndPhaseChanges(){
+        updateTemperatureAndPhaseChanges(pressure_kPa);
+    }
+
+    public void updateTemperatureAndPhaseChanges(double totalPressure_kPa)
     {
         List<Compound> changedCompounds = new ArrayList<>();
         double temperatureSum = 0;
         for (PhaseMix phaseMix : mix)
         {
-            phaseMix.updateTemperatureAndPhase(pressure_kPa);
+            phaseMix.updateTemperatureAndPhase(totalPressure_kPa);
             temperatureSum += phaseMix.getTemperature_K();
             List<Compound> compounds = phaseMix.getAndRemoveCompoundsOnPhaseChange();
             changedCompounds.addAll(compounds);

@@ -83,4 +83,14 @@ public class LinearFunction implements Function{
     {
         return varA > 0;
     }
+
+    public double getVarA()
+    {
+        return varA;
+    }
+
+    public double getVarB()
+    {
+        return varB;
+    }
 }

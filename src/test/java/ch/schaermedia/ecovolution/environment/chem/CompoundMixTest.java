@@ -26,7 +26,8 @@ public class CompoundMixTest {
         try
         {
             ChemUtilities.readElements("res/Chemics.json");
-        } catch (FileNotFoundException ex)
+        }
+        catch (FileNotFoundException ex)
         {
             Logger.getLogger(CompoundMixTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -39,14 +40,16 @@ public class CompoundMixTest {
         Phase phase = Phase.LIQUID;
         double moles = ChemUtilities.moles(standardPressure, standardVolume, standardTemperature);
         CompoundProperties prop = CompoundProperties.getPropertiesFromCode(compound);
-        double energyForTemp = prop.getSpecificHeatCapacity_kj_mol_K() * moles * standardTemperature;
-        energyForTemp += (prop.getFusionHeat_kj() * moles);
-
+        double energyForTemp = moles * (prop.getSpecificHeatCapacity_kj_mol_K() * standardTemperature + prop.getFusionHeat_kj());
 
         mix.add(compound, phase.idx, moles, energyForTemp);
         mix.updateStats();
-        mix.updateTemperatureAndPhaseChanges();
+        mix.updateTemperatureAndPhaseChanges(standardPressure);
         mix.updateStats();
+        assertEquals(moles, mix.getAmount_mol(), 0.0);
+        assertEquals(standardTemperature, mix.getTemperature_K(), 0.0);
+        assertEquals(standardPressure, mix.getPressure_kPa(), 0.0);
+        assertEquals(standardVolume, mix.getVolume_L(), 0.0);
         return mix;
     }
 

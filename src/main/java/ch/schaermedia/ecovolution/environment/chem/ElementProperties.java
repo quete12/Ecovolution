@@ -93,6 +93,14 @@ public class ElementProperties {
         return code;
     }
 
+    public boolean isBoilingPointUnderTriplePoint(){
+        return boilingPoint_K < triplePointHeat_K;
+    }
+
+    public boolean isMeltingPointUnderTriplePoint(){
+        return meltingPoint_K < triplePointHeat_K;
+    }
+
     public double getSpecificHeatCapacity_kj_mol_K()
     {
         return specificHeatCapacity_kj_mol_K;

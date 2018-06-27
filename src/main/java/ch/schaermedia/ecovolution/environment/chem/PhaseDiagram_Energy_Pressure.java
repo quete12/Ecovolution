@@ -7,7 +7,6 @@ package ch.schaermedia.ecovolution.environment.chem;
 
 import ch.schaermedia.ecovolution.general.math.Function;
 import ch.schaermedia.ecovolution.general.math.LinearFunction;
-import ch.schaermedia.ecovolution.general.math.QuadraticFunction;
 
 /**
  *
@@ -37,11 +36,10 @@ public class PhaseDiagram_Energy_Pressure {
                 0,
                 triplePointMinEnergy(),
                 properties.getTriplePointPressure_kPa());
-        double sublimationEnergy = properties.getFusionHeat_kj() + properties.getVaporizationHeat_kj();
         sublimationMaxEnergy = new LinearFunction(
-                sublimationEnergy,
                 0,
-                triplePointMinEnergy() + sublimationEnergy,
+                0,
+                triplePointMaxEnergy(),
                 properties.getTriplePointPressure_kPa());
 
         meltingMinEnergy = new LinearFunction(
@@ -52,21 +50,17 @@ public class PhaseDiagram_Energy_Pressure {
         meltingMaxEnergy = new LinearFunction(
                 energyAtMeltingPoint() + properties.getFusionHeat_kj(),
                 CompoundMix.STATIC_PRESSURE_kPa,
-                triplePointMinEnergy() + properties.getFusionHeat_kj(),
+                triplePointMaxEnergy(),
                 properties.getTriplePointPressure_kPa());
 
-        vaporizationMinEnergy = new QuadraticFunction(
+        vaporizationMinEnergy = new LinearFunction(
                 triplePointMinEnergy(),
                 properties.getTriplePointPressure_kPa(),
-                boilingPointMinEnergy(),
-                CompoundMix.STATIC_PRESSURE_kPa,
                 criticalMinEnergy(),
                 properties.getCriticalPointPressure_kPa());
-        vaporizationMaxEnergy = new QuadraticFunction(
-                triplePointMinEnergy() + properties.getVaporizationHeat_kj(),
+        vaporizationMaxEnergy = new LinearFunction(
+                triplePointMaxEnergy(),
                 properties.getTriplePointPressure_kPa(),
-                boilingPointMaxEnergy(),
-                CompoundMix.STATIC_PRESSURE_kPa,
                 criticalMinEnergy() + properties.getVaporizationHeat_kj(),
                 properties.getCriticalPointPressure_kPa());
     }
@@ -98,35 +92,39 @@ public class PhaseDiagram_Energy_Pressure {
 
     public double temperatureAt(double energy_kj_mol, double mixturePressure, Phase phase)
     {
-        PhaseDiagram_Temperature_Pressure tPDia = properties.getTemperature_Pressure_Diagram();
+        double energyTemp;
         switch (phase)
         {
             case SOLID:
                 if (sublimationMinEnergy.isPointOnOrLeft(energy_kj_mol, mixturePressure)
                         && meltingMinEnergy.isPointOnOrLeft(energy_kj_mol, mixturePressure))
                 {
-                    return energy_kj_mol / properties.getSpecificHeatCapacity_kj_mol_K();
+                    energyTemp = energy_kj_mol;
                 } else if (mixturePressure > properties.getTriplePointPressure_kPa())
                 {
-                    return tPDia.getMeltingBorder().x(mixturePressure);
+                    energyTemp = meltingMinEnergy.x(mixturePressure);
                 } else
                 {
-                    return tPDia.getSublimationBorder().x(mixturePressure);
+                    energyTemp = sublimationMinEnergy.x(mixturePressure);
                 }
+                break;
             case LIQUID:
                 if (vaporizationMinEnergy.isPointOnOrLeft(energy_kj_mol, mixturePressure))
                 {
-                    return (energy_kj_mol - properties.getFusionHeat_kj()) / properties.getSpecificHeatCapacity_kj_mol_K();
+                    energyTemp = energy_kj_mol - properties.getFusionHeat_kj();
                 } else
                 {
-                    return tPDia.getVaporizationBorder().x(mixturePressure);
+                    energyTemp = vaporizationMinEnergy.x(mixturePressure);
                 }
+                break;
             case GAS:
             case SUPERCRITICAL_FLUID:
-                return (energy_kj_mol - properties.getFusionHeat_kj() - properties.getVaporizationHeat_kj()) / properties.getSpecificHeatCapacity_kj_mol_K();
+                energyTemp = energy_kj_mol - properties.getFusionHeat_kj() - properties.getVaporizationHeat_kj();
+                break;
             default:
                 throw new AssertionError(phase.name());
         }
+        return energyTemp / properties.getSpecificHeatCapacity_kj_mol_K();
     }
 
     private double energyAtMeltingPoint()
@@ -139,12 +137,9 @@ public class PhaseDiagram_Energy_Pressure {
         return properties.getTriplePointHeat_K() * properties.getSpecificHeatCapacity_kj_mol_K();
     }
 
-    private double boilingPointMinEnergy(){
-        return properties.getBoilingPoint_K()*properties.getSpecificHeatCapacity_kj_mol_K()+properties.getFusionHeat_kj();
-    }
-
-    private double boilingPointMaxEnergy(){
-        return properties.getBoilingPoint_K()*properties.getSpecificHeatCapacity_kj_mol_K()+properties.getFusionHeat_kj()+properties.getVaporizationHeat_kj();
+    private double triplePointMaxEnergy()
+    {
+        return properties.getTriplePointHeat_K() * properties.getSpecificHeatCapacity_kj_mol_K() + properties.getVaporizationHeat_kj() + properties.getFusionHeat_kj();
     }
 
     private double criticalMinEnergy()
@@ -152,5 +147,20 @@ public class PhaseDiagram_Energy_Pressure {
         return energyAtMeltingPoint()
                 + properties.getFusionHeat_kj()
                 + properties.getCriticalPointHeat_K() * properties.getSpecificHeatCapacity_kj_mol_K();
+    }
+
+    public Function getSublimationMinEnergy()
+    {
+        return sublimationMinEnergy;
+    }
+
+    public Function getMeltingMinEnergy()
+    {
+        return meltingMinEnergy;
+    }
+
+    public Function getVaporizationMinEnergy()
+    {
+        return vaporizationMinEnergy;
     }
 }
