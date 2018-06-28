@@ -5,6 +5,7 @@
  */
 package ch.schaermedia.ecovolution.environment.chem;
 
+import ch.schaermedia.ecovolution.environment.chem.phasediagram.PhaseDiagram_Energy_Pressure;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONObject;
@@ -39,7 +40,6 @@ public class ElementProperties {
     private double criticalPointHeat_K;
     private double criticalPointPressure_kPa;
 
-    private PhaseDiagram_Temperature_Pressure temperature_Pressure_Diagram;
     private PhaseDiagram_Energy_Pressure energy_Pressure_Diagram;
 
     public ElementProperties()
@@ -52,12 +52,13 @@ public class ElementProperties {
         initDiagrams();
     }
 
-    private void initDiagrams(){
-        temperature_Pressure_Diagram = new PhaseDiagram_Temperature_Pressure(this);
+    private void initDiagrams()
+    {
         energy_Pressure_Diagram = new PhaseDiagram_Energy_Pressure(this);
     }
 
-    private void readProperties(JSONObject object){
+    private void readProperties(JSONObject object)
+    {
         name = object.getString("name");
         code = object.getString("symbol");
         orderNumber = object.optInt("number");
@@ -91,6 +92,16 @@ public class ElementProperties {
     public String getCode()
     {
         return code;
+    }
+
+    public boolean isBoilingPointUnderTriplePoint()
+    {
+        return boilingPoint_K < triplePointHeat_K && CompoundMix.STATIC_PRESSURE_kPa < triplePointPressure_kPa;
+    }
+
+    public boolean isMeltingPointUnderTriplePoint()
+    {
+        return meltingPoint_K < triplePointHeat_K && CompoundMix.STATIC_PRESSURE_kPa < triplePointPressure_kPa;
     }
 
     public double getSpecificHeatCapacity_kj_mol_K()
@@ -138,13 +149,58 @@ public class ElementProperties {
         return criticalPointPressure_kPa;
     }
 
-    public PhaseDiagram_Temperature_Pressure getTemperature_Pressure_Diagram()
-    {
-        return temperature_Pressure_Diagram;
-    }
-
     public PhaseDiagram_Energy_Pressure getEnergy_Pressure_Diagram()
     {
         return energy_Pressure_Diagram;
+    }
+
+    public double minCriticalEnergy()
+    {
+        return criticalPointHeat_K * specificHeatCapacity_kj_mol_K + fusionHeat_kj;
+    }
+
+    public double maxCriticalEnergy()
+    {
+        return minCriticalEnergy() + vaporizationHeat_kj;
+    }
+
+    public double minMeltingPointEnergy()
+    {
+        return meltingPoint_K * specificHeatCapacity_kj_mol_K;
+    }
+
+    public double maxMeltingPointEnergy()
+    {
+        return minMeltingPointEnergy() + fusionHeat_kj;
+    }
+
+    public double minBoilingEnergy()
+    {
+        return boilingPoint_K * specificHeatCapacity_kj_mol_K + fusionHeat_kj;
+    }
+
+    public double maxBoilingEnergy()
+    {
+        return minBoilingEnergy() + vaporizationHeat_kj;
+    }
+
+    public double minTriplePointEnergy()
+    {
+        return triplePointHeat_K * specificHeatCapacity_kj_mol_K;
+    }
+
+    public double maxTriplePointVaporizationEnergy()
+    {
+        return minTriplePointEnergy() + fusionHeat_kj + vaporizationHeat_kj;
+    }
+
+    public double maxTriplePointMeltingEnergy()
+    {
+        return minTriplePointEnergy() + fusionHeat_kj;
+    }
+
+    public double maxTriplePointSublimationEnergy()
+    {
+        return minTriplePointEnergy() + fusionHeat_kj + vaporizationHeat_kj;
     }
 }

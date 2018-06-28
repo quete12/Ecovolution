@@ -27,12 +27,16 @@ public class PhaseMix {
 
     private double temperature_K;
 
+    private final int horizontalSpreadSize;
     private final Map<String, Compound> composition;
+    private final List<PhaseMix> neighbours;
 
-    public PhaseMix(Phase phase)
+    public PhaseMix(Phase phase, int horizontalSpreadSize)
     {
         this.phase = phase;
+        this.horizontalSpreadSize = horizontalSpreadSize;
         this.composition = new HashMap<>();
+        this.neighbours = new ArrayList<>(horizontalSpreadSize);
     }
 
     public int numberOfCompounds()
@@ -68,25 +72,24 @@ public class PhaseMix {
 
     public void importCompound(Compound compound)
     {
-        //TODO: check if compound really belongs to this Phase
         if (composition.containsKey(compound.getCode()))
         {
             Compound existing = composition.get(compound.getCode());
-            existing.directImportCompound(compound);
+            existing.importCompound(compound);
         } else
         {
             composition.put(compound.getCode(), compound);
         }
     }
 
-    public void updateTemperature(double totalPressure_kPa)
+    public void updateTemperatureAndPhase(double totalPressure_kPa)
     {
         double temperatureSum = 0;
-        for (Compound compound : composition.values())
+        temperatureSum = composition.values().stream().map((compound) ->
         {
             compound.updateTemperatureAndPhase(totalPressure_kPa);
-            temperatureSum += compound.getTemperature_K();
-        }
+            return compound;
+        }).map((compound) -> compound.getTemperature_K()).reduce(temperatureSum, (accumulator, _item) -> accumulator + _item);
         temperature_K = (!composition.isEmpty()) ? temperatureSum / composition.size() : 0;
     }
 
@@ -101,53 +104,12 @@ public class PhaseMix {
         pressure_kPa = 0;
         for (Compound compound : composition.values())
         {
-            if (compound == null)
-            {
-                continue;
-            }
             compound.importBuffers();
             amount_mol += compound.getAmount_mol();
             heatCapacitySum += compound.getTotalHeatCapacity();
 
             volume_L += compound.volume_L(STATIC_PRESSURE_kPa);
             pressure_kPa += compound.pressure_kPa(STATIC_VOLUME_L);
-        }
-    }
-
-    public void spread(PhaseMix spreadTo, double percentage)
-    {
-        for (Map.Entry<String, Compound> entry : composition.entrySet())
-        {
-            String key = entry.getKey();
-            Compound compound = entry.getValue();
-            if (compound == null)
-            {
-                continue;
-            }
-            spreadTo.add(key, compound.splitDirectMoles(percentage), compound.splitDirectEnergy(percentage));
-        }
-    }
-
-    public void spread(List<PhaseMix> layer, double percentage)
-    {
-        double totalSpreadPercentage = percentage * layer.size();
-        for (Compound compound : composition.values())
-        {
-            if (compound == null)
-            {
-                continue;
-            }
-
-            double splitMoles = compound.splitMoles(totalSpreadPercentage);
-            double splitEnergy = compound.splitEnergy(totalSpreadPercentage);
-
-            double splitMolesPerMix = splitMoles / layer.size();
-            double splitEnergyPerMix = splitEnergy / layer.size();
-
-            for (PhaseMix phaseMix : layer)
-            {
-                phaseMix.add(compound.getCode(), splitMolesPerMix, splitEnergyPerMix);
-            }
         }
     }
 
@@ -173,6 +135,25 @@ public class PhaseMix {
             }
             double percent = compound.getTotalHeatCapacity() / heatCapacitySum;
             compound.addEnergy(energy_kj * percent);
+        }
+    }
+
+    public void spreadPercentage(PhaseMix spreadTo, double precentage)
+    {
+        composition.values().forEach((value) ->
+        {
+            double splitEnergy = value.splitEnergy(precentage);
+            double splitMoles = value.splitMoles(precentage);
+            spreadTo.add(value.getCode(), splitMoles, splitEnergy);
+        });
+    }
+
+    public void spreadHorizontal()
+    {
+        double percentage = 1.0 / horizontalSpreadSize;
+        for (PhaseMix neighbour : neighbours)
+        {
+            spreadPercentage(neighbour, percentage);
         }
     }
 
@@ -204,5 +185,15 @@ public class PhaseMix {
     public double getPressure_kPa()
     {
         return pressure_kPa;
+    }
+
+    public double getTemperature_K()
+    {
+        return temperature_K;
+    }
+
+    public void addAsNeighbour(PhaseMix phaseMix)
+    {
+        this.neighbours.add(phaseMix);
     }
 }

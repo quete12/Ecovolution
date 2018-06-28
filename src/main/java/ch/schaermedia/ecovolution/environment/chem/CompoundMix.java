@@ -29,48 +29,35 @@ public class CompoundMix {
 
     private int compoundCount;
 
+    private CompoundMix lower;
+    private CompoundMix higher;
+
     //TODO find a way to prevent negative temperature since this could really screw up other calculations (resulting in nevative volume, pressure etc)
     private double temperature_K;
 
-    public CompoundMix(int x, int y, int z)
+    public CompoundMix(int x, int y, int z, int horizontalSpreadSize)
     {
         this.x = x;
         this.y = y;
         this.z = z;
         this.mix = new PhaseMix[Phase.values().length];
-        initMix();
+        initMix(horizontalSpreadSize);
     }
 
-    private void initMix()
+    public void addAsNeibour(CompoundMix neighbour)
+    {
+        for (PhaseMix phaseMix : mix)
+        {
+            phaseMix.addAsNeighbour(neighbour.getMixForPhase(phaseMix.getPhase().idx));
+        }
+    }
+
+    private void initMix(int horizontalSpreadSize)
     {
         for (Phase value : Phase.values())
         {
-            mix[value.idx] = new PhaseMix(value);
+            mix[value.idx] = new PhaseMix(value, horizontalSpreadSize);
         }
-    }
-
-    public void spread(List<CompoundMix> layer, CompoundMix higher, CompoundMix lower, int range)
-    {
-        if (amount_mol == 0)
-        {
-            return;
-        }
-        boolean hasLower = lower != null;
-        boolean hasHigher = higher != null;
-        double tmp_volume_L = volume_L;
-        double tmp_pressure_kPa = pressure_kPa;
-        if (hasLower)
-        {
-            double spreadPercentage = spreadToLower(lower);
-            tmp_volume_L -= tmp_volume_L * spreadPercentage;
-            tmp_pressure_kPa -= tmp_pressure_kPa * spreadPercentage;
-        }
-        if (hasHigher)
-        {
-            spreadToHigher(higher, tmp_volume_L, tmp_pressure_kPa);
-        }
-        int side = 2 * range + 1;
-        spread(layer, side * side);
     }
 
     public Compound[] getPhasesByCode(String code)
@@ -86,14 +73,22 @@ public class CompoundMix {
 
     public void addEnergy(double energy_kj)
     {
+        double added = 0;
         for (PhaseMix phaseMix : mix)
         {
             double phasePercentage = phaseMix.getHeatCapacitySum() / heatCapacitySum;
-            if(phasePercentage == 0){
+            if (phasePercentage == 0)
+            {
                 continue;
             }
             double toAdd = energy_kj * phasePercentage;
+            added += toAdd;
             phaseMix.addEnergy(toAdd);
+        }
+
+        if (Math.abs(added - energy_kj) > 0.00001)
+        {
+            throw new RuntimeException("Lost Energy while adding! added: " + added + " expected: " + energy_kj);
         }
     }
 
@@ -102,81 +97,86 @@ public class CompoundMix {
         mix[phase].add(code, amount_mol, energy_kj);
     }
 
-    private void spread(List<CompoundMix> layer, int sqareSize)
+    public void spreadHorizontal()
     {
-        double percentage = (double) (1.0 / sqareSize);
         for (PhaseMix phaseMix : mix)
         {
-            int phase_idx = phaseMix.getPhase().idx;
-            List<PhaseMix> phases = new ArrayList<>();
-            for (CompoundMix compoundMix : layer)
+            phaseMix.spreadHorizontal();
+        }
+    }
+
+    public void spreadToLower()
+    {
+        if (!hasLower())
+        {
+            return;
+        }
+        double toSpread = lower.molesUnderVolume();
+        if (toSpread == 0)
+        {
+            return;
+        }
+        for (int i = 0; i < mix.length; i++)
+        {
+            if (Math.abs(toSpread) < 0.000005)
             {
-                phases.add(compoundMix.getMixForPhase(phase_idx));
+                break;
             }
-            phaseMix.spread(phases, percentage);
+            if (toSpread < 0)
+            {
+                throw new RuntimeException("Spread too much!!" + toSpread);
+            }
+            PhaseMix phaseMix = mix[i];
+            if (phaseMix.getAmount_mol() == 0)
+            {
+                continue;
+            }
+            double percentage = toSpread / phaseMix.getAmount_mol();
+            if (percentage > 0.5)
+            {
+                percentage = 0.5;
+            }
+            PhaseMix lowerPhaseMix = lower.getMixForPhase(i);
+            phaseMix.spreadPercentage(lowerPhaseMix, percentage);
+            toSpread -= phaseMix.getAmount_mol() * percentage;
         }
     }
 
-    /**
-     * Tries to fill the lower mix untill lower mix has reached StaticPressure
-     * (1 atm)
-     *
-     * @param lower
-     */
-    private double spreadToLower(CompoundMix lower)
+    public void spreadToHigher()
     {
-        if (lower.getPressure_kPa() >= STATIC_PRESSURE_kPa)
+        if (!hasHigher())
         {
-            return 0;
+            return;
         }
-        //TODO: solids fall down
-        //TODO: liquids rain down
-        //TODO: if there is still space in mix below fill with Gases
-
-        //Untill beforementionned features are implemented: spread a percentage of each compound and phase
-        double molesToPressurize = lower.molesToPressurize();
-        double percentage = molesToPressurize / amount_mol;
-        if (percentage <= 0)
+        double toSpread = molesOverVolume();
+        if (toSpread == 0)
         {
-            return 0;
+            return;
         }
-        if (percentage > 1)
+        for (int i = mix.length - 1; i >= 0; i--)
         {
-            percentage = 1;
+            if (Math.abs(toSpread) < 0.000005)
+            {
+                break;
+            }
+            if (toSpread < 0)
+            {
+                throw new RuntimeException("Spread too much!!" + toSpread);
+            }
+            PhaseMix phaseMix = mix[i];
+            if (phaseMix.getAmount_mol() == 0)
+            {
+                continue;
+            }
+            double percentage = toSpread / phaseMix.getAmount_mol();
+            if (percentage > 0.5)
+            {
+                percentage = 0.5;
+            }
+            PhaseMix higherPhaseMix = higher.getMixForPhase(i);
+            phaseMix.spreadPercentage(higherPhaseMix, percentage);
+            toSpread -= phaseMix.getAmount_mol() * percentage;
         }
-        spreadByPercentage(lower, percentage);
-        return percentage;
-    }
-
-    private double spreadToHigher(CompoundMix higher, double currentVolume, double currentPressure)
-    {
-        if (currentVolume <= STATIC_VOLUME_L || currentPressure <= higher.getPressure_kPa())
-        {
-            return 0;
-        }
-        double molesOverVolume = molesOverVolume(currentVolume);
-        double percentage = molesOverVolume / amount_mol;
-        if (percentage > .9)
-        {
-            percentage = .9;
-        }
-        spreadByPercentage(higher, percentage);
-        return percentage;
-    }
-
-    private void spreadByPercentage(CompoundMix spreadTo, double percentage)
-    {
-        for (PhaseMix phaseMix : mix)
-        {
-            PhaseMix toMix = spreadTo.getMixForPhase(phaseMix.getPhase().idx);
-            phaseMix.spread(toMix, percentage);
-        }
-    }
-
-    public void update()
-    {
-        updateStats();
-        updateTemperatureAndPhaseChanges();
     }
 
     private List<Compound>[] sortByPhase(List<Compound> unsorted)
@@ -194,16 +194,22 @@ public class CompoundMix {
         return results;
     }
 
-    private void updateTemperatureAndPhaseChanges()
+    public void updateTemperatureAndPhaseChanges(){
+        updateTemperatureAndPhaseChanges(pressure_kPa);
+    }
+
+    public void updateTemperatureAndPhaseChanges(double totalPressure_kPa)
     {
         List<Compound> changedCompounds = new ArrayList<>();
         double temperatureSum = 0;
         for (PhaseMix phaseMix : mix)
         {
-            phaseMix.updateTemperature(pressure_kPa);
+            phaseMix.updateTemperatureAndPhase(totalPressure_kPa);
+            temperatureSum += phaseMix.getTemperature_K();
             List<Compound> compounds = phaseMix.getAndRemoveCompoundsOnPhaseChange();
             changedCompounds.addAll(compounds);
         }
+        temperature_K = (compoundCount > 0) ? temperatureSum / compoundCount : 0;
         List<Compound>[] sorted = sortByPhase(changedCompounds);
         for (int i = 0; i < sorted.length; i++)
         {
@@ -215,10 +221,9 @@ public class CompoundMix {
             }
             mix[i].importCompounds(compounds);
         }
-        temperature_K = (compoundCount > 0) ? temperatureSum / compoundCount : 0;
     }
 
-    private void updateStats()
+    public void updateStats()
     {
         amount_mol = 0;
         heatCapacitySum = 0;
@@ -243,10 +248,10 @@ public class CompoundMix {
         return mix[phase];
     }
 
-    public double molesToPressurize()
+    public double molesUnderPressure()
     {
         double diffPressure = STATIC_PRESSURE_kPa - pressure_kPa;
-        if (diffPressure < 0)
+        if (diffPressure <= 0)
         {
             return 0;
         }
@@ -254,10 +259,32 @@ public class CompoundMix {
         return ChemUtilities.moles(diffPressure, STATIC_VOLUME_L, temperature_K);
     }
 
-    public double molesOverVolume(double baseVolume)
+    public double molesOverPressure()
     {
-        double diffVolume = baseVolume - STATIC_VOLUME_L;
-        if (diffVolume < 0)
+        double diffPressure = pressure_kPa - STATIC_PRESSURE_kPa;
+        if (diffPressure <= 0)
+        {
+            return 0;
+        }
+        //Use static volume because the original pressure was calculated using static volume. If we would use our calculated volume the result would be way off!
+        return ChemUtilities.moles(diffPressure, STATIC_VOLUME_L, temperature_K);
+    }
+
+    public double molesOverVolume()
+    {
+        double diffVolume = volume_L - STATIC_VOLUME_L;
+        if (diffVolume <= 0)
+        {
+            return 0;
+        }
+        //Use static pressure because the original volume was calculated using static pressure. If we would use our calculated pressure the result would be way off!
+        return ChemUtilities.moles(STATIC_PRESSURE_kPa, diffVolume, temperature_K);
+    }
+
+    public double molesUnderVolume()
+    {
+        double diffVolume = STATIC_VOLUME_L - volume_L;
+        if (diffVolume <= 0)
         {
             return 0;
         }
@@ -283,6 +310,41 @@ public class CompoundMix {
     public double getTemperature_K()
     {
         return temperature_K;
+    }
+
+    public int getX()
+    {
+        return x;
+    }
+
+    public int getY()
+    {
+        return y;
+    }
+
+    public int getZ()
+    {
+        return z;
+    }
+
+    public void setHigher(CompoundMix higher)
+    {
+        this.higher = higher;
+    }
+
+    public void setLower(CompoundMix lower)
+    {
+        this.lower = lower;
+    }
+
+    public boolean hasLower()
+    {
+        return lower != null;
+    }
+
+    public boolean hasHigher()
+    {
+        return higher != null;
     }
 
 }

@@ -19,6 +19,7 @@ public class TileRenderer {
     public enum ShowDetail {
         PHASE,
         TEMPERATURE,
+        PRESSURE,
         VOLUME;
     }
 
@@ -72,11 +73,32 @@ public class TileRenderer {
             case VOLUME:
                 renderVolumeGrayScale(mix, g);
                 break;
+            case PRESSURE:
+                renderPressureGrayScale(mix, g);
+                break;
             default:
                 throw new AssertionError(showDetail.name());
 
         }
         g.rect(tile.getX() * tile.getWidth(), tile.getY() * tile.getHeight(), tile.getWidth(), tile.getHeight());
+    }
+
+    private void renderPressureGrayScale(CompoundMix mix, PGraphics g)
+    {
+        double pressure = mix.getPressure_kPa();
+        if (pressure < 0)
+        {
+            g.color(255, 0, 0);
+            return;
+        }
+        float value = (float) (pressure / CompoundMix.STATIC_PRESSURE_kPa) * 255.0f;
+        if (value > 255)
+        {
+            g.fill(255, 255, 0);
+        } else
+        {
+            g.fill(value);
+        }
     }
 
     private void renderPhase(String code, CompoundMix mix, PGraphics g)
@@ -141,9 +163,15 @@ public class TileRenderer {
         if (volume < 0)
         {
             g.color(255, 0, 0);
+            return;
+        }
+        float value = (float) (volume / CompoundMix.STATIC_VOLUME_L) * 255.0f;
+        if (value > 255)
+        {
+            g.fill(255, 255, 0);
         } else
         {
-            g.fill((float) (volume / CompoundMix.STATIC_VOLUME_L) * 255.0f);
+            g.fill(value);
         }
     }
 }

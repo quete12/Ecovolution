@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ch.schaermedia.ecovolution.general;
+package ch.schaermedia.ecovolution.general.math;
 
 /**
  *
  * @author Quentin
  */
-public class LinearFunction {
+public class LinearFunction implements Function {
 
     private final double varA;
     private final double varB;
@@ -26,13 +26,15 @@ public class LinearFunction {
         this.varB = varB;
     }
 
-    public LinearFunction shiftLeft(double n){
-        double newB = varB + varA*n;
+    public LinearFunction shiftLeft(double n)
+    {
+        double newB = varB + varA * n;
         return new LinearFunction(varA, newB);
     }
 
-    public LinearFunction shiftRight(double n){
-        double newB = varB - varA*n;
+    public LinearFunction shiftRight(double n)
+    {
+        double newB = varB - varA * n;
         return new LinearFunction(varA, newB);
     }
 
@@ -46,19 +48,25 @@ public class LinearFunction {
         return (y - varB) / varA;
     }
 
-    public boolean isPointLeft(double px, double py){
-        if(varA>0){
-            return y(px)<py;
-        }else{
-            return y(px)>py;
+    public boolean isPointLeft(double px, double py)
+    {
+        if (varA > 0)
+        {
+            return y(px) < py;
+        } else
+        {
+            return y(px) > py;
         }
     }
 
-    public boolean isPointLeftOrOn(double px, double py){
-        if(varA>0){
-            return y(px)<=py;
-        }else{
-            return y(px)>=py;
+    public boolean isPointOnOrOver(double px, double py)
+    {
+        if (varA > 0)
+        {
+            return y(px) <= py;
+        } else
+        {
+            return y(px) >= py;
         }
     }
 
@@ -70,5 +78,33 @@ public class LinearFunction {
     private double findVarA(double p1X, double p1Y, double p2X, double p2Y)
     {
         return (p2Y - p1Y) / (p2X - p1X);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "f(x) = " + varA + "x + " + varB;
+    }
+
+    @Override
+    public boolean isPositive()
+    {
+        return varA > 0;
+    }
+
+    public double getVarA()
+    {
+        return varA;
+    }
+
+    public double getVarB()
+    {
+        return varB;
+    }
+
+    @Override
+    public boolean isNegative()
+    {
+        return varA < 0;
     }
 }
