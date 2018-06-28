@@ -20,41 +20,49 @@ public interface Function{
 
     default public boolean isPointOnOrLeft(double x, double y)
     {
-        return x <= x(y);
+        double fx = x(y);
+        return x <= fx;
     }
 
     default public boolean isPointLeft(double x, double y)
     {
-        return x < x(y);
+        double fx = x(y);
+        return x < fx;
     }
 
     default public boolean isPointOnOrRight(double x, double y)
     {
-        return x >= x(y);
+        double fx = x(y);
+        return x >= fx;
     }
 
     default public boolean isPointRight(double x, double y)
     {
-        return x > x(y);
+        double fx = x(y);
+        return x > fx;
     }
 
     default public boolean isPointOnOrOver(double x, double y)
     {
-        return y >= y(x);
+        double fy = y(x);
+        return y >= fy;
     }
 
     default public boolean isPointOver(double x, double y)
     {
-        return y > y(x);
+        double fy = y(x);
+        return y > fy;
     }
 
     default public boolean isPointOnOrUnder(double x, double y)
     {
-        return y <= y(x);
+        double fy = y(x);
+        return y <= fy;
     }
 
     default public boolean isPointUnder(double x, double y)
     {
-        return y < y(x);
+        double fy = y(x);
+        return y < fy;
     }
 }

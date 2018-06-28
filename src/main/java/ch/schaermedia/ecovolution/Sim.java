@@ -13,6 +13,8 @@ import ch.schaermedia.ecovolution.environment.chem.Phase;
 import ch.schaermedia.ecovolution.representation.TileRenderer;
 import ch.schaermedia.ecovolution.representation.WorldRenderer;
 import java.io.FileNotFoundException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import processing.core.PApplet;
@@ -30,8 +32,13 @@ public class Sim extends PApplet {
     private static final int SPREAD_RANGE = 3;
     private static final int FRAMERATE = 60;
 
+    private static final int NUM_RENDER_THREADS = 4;
+
     private World world;
     private WorldRenderer[][] renderers;
+
+
+    private ExecutorService renderPool;
 
     @Override
     public void settings()
@@ -110,6 +117,8 @@ public class Sim extends PApplet {
 
     private void rendererSetup()
     {
+        renderPool = Executors.newFixedThreadPool(NUM_RENDER_THREADS);
+        
         renderers = new WorldRenderer[5][3];
         for (int i = 0; i < renderers[0].length; i++)
         {

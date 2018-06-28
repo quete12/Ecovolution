@@ -6,7 +6,7 @@
 package ch.schaermedia.ecovolution.environment.chem.phasediagram;
 
 import ch.schaermedia.ecovolution.environment.chem.CompoundMix;
-import ch.schaermedia.ecovolution.environment.chem.CompoundProperties;
+import ch.schaermedia.ecovolution.environment.chem.ElementProperties;
 import ch.schaermedia.ecovolution.general.math.Function;
 import ch.schaermedia.ecovolution.general.math.LinearFunction;
 
@@ -14,39 +14,32 @@ import ch.schaermedia.ecovolution.general.math.LinearFunction;
  *
  * @author Quentin
  */
-public class MeltingBorder extends PhaseBorder{
+public class MeltingBorder extends PhaseBorder {
 
     private Function meltingMin;
     private Function meltingMax;
 
-    public MeltingBorder(CompoundProperties properties)
+    public MeltingBorder(ElementProperties properties)
     {
         super(false);
         initMeltingBorders(properties);
     }
 
-    private void initMeltingBorders(CompoundProperties properties)
+    private void initMeltingBorders(ElementProperties properties)
     {
         meltingMin = new LinearFunction(
                 properties.minTriplePointEnergy(),
                 properties.getTriplePointPressure_kPa(),
                 properties.minMeltingPointEnergy(),
                 CompoundMix.STATIC_PRESSURE_kPa);
-        if (properties.isBoilingPointUnderTriplePoint())
-        {
-            meltingMax = new LinearFunction(
-                    properties.maxTriplePointEnergy(),
-                    properties.getTriplePointPressure_kPa(),
-                    properties.maxBoilingEnergy(),
-                    CompoundMix.STATIC_PRESSURE_kPa);
-        } else
-        {
-            meltingMax = new LinearFunction(
-                    properties.maxTriplePointEnergy(),
-                    properties.getTriplePointPressure_kPa(),
-                    properties.maxMeltingPointEnergy(),
-                    CompoundMix.STATIC_PRESSURE_kPa);
-        }
+
+        double highPressure = properties.getCriticalPointPressure_kPa();
+        double meltingEnergyAtHighPressure = meltingMin.x(highPressure);
+        meltingMax = new LinearFunction(
+                properties.maxTriplePointMeltingEnergy(),
+                properties.getTriplePointPressure_kPa(),
+                meltingEnergyAtHighPressure+properties.getFusionHeat_kj(),
+                highPressure);
     }
 
     public boolean isMelted(double energy_kj_mol, double pressure_kPa)
@@ -60,7 +53,7 @@ public class MeltingBorder extends PhaseBorder{
         {
             return false;
         }
-        return meltingMin.isPointOnOrRight(pressure_kPa, pressure_kPa);
+        return meltingMin.isPointOnOrRight(energy_kj_mol, pressure_kPa);
     }
 
     @Override

@@ -5,6 +5,7 @@
  */
 package ch.schaermedia.ecovolution.environment.chem;
 
+import ch.schaermedia.ecovolution.environment.chem.phasediagram.PhaseDiagram_Energy_Pressure;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONObject;
@@ -39,7 +40,6 @@ public class ElementProperties {
     private double criticalPointHeat_K;
     private double criticalPointPressure_kPa;
 
-    private PhaseDiagram_Temperature_Pressure temperature_Pressure_Diagram;
     private PhaseDiagram_Energy_Pressure energy_Pressure_Diagram;
 
     public ElementProperties()
@@ -54,7 +54,6 @@ public class ElementProperties {
 
     private void initDiagrams()
     {
-        temperature_Pressure_Diagram = new PhaseDiagram_Temperature_Pressure(this);
         energy_Pressure_Diagram = new PhaseDiagram_Energy_Pressure(this);
     }
 
@@ -150,11 +149,6 @@ public class ElementProperties {
         return criticalPointPressure_kPa;
     }
 
-    public PhaseDiagram_Temperature_Pressure getTemperature_Pressure_Diagram()
-    {
-        return temperature_Pressure_Diagram;
-    }
-
     public PhaseDiagram_Energy_Pressure getEnergy_Pressure_Diagram()
     {
         return energy_Pressure_Diagram;
@@ -195,7 +189,17 @@ public class ElementProperties {
         return triplePointHeat_K * specificHeatCapacity_kj_mol_K;
     }
 
-    public double maxTriplePointEnergy()
+    public double maxTriplePointVaporizationEnergy()
+    {
+        return minTriplePointEnergy() + fusionHeat_kj + vaporizationHeat_kj;
+    }
+
+    public double maxTriplePointMeltingEnergy()
+    {
+        return minTriplePointEnergy() + fusionHeat_kj;
+    }
+
+    public double maxTriplePointSublimationEnergy()
     {
         return minTriplePointEnergy() + fusionHeat_kj + vaporizationHeat_kj;
     }

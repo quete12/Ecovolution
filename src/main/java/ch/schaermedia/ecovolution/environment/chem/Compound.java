@@ -100,7 +100,7 @@ public class Compound {
 
     private void updatePhase(double energy_kj_mol, double mixturePressure)
     {
-        phase = properties.getEnergy_Pressure_Diagram().phaseAt(energy_kj_mol, mixturePressure);
+        phase = properties.getEnergy_Pressure_Diagram().getPhaseAt(energy_kj_mol, mixturePressure);
     }
 
     private void updateTemperature(double energy_kj_mol, double mixturePressure)
@@ -110,7 +110,7 @@ public class Compound {
             temperature_K = 0;
             return;
         }
-        temperature_K = properties.getEnergy_Pressure_Diagram().temperatureAt(energy_kj_mol, mixturePressure, phase);
+        temperature_K = properties.getEnergy_Pressure_Diagram().getTemperature_K_at(energy_kj_mol, mixturePressure, phase);
     }
 
     public double getAmount_mol()

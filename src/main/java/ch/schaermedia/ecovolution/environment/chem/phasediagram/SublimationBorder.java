@@ -6,24 +6,25 @@
 package ch.schaermedia.ecovolution.environment.chem.phasediagram;
 
 import ch.schaermedia.ecovolution.environment.chem.CompoundMix;
-import ch.schaermedia.ecovolution.environment.chem.CompoundProperties;
+import ch.schaermedia.ecovolution.environment.chem.ElementProperties;
 import ch.schaermedia.ecovolution.general.math.LinearFunction;
 
 /**
  *
  * @author Quentin
  */
-public class SublimationBorder extends PhaseBorder{
+public class SublimationBorder extends PhaseBorder {
+
     private LinearFunction[] sublimationMin;
     private LinearFunction[] sublimationMax;
 
-    public SublimationBorder(CompoundProperties properties)
+    public SublimationBorder(ElementProperties properties)
     {
         super(properties.isBoilingPointUnderTriplePoint());
         initBorders(properties);
     }
 
-    private void initBorders(CompoundProperties properties)
+    private void initBorders(ElementProperties properties)
     {
         if (hasDualFunction)
         {
@@ -39,7 +40,7 @@ public class SublimationBorder extends PhaseBorder{
         }
     }
 
-    private void initBordersZeroToTriple(CompoundProperties properties)
+    private void initBordersZeroToTriple(ElementProperties properties)
     {
         sublimationMin[0] = new LinearFunction(
                 0,
@@ -49,17 +50,17 @@ public class SublimationBorder extends PhaseBorder{
         sublimationMax[0] = new LinearFunction(
                 0,
                 0,
-                properties.maxTriplePointEnergy(),
+                properties.maxTriplePointSublimationEnergy(),
                 properties.getTriplePointPressure_kPa());
 
     }
 
-    private void initBordersZeroToBoiling(CompoundProperties properties)
+    private void initBordersZeroToBoiling(ElementProperties properties)
     {
         sublimationMin[0] = new LinearFunction(
                 0,
                 0,
-                properties.minBoilingEnergy(),
+                properties.minBoilingEnergy() - properties.getFusionHeat_kj(),
                 CompoundMix.STATIC_PRESSURE_kPa);
         sublimationMax[0] = new LinearFunction(
                 0,
@@ -68,17 +69,17 @@ public class SublimationBorder extends PhaseBorder{
                 CompoundMix.STATIC_PRESSURE_kPa);
     }
 
-    private void initBordersBoilingToTriple(CompoundProperties properties)
+    private void initBordersBoilingToTriple(ElementProperties properties)
     {
         sublimationMin[1] = new LinearFunction(
-                properties.minBoilingEnergy(),
+                properties.minBoilingEnergy() - properties.getFusionHeat_kj(),
                 CompoundMix.STATIC_PRESSURE_kPa,
                 properties.minTriplePointEnergy(),
                 properties.getTriplePointPressure_kPa());
         sublimationMax[1] = new LinearFunction(
                 properties.maxBoilingEnergy(),
                 CompoundMix.STATIC_PRESSURE_kPa,
-                properties.maxTriplePointEnergy(),
+                properties.maxTriplePointSublimationEnergy(),
                 properties.getTriplePointPressure_kPa());
     }
 
@@ -122,16 +123,18 @@ public class SublimationBorder extends PhaseBorder{
         }
     }
 
-
     @Override
     public double getMinEnergy_kj_mol(double pressure_kPa)
     {
-        if(!hasDualFunction){
+        if (!hasDualFunction)
+        {
             return sublimationMin[0].x(pressure_kPa);
         }
-        if(isSteepFirst(sublimationMin)){
+        if (isSteepFirst(sublimationMin))
+        {
             return Math.max(sublimationMin[0].x(pressure_kPa), sublimationMin[1].x(pressure_kPa));
-        }else{
+        } else
+        {
             return Math.min(sublimationMin[0].x(pressure_kPa), sublimationMin[1].x(pressure_kPa));
         }
     }

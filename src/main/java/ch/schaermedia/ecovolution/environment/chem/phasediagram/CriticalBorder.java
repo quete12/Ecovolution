@@ -5,7 +5,7 @@
  */
 package ch.schaermedia.ecovolution.environment.chem.phasediagram;
 
-import ch.schaermedia.ecovolution.environment.chem.CompoundProperties;
+import ch.schaermedia.ecovolution.environment.chem.ElementProperties;
 
 /**
  *
@@ -15,7 +15,7 @@ public class CriticalBorder extends PhaseBorder{
     private final double criticalEnergy_kj_mol;
     private final double criticalPressure_kPa;
 
-    public CriticalBorder(CompoundProperties properties)
+    public CriticalBorder(ElementProperties properties)
     {
         super(false);
         criticalPressure_kPa = properties.getCriticalPointPressure_kPa();

@@ -6,7 +6,7 @@
 package ch.schaermedia.ecovolution.environment.chem.phasediagram;
 
 import ch.schaermedia.ecovolution.environment.chem.CompoundMix;
-import ch.schaermedia.ecovolution.environment.chem.CompoundProperties;
+import ch.schaermedia.ecovolution.environment.chem.ElementProperties;
 import ch.schaermedia.ecovolution.general.math.LinearFunction;
 
 /**
@@ -18,13 +18,13 @@ public class VaporizationBorder extends PhaseBorder{
     private LinearFunction[] vaporizationMin;
     private LinearFunction[] vaporizationMax;
 
-    public VaporizationBorder(CompoundProperties properties)
+    public VaporizationBorder(ElementProperties properties)
     {
         super(!properties.isBoilingPointUnderTriplePoint());
         initVaporizationBorders(properties);
     }
 
-    private void initVaporizationBorders(CompoundProperties properties)
+    private void initVaporizationBorders(ElementProperties properties)
     {
         if (hasDualFunction)
         {
@@ -40,7 +40,7 @@ public class VaporizationBorder extends PhaseBorder{
         }
     }
 
-    private void initVaporizationBordersBoilingToCritical(CompoundProperties properties)
+    private void initVaporizationBordersBoilingToCritical(ElementProperties properties)
     {
         vaporizationMin[1] = new LinearFunction(
                 properties.minBoilingEnergy(),
@@ -54,7 +54,7 @@ public class VaporizationBorder extends PhaseBorder{
                 properties.getCriticalPointPressure_kPa());
     }
 
-    private void initVaporizationBordersTripleToBoiling(CompoundProperties properties)
+    private void initVaporizationBordersTripleToBoiling(ElementProperties properties)
     {
         vaporizationMin[0] = new LinearFunction(
                 properties.minBoilingEnergy(),
@@ -64,11 +64,11 @@ public class VaporizationBorder extends PhaseBorder{
         vaporizationMax[0] = new LinearFunction(
                 properties.maxBoilingEnergy(),
                 CompoundMix.STATIC_PRESSURE_kPa,
-                properties.maxTriplePointEnergy(),
+                properties.maxTriplePointVaporizationEnergy(),
                 properties.getTriplePointPressure_kPa());
     }
 
-    private void initVaporizationBordersTripleToCritical(CompoundProperties properties)
+    private void initVaporizationBordersTripleToCritical(ElementProperties properties)
     {
         vaporizationMin[0] = new LinearFunction(
                 properties.minTriplePointEnergy(),
@@ -76,7 +76,7 @@ public class VaporizationBorder extends PhaseBorder{
                 properties.minCriticalEnergy(),
                 properties.getCriticalPointPressure_kPa());
         vaporizationMax[0] = new LinearFunction(
-                properties.maxTriplePointEnergy(),
+                properties.maxTriplePointVaporizationEnergy(),
                 properties.getTriplePointPressure_kPa(),
                 properties.maxCriticalEnergy(),
                 properties.getCriticalPointPressure_kPa());

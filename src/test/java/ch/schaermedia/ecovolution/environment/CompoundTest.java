@@ -24,7 +24,7 @@ public class CompoundTest {
 
     private final double standardPressure = CompoundMix.STATIC_PRESSURE_kPa;
     private final double standardVolume = CompoundMix.STATIC_VOLUME_L;
-    private final double standardTemperature = ChemUtilities.toKelvin(13.5);
+    private final double standardTemperature = ChemUtilities.toKelvin(15.5);
 
     public CompoundTest()
     {
@@ -53,13 +53,13 @@ public class CompoundTest {
         double energy = moles * (prop.getSpecificHeatCapacity_kj_mol_K() * expResult + prop.getFusionHeat_kj() + prop.getVaporizationHeat_kj());
         instance.setEnergy_kj(energy);
         instance.updateTemperatureAndPhase(standardPressure);
-        double temperatureAt = prop.getEnergy_Pressure_Diagram().temperatureAt(instance.getEnergy_kj() / instance.getAmount_mol(), standardPressure);
+        double temperatureAt = prop.getEnergy_Pressure_Diagram().getTemperature_K_at(instance.getEnergy_kj() / instance.getAmount_mol(), standardPressure);
         double result = instance.getTemperature_K();
         Phase resultPhase = instance.getPhase();
         System.out.println("Result Check");
-        assertEquals(expResult, result, 0.0);
+        assertEquals(expResult, result, 0.0000001);
         System.out.println("T instance energy Check");
-        assertEquals(expResult, temperatureAt, 0.0);
+        assertEquals(expResult, temperatureAt, 0.0000001);
         System.out.println("Phase Check");
         assertEquals(Phase.GAS, resultPhase);
     }
@@ -72,19 +72,19 @@ public class CompoundTest {
         Compound instance = new Compound(prop);
         double moles = 100;
         instance.setAmount_mol(moles);
-        double expResult = standardTemperature;
+        double expResult = ChemUtilities.toKelvin(115);
         double energy = moles * (prop.getSpecificHeatCapacity_kj_mol_K() * expResult + prop.getFusionHeat_kj() + prop.getVaporizationHeat_kj());
         instance.setEnergy_kj(energy);
         instance.updateTemperatureAndPhase(standardPressure);
-        double temperatureAt = prop.getEnergy_Pressure_Diagram().temperatureAt(instance.getEnergy_kj() / instance.getAmount_mol(), standardPressure);
+        double temperatureAt = prop.getEnergy_Pressure_Diagram().getTemperature_K_at(instance.getEnergy_kj() / instance.getAmount_mol(), standardPressure);
         double result = instance.getTemperature_K();
         Phase resultPhase = instance.getPhase();
-        System.out.println("Result Check");
-        assertEquals(expResult, result, 0.0);
-        System.out.println("T instance energy Check");
-        assertEquals(expResult, temperatureAt, 0.0);
         System.out.println("Phase Check");
         assertEquals(Phase.GAS, resultPhase);
+        System.out.println("Result Check");
+        assertEquals(expResult, result, 0.0000001);
+        System.out.println("T instance energy Check");
+        assertEquals(expResult, temperatureAt, 0.0000001);
     }
 
     @Test
@@ -99,15 +99,15 @@ public class CompoundTest {
         double energy = moles * (prop.getSpecificHeatCapacity_kj_mol_K() * expResult + prop.getFusionHeat_kj());
         instance.setEnergy_kj(energy);
         instance.updateTemperatureAndPhase(standardPressure);
-        double temperatureAt = prop.getEnergy_Pressure_Diagram().temperatureAt(instance.getEnergy_kj() / instance.getAmount_mol(), standardPressure);
+        double temperatureAt = prop.getEnergy_Pressure_Diagram().getTemperature_K_at(instance.getEnergy_kj() / instance.getAmount_mol(), standardPressure);
         double result = instance.getTemperature_K();
         Phase resultPhase = instance.getPhase();
         System.out.println("Phase Check");
         assertEquals(Phase.LIQUID, resultPhase);
         System.out.println("T instance energy Check");
-        assertEquals(expResult, temperatureAt, 0.0);
+        assertEquals(expResult, temperatureAt, 0.0000001);
         System.out.println("Result Check");
-        assertEquals(expResult, result, 0.0);
+        assertEquals(expResult, result, 0.0000001);
     }
 
     @Test
@@ -118,19 +118,19 @@ public class CompoundTest {
         Compound instance = new Compound(prop);
         double moles = 100;
         instance.setAmount_mol(moles);
-        double expResult = standardTemperature;
-        double energy = moles * (prop.getSpecificHeatCapacity_kj_mol_K() * expResult);
+        double expResult = ChemUtilities.toKelvin(-12);
+        double energy = moles * prop.getSpecificHeatCapacity_kj_mol_K() * expResult;
         instance.setEnergy_kj(energy);
         instance.updateTemperatureAndPhase(standardPressure);
-        double temperatureAt = prop.getEnergy_Pressure_Diagram().temperatureAt(instance.getEnergy_kj() / instance.getAmount_mol(), standardPressure);
+        double temperatureAt = prop.getEnergy_Pressure_Diagram().getTemperature_K_at(instance.getEnergy_kj() / instance.getAmount_mol(), standardPressure);
         double result = instance.getTemperature_K();
         Phase resultPhase = instance.getPhase();
         System.out.println("Phase Check");
         assertEquals(Phase.SOLID, resultPhase);
         System.out.println("Result Check");
-        assertEquals(expResult, result, 0.0);
+        assertEquals(expResult, result, 0.0000001);
         System.out.println("T instance energy Check");
-        assertEquals(expResult, temperatureAt, 0.0);
+        assertEquals(expResult, temperatureAt, 0.0000001);
     }
 
 }

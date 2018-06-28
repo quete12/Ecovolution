@@ -5,23 +5,23 @@
  */
 package ch.schaermedia.ecovolution.environment.chem.phasediagram;
 
-import ch.schaermedia.ecovolution.environment.chem.CompoundProperties;
+import ch.schaermedia.ecovolution.environment.chem.ElementProperties;
 import ch.schaermedia.ecovolution.environment.chem.Phase;
 
 /**
  *
  * @author Quentin
  */
-public class PhaseDiagram_Energy_Pressure2 {
+public class PhaseDiagram_Energy_Pressure {
 
-    private final CompoundProperties properties;
+    private final ElementProperties properties;
 
     private final SublimationBorder sublimationBorder;
     private final MeltingBorder meltingBorder;
     private final VaporizationBorder vaporizationBorder;
     private final CriticalBorder criticalBorder;
 
-    public PhaseDiagram_Energy_Pressure2(CompoundProperties properties)
+    public PhaseDiagram_Energy_Pressure(ElementProperties properties)
     {
         this.properties = properties;
         sublimationBorder = new SublimationBorder(properties);
@@ -48,7 +48,7 @@ public class PhaseDiagram_Energy_Pressure2 {
         {
             return Phase.SOLID;
         }
-        throw new AssertionError("Invalid Conditions for e= " + energy_kj_mol + "kj/mol and p= " + pressure_kPa + "kPa");
+        throw new AssertionError("Invalid Conditions for element: " + properties.getCode() + " e= " + energy_kj_mol + "kj/mol and p= " + pressure_kPa + "kPa");
     }
 
     private boolean isSolid(double energy_kj_mol, double pressure_kPa)
@@ -83,7 +83,7 @@ public class PhaseDiagram_Energy_Pressure2 {
         {
             return false;
         }
-        if (energy_kj_mol < properties.minTriplePointEnergy()) //below triplePoint is considered sublimating
+        if (energy_kj_mol < properties.maxTriplePointSublimationEnergy()) //below triplePoint is considered sublimating
         {
             return sublimationBorder.isSublimated(energy_kj_mol, pressure_kPa);
         } else
@@ -97,11 +97,15 @@ public class PhaseDiagram_Energy_Pressure2 {
         return criticalBorder.isCritical(energy_kj_mol, pressure_kPa);
     }
 
-    public double getTemperature_K_at(double energy_kj_mol, double pressure_kPa){
+    public double getTemperature_K_at(double energy_kj_mol, double pressure_kPa)
+    {
         return getTemperature_K_at(energy_kj_mol, pressure_kPa, getPhaseAt(energy_kj_mol, pressure_kPa));
     }
-    public double getTemperature_K_at(double energy_kj_mol, double pressure_kPa, Phase phase){
-        switch(phase){
+
+    public double getTemperature_K_at(double energy_kj_mol, double pressure_kPa, Phase phase)
+    {
+        switch (phase)
+        {
             case SOLID:
                 return getTemperature_K_ofSolid(energy_kj_mol, pressure_kPa);
             case LIQUID:
