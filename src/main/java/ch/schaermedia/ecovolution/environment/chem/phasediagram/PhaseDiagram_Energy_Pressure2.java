@@ -97,6 +97,55 @@ public class PhaseDiagram_Energy_Pressure2 {
         return criticalBorder.isCritical(energy_kj_mol, pressure_kPa);
     }
 
+    public double getTemperature_K_at(double energy_kj_mol, double pressure_kPa){
+        return getTemperature_K_at(energy_kj_mol, pressure_kPa, getPhaseAt(energy_kj_mol, pressure_kPa));
+    }
+    public double getTemperature_K_at(double energy_kj_mol, double pressure_kPa, Phase phase){
+        switch(phase){
+            case SOLID:
+                return getTemperature_K_ofSolid(energy_kj_mol, pressure_kPa);
+            case LIQUID:
+                return getTemperature_K_ofLiquid(energy_kj_mol, pressure_kPa);
+            case GAS:
+                return getTemperature_K_ofGas(energy_kj_mol, pressure_kPa);
+            case SUPERCRITICAL_FLUID:
+                return getTemperature_K_ofSupercriticalFluid(energy_kj_mol, pressure_kPa);
+            default:
+                throw new AssertionError(phase.name());
+        }
+    }
+
+    private double getTemperature_K_ofSupercriticalFluid(double energy_kj_mol, double pressure_kPa)
+    {
+        double energyForCalculation = energy_kj_mol;
+        energyForCalculation -= properties.getFusionHeat_kj();
+        energyForCalculation -= properties.getVaporizationHeat_kj();
+        return energyForCalculation / properties.getSpecificHeatCapacity_kj_mol_K();
+    }
+
+    private double getTemperature_K_ofGas(double energy_kj_mol, double pressure_kPa)
+    {
+        double energyForCalculation = energy_kj_mol;
+        energyForCalculation -= properties.getFusionHeat_kj();
+        energyForCalculation -= properties.getVaporizationHeat_kj();
+        return energyForCalculation / properties.getSpecificHeatCapacity_kj_mol_K();
+    }
+
+    private double getTemperature_K_ofLiquid(double energy_kj_mol, double pressure_kPa)
+    {
+        boolean isVaporizing = vaporizationBorder.isVaporizing(energy_kj_mol, pressure_kPa);
+        double energyForCalculation;
+        if (isVaporizing)
+        {
+            energyForCalculation = vaporizationBorder.getMinEnergy_kj_mol(pressure_kPa);
+        } else
+        {
+            energyForCalculation = energy_kj_mol;
+        }
+        energyForCalculation -= properties.getFusionHeat_kj();
+        return energyForCalculation / properties.getSpecificHeatCapacity_kj_mol_K();
+    }
+
     private double getTemperature_K_ofSolid(double energy_kj_mol, double pressure_kPa)
     {
         boolean isMelting = meltingBorder.isMelting(energy_kj_mol, pressure_kPa);

@@ -11,6 +11,7 @@ import ch.schaermedia.ecovolution.general.math.LinearFunction;
 /**
  *
  * @author Quentin
+ * @deprecated 
  */
 public class PhaseDiagram_Energy_Pressure {
 
