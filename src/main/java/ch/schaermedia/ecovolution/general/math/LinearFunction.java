@@ -9,7 +9,7 @@ package ch.schaermedia.ecovolution.general.math;
  *
  * @author Quentin
  */
-public class LinearFunction implements Function{
+public class LinearFunction implements Function {
 
     private final double varA;
     private final double varB;
@@ -26,13 +26,15 @@ public class LinearFunction implements Function{
         this.varB = varB;
     }
 
-    public LinearFunction shiftLeft(double n){
-        double newB = varB + varA*n;
+    public LinearFunction shiftLeft(double n)
+    {
+        double newB = varB + varA * n;
         return new LinearFunction(varA, newB);
     }
 
-    public LinearFunction shiftRight(double n){
-        double newB = varB - varA*n;
+    public LinearFunction shiftRight(double n)
+    {
+        double newB = varB - varA * n;
         return new LinearFunction(varA, newB);
     }
 
@@ -46,19 +48,25 @@ public class LinearFunction implements Function{
         return (y - varB) / varA;
     }
 
-    public boolean isPointLeft(double px, double py){
-        if(varA>0){
-            return y(px)<py;
-        }else{
-            return y(px)>py;
+    public boolean isPointLeft(double px, double py)
+    {
+        if (varA > 0)
+        {
+            return y(px) < py;
+        } else
+        {
+            return y(px) > py;
         }
     }
 
-    public boolean isPointOnOrOver(double px, double py){
-        if(varA>0){
-            return y(px)<=py;
-        }else{
-            return y(px)>=py;
+    public boolean isPointOnOrOver(double px, double py)
+    {
+        if (varA > 0)
+        {
+            return y(px) <= py;
+        } else
+        {
+            return y(px) >= py;
         }
     }
 
@@ -92,5 +100,11 @@ public class LinearFunction implements Function{
     public double getVarB()
     {
         return varB;
+    }
+
+    @Override
+    public boolean isNegative()
+    {
+        return varA < 0;
     }
 }

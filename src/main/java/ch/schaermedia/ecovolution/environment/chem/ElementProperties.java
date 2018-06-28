@@ -52,12 +52,14 @@ public class ElementProperties {
         initDiagrams();
     }
 
-    private void initDiagrams(){
+    private void initDiagrams()
+    {
         temperature_Pressure_Diagram = new PhaseDiagram_Temperature_Pressure(this);
         energy_Pressure_Diagram = new PhaseDiagram_Energy_Pressure(this);
     }
 
-    private void readProperties(JSONObject object){
+    private void readProperties(JSONObject object)
+    {
         name = object.getString("name");
         code = object.getString("symbol");
         orderNumber = object.optInt("number");
@@ -93,12 +95,14 @@ public class ElementProperties {
         return code;
     }
 
-    public boolean isBoilingPointUnderTriplePoint(){
-        return boilingPoint_K < triplePointHeat_K;
+    public boolean isBoilingPointUnderTriplePoint()
+    {
+        return boilingPoint_K < triplePointHeat_K && CompoundMix.STATIC_PRESSURE_kPa < triplePointPressure_kPa;
     }
 
-    public boolean isMeltingPointUnderTriplePoint(){
-        return meltingPoint_K < triplePointHeat_K;
+    public boolean isMeltingPointUnderTriplePoint()
+    {
+        return meltingPoint_K < triplePointHeat_K && CompoundMix.STATIC_PRESSURE_kPa < triplePointPressure_kPa;
     }
 
     public double getSpecificHeatCapacity_kj_mol_K()
@@ -154,5 +158,45 @@ public class ElementProperties {
     public PhaseDiagram_Energy_Pressure getEnergy_Pressure_Diagram()
     {
         return energy_Pressure_Diagram;
+    }
+
+    public double minCriticalEnergy()
+    {
+        return criticalPointHeat_K * specificHeatCapacity_kj_mol_K + fusionHeat_kj;
+    }
+
+    public double maxCriticalEnergy()
+    {
+        return minCriticalEnergy() + vaporizationHeat_kj;
+    }
+
+    public double minMeltingPointEnergy()
+    {
+        return meltingPoint_K * specificHeatCapacity_kj_mol_K;
+    }
+
+    public double maxMeltingPointEnergy()
+    {
+        return minMeltingPointEnergy() + fusionHeat_kj;
+    }
+
+    public double minBoilingEnergy()
+    {
+        return boilingPoint_K * specificHeatCapacity_kj_mol_K + fusionHeat_kj;
+    }
+
+    public double maxBoilingEnergy()
+    {
+        return minBoilingEnergy() + vaporizationHeat_kj;
+    }
+
+    public double minTriplePointEnergy()
+    {
+        return triplePointHeat_K * specificHeatCapacity_kj_mol_K;
+    }
+
+    public double maxTriplePointEnergy()
+    {
+        return minTriplePointEnergy() + fusionHeat_kj + vaporizationHeat_kj;
     }
 }

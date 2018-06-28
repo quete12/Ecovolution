@@ -9,13 +9,14 @@ package ch.schaermedia.ecovolution.general.math;
  *
  * @author Quentin
  */
-public interface Function {
+public interface Function{
 
     public double x(double y);
 
     public double y(double x);
 
     public boolean isPositive();
+    public boolean isNegative();
 
     default public boolean isPointOnOrLeft(double x, double y)
     {

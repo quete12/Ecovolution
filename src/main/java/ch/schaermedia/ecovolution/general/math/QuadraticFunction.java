@@ -132,10 +132,17 @@ public class QuadraticFunction implements Function {
     {
         return c;
     }
+
     @Override
     public boolean isPositive()
     {
         return a > 0;
+    }
+
+    @Override
+    public boolean isNegative()
+    {
+        return a < 0;
     }
 
 }
