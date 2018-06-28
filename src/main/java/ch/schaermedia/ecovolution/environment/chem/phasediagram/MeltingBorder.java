@@ -63,4 +63,10 @@ public class MeltingBorder extends PhaseBorder{
         return meltingMin.isPointOnOrRight(pressure_kPa, pressure_kPa);
     }
 
+    @Override
+    public double getMinEnergy_kj_mol(double pressure_kPa)
+    {
+        return meltingMin.x(pressure_kPa);
+    }
+
 }

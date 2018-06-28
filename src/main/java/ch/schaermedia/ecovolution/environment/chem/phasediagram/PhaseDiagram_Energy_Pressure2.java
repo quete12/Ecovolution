@@ -53,6 +53,10 @@ public class PhaseDiagram_Energy_Pressure2 {
 
     private boolean isSolid(double energy_kj_mol, double pressure_kPa)
     {
+        if (criticalBorder.isCritical(energy_kj_mol, pressure_kPa))
+        {
+            return false;
+        }
         if (meltingBorder.isMelted(energy_kj_mol, pressure_kPa))
         {
             return false;
@@ -91,5 +95,30 @@ public class PhaseDiagram_Energy_Pressure2 {
     private boolean isSupercriticalFluid(double energy_kj_mol, double pressure_kPa)
     {
         return criticalBorder.isCritical(energy_kj_mol, pressure_kPa);
+    }
+
+    private double getTemperature_K_ofSolid(double energy_kj_mol, double pressure_kPa)
+    {
+        boolean isMelting = meltingBorder.isMelting(energy_kj_mol, pressure_kPa);
+        boolean isSublimating = sublimationBorder.isSublimating(energy_kj_mol, pressure_kPa);
+        double energyForCalculation;
+        if (isMelting && isSublimating)
+        {
+            // this is an edge case at the triple point
+            // I assume that the melting slope is allways steeper than sublimation
+            energyForCalculation = Math.min(
+                    meltingBorder.getMinEnergy_kj_mol(pressure_kPa),
+                    sublimationBorder.getMinEnergy_kj_mol(pressure_kPa));
+        } else if (isMelting)
+        {
+            energyForCalculation = meltingBorder.getMinEnergy_kj_mol(pressure_kPa);
+        } else if (isSublimating)
+        {
+            energyForCalculation = sublimationBorder.getMinEnergy_kj_mol(pressure_kPa);
+        } else
+        {
+            energyForCalculation = energy_kj_mol;
+        }
+        return energyForCalculation / properties.getSpecificHeatCapacity_kj_mol_K();
     }
 }

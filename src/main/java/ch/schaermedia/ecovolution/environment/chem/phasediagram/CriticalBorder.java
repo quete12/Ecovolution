@@ -28,5 +28,11 @@ public class CriticalBorder extends PhaseBorder{
                 && energy_kj_mol > criticalEnergy_kj_mol;
     }
 
+    @Override
+    public double getMinEnergy_kj_mol(double pressure_kPa)
+    {
+        return criticalEnergy_kj_mol;
+    }
+
 
 }

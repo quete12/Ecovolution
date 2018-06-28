@@ -121,4 +121,17 @@ public class VaporizationBorder extends PhaseBorder{
                     || vaporizationMin[1].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
         }
     }
+
+    @Override
+    public double getMinEnergy_kj_mol(double pressure_kPa)
+    {
+        if(!hasDualFunction){
+            return vaporizationMin[0].x(pressure_kPa);
+        }
+        if(isSteepFirst(vaporizationMin)){
+            return Math.max(vaporizationMin[0].x(pressure_kPa), vaporizationMin[1].x(pressure_kPa));
+        }else{
+            return Math.min(vaporizationMin[0].x(pressure_kPa), vaporizationMin[1].x(pressure_kPa));
+        }
+    }
 }

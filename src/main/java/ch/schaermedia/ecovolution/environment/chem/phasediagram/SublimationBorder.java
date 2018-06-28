@@ -121,4 +121,18 @@ public class SublimationBorder extends PhaseBorder{
                     || sublimationMin[1].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
         }
     }
+
+
+    @Override
+    public double getMinEnergy_kj_mol(double pressure_kPa)
+    {
+        if(!hasDualFunction){
+            return sublimationMin[0].x(pressure_kPa);
+        }
+        if(isSteepFirst(sublimationMin)){
+            return Math.max(sublimationMin[0].x(pressure_kPa), sublimationMin[1].x(pressure_kPa));
+        }else{
+            return Math.min(sublimationMin[0].x(pressure_kPa), sublimationMin[1].x(pressure_kPa));
+        }
+    }
 }
