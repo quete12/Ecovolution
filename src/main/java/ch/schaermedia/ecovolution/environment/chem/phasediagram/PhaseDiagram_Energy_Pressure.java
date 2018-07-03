@@ -5,8 +5,8 @@
  */
 package ch.schaermedia.ecovolution.environment.chem.phasediagram;
 
-import ch.schaermedia.ecovolution.environment.chem.ElementProperties;
-import ch.schaermedia.ecovolution.environment.chem.Phase;
+import ch.schaermedia.ecovolution.environment.chem.compound.Phase;
+import ch.schaermedia.ecovolution.environment.chem.properties.ElementProperties;
 
 /**
  *
@@ -30,7 +30,7 @@ public class PhaseDiagram_Energy_Pressure {
         criticalBorder = new CriticalBorder(properties);
     }
 
-    public Phase getPhaseAt(double energy_kj_mol, double pressure_kPa)
+    public Phase getPhaseAt(long energy_kj_mol, long pressure_kPa)
     {
         if (isSupercriticalFluid(energy_kj_mol, pressure_kPa))
         {
@@ -51,7 +51,7 @@ public class PhaseDiagram_Energy_Pressure {
         throw new AssertionError("Invalid Conditions for element: " + properties.getCode() + " e= " + energy_kj_mol + "kj/mol and p= " + pressure_kPa + "kPa");
     }
 
-    private boolean isSolid(double energy_kj_mol, double pressure_kPa)
+    private boolean isSolid(long energy_kj_mol, long pressure_kPa)
     {
         if (criticalBorder.isCritical(energy_kj_mol, pressure_kPa))
         {
@@ -64,7 +64,7 @@ public class PhaseDiagram_Energy_Pressure {
         return !sublimationBorder.isSublimated(energy_kj_mol, pressure_kPa);
     }
 
-    private boolean isLiquid(double energy_kj_mol, double pressure_kPa)
+    private boolean isLiquid(long energy_kj_mol, long pressure_kPa)
     {
         if (criticalBorder.isCritical(energy_kj_mol, pressure_kPa))
         {
@@ -77,7 +77,7 @@ public class PhaseDiagram_Energy_Pressure {
         return meltingBorder.isMelted(energy_kj_mol, pressure_kPa);
     }
 
-    private boolean isGas(double energy_kj_mol, double pressure_kPa)
+    private boolean isGas(long energy_kj_mol, long pressure_kPa)
     {
         if (criticalBorder.isCritical(energy_kj_mol, pressure_kPa))
         {
@@ -92,17 +92,17 @@ public class PhaseDiagram_Energy_Pressure {
         }
     }
 
-    private boolean isSupercriticalFluid(double energy_kj_mol, double pressure_kPa)
+    private boolean isSupercriticalFluid(long energy_kj_mol, long pressure_kPa)
     {
         return criticalBorder.isCritical(energy_kj_mol, pressure_kPa);
     }
 
-    public double getTemperature_K_at(double energy_kj_mol, double pressure_kPa)
+    public long getTemperature_K_at(long energy_kj_mol, long pressure_kPa)
     {
         return getTemperature_K_at(energy_kj_mol, pressure_kPa, getPhaseAt(energy_kj_mol, pressure_kPa));
     }
 
-    public double getTemperature_K_at(double energy_kj_mol, double pressure_kPa, Phase phase)
+    public long getTemperature_K_at(long energy_kj_mol, long pressure_kPa, Phase phase)
     {
         switch (phase)
         {
@@ -119,26 +119,26 @@ public class PhaseDiagram_Energy_Pressure {
         }
     }
 
-    private double getTemperature_K_ofSupercriticalFluid(double energy_kj_mol, double pressure_kPa)
+    private long getTemperature_K_ofSupercriticalFluid(long energy_kj_mol, long pressure_kPa)
     {
-        double energyForCalculation = energy_kj_mol;
+        long energyForCalculation = energy_kj_mol;
         energyForCalculation -= properties.getFusionHeat_kj();
         energyForCalculation -= properties.getVaporizationHeat_kj();
         return energyForCalculation / properties.getSpecificHeatCapacity_kj_mol_K();
     }
 
-    private double getTemperature_K_ofGas(double energy_kj_mol, double pressure_kPa)
+    private long getTemperature_K_ofGas(long energy_kj_mol, long pressure_kPa)
     {
-        double energyForCalculation = energy_kj_mol;
+        long energyForCalculation = energy_kj_mol;
         energyForCalculation -= properties.getFusionHeat_kj();
         energyForCalculation -= properties.getVaporizationHeat_kj();
         return energyForCalculation / properties.getSpecificHeatCapacity_kj_mol_K();
     }
 
-    private double getTemperature_K_ofLiquid(double energy_kj_mol, double pressure_kPa)
+    private long getTemperature_K_ofLiquid(long energy_kj_mol, long pressure_kPa)
     {
         boolean isVaporizing = vaporizationBorder.isVaporizing(energy_kj_mol, pressure_kPa);
-        double energyForCalculation;
+        long energyForCalculation;
         if (isVaporizing)
         {
             energyForCalculation = vaporizationBorder.getMinEnergy_kj_mol(pressure_kPa);
@@ -150,11 +150,11 @@ public class PhaseDiagram_Energy_Pressure {
         return energyForCalculation / properties.getSpecificHeatCapacity_kj_mol_K();
     }
 
-    private double getTemperature_K_ofSolid(double energy_kj_mol, double pressure_kPa)
+    private long getTemperature_K_ofSolid(long energy_kj_mol, long pressure_kPa)
     {
         boolean isMelting = meltingBorder.isMelting(energy_kj_mol, pressure_kPa);
         boolean isSublimating = sublimationBorder.isSublimating(energy_kj_mol, pressure_kPa);
-        double energyForCalculation;
+        long energyForCalculation;
         if (isMelting && isSublimating)
         {
             // this is an edge case at the triple point

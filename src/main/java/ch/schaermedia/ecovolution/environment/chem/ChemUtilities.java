@@ -5,6 +5,9 @@
  */
 package ch.schaermedia.ecovolution.environment.chem;
 
+import ch.schaermedia.ecovolution.environment.chem.properties.CompoundProperties;
+import ch.schaermedia.ecovolution.environment.chem.properties.ElementProperties;
+import ch.schaermedia.ecovolution.general.math.Consts;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.logging.Level;
@@ -20,17 +23,15 @@ import org.json.JSONTokener;
  */
 public class ChemUtilities {
 
-    public static final double CELSIUS_TO_KELVIN_CONVERSION = 273.15;
-    public static final double GAS_CONSTANT_L_kPa_K = 8.3144598;
 
     //<editor-fold desc="static calculations">
     /**
      *
      * @param amount_mol the value of amount_mol
      * @param volume_L the value of volume_L
-     * @return the double
+     * @return the long
      */
-    public static double density_mol_L(double amount_mol, double volume_L)
+    public static long density_mol_L(long amount_mol, long volume_L)
     {
         return amount_mol / volume_L;
     }
@@ -40,9 +41,9 @@ public class ChemUtilities {
      * @param pressure_kPa the value of pressure_kPa
      * @param amount_mol the value of amount_mol
      * @param temperature_K the value of temperature_K
-     * @return the double
+     * @return the long
      */
-    public static double density_mol_L(double pressure_kPa, double amount_mol, double temperature_K)
+    public static long density_mol_L(long pressure_kPa, long amount_mol, long temperature_K)
     {
         return amount_mol / volume_L(pressure_kPa, amount_mol, temperature_K);
     }
@@ -52,20 +53,20 @@ public class ChemUtilities {
      * @param pressure_kPa the value of pressure_kPa
      * @param volume_L the value of volume_L
      * @param temperature_K the value of temperature_K
-     * @return the double
+     * @return the long
      */
-    public static double moles(double pressure_kPa, double volume_L, double temperature_K)
+    public static long moles(long pressure_kPa, long volume_L, long temperature_K)
     {
-        return pressure_kPa * volume_L / (GAS_CONSTANT_L_kPa_K * temperature_K);
+        return pressure_kPa * volume_L / (Consts.GAS_CONSTANT_L_kPa_K * temperature_K);
     }
 
     /**
      *
      * @param volume_L the value of volume_L
      * @param density_mol_L the value of density_mol_L
-     * @return the double
+     * @return the long
      */
-    public static double molesOfDensity_mol(double volume_L, double density_mol_L)
+    public static long molesOfDensity_mol(long volume_L, long density_mol_L)
     {
         return density_mol_L * volume_L;
     }
@@ -75,14 +76,14 @@ public class ChemUtilities {
      * @param volume_L the value of volume_L
      * @param amount_mol the value of amount_mol
      * @param temperature_K the value of temperature_K
-     * @return the double
+     * @return the long
      */
-    public static double pressure_kPa(double volume_L, double amount_mol, double temperature_K)
+    public static long pressure_kPa(long volume_L, long amount_mol, long temperature_K)
     {
         if(volume_L == 0){
             return 0;
         }
-        return (amount_mol * GAS_CONSTANT_L_kPa_K * temperature_K) / volume_L;
+        return (amount_mol * Consts.GAS_CONSTANT_L_kPa_K * temperature_K) / volume_L;
     }
 
     /**
@@ -90,44 +91,44 @@ public class ChemUtilities {
      * @param pressure_kPa the value of pressure_kPa
      * @param volume_L the value of volume_L
      * @param amount_mol the value of amount_mol
-     * @return the double
+     * @return the long
      */
-    public static double temperature_K(double pressure_kPa, double volume_L, double amount_mol)
+    public static long temperature_K(long pressure_kPa, long volume_L, long amount_mol)
     {
         if(amount_mol == 0){
             return 0;
         }
-        return pressure_kPa * volume_L / (amount_mol * GAS_CONSTANT_L_kPa_K);
+        return pressure_kPa * volume_L / (amount_mol * Consts.GAS_CONSTANT_L_kPa_K);
     }
 
     /**
      *
      * @param tempInK the value of tempInK
-     * @return the double
+     * @return the long
      */
-    public static double toCelsius(double tempInK)
+    public static long toCelsius(long tempInK)
     {
-        return tempInK - CELSIUS_TO_KELVIN_CONVERSION;
+        return tempInK - Consts.CELSIUS_TO_KELVIN_CONVERSION;
     }
     //</editor-fold>
 
     /**
      *
      * @param tempInC the value of tempInC
-     * @return the double
+     * @return the long
      */
-    public static double toKelvin(double tempInC)
+    public static long toKelvin(long tempInC)
     {
-        return tempInC + CELSIUS_TO_KELVIN_CONVERSION;
+        return tempInC + Consts.CELSIUS_TO_KELVIN_CONVERSION;
     }
 
     /**
      *
      * @param amount_mol the value of amount_mol
      * @param density_mol_L the value of density_mol_L
-     * @return the double
+     * @return the long
      */
-    public static double volumeOfDensity_L(double amount_mol, double density_mol_L)
+    public static long volumeOfDensity_L(long amount_mol, long density_mol_L)
     {
         return amount_mol / density_mol_L;
     }
@@ -137,14 +138,14 @@ public class ChemUtilities {
      * @param pressure_kPa the value of pressure_kPa
      * @param amount_mol the value of amount_mol
      * @param temperature_K the value of temperature_K
-     * @return the double
+     * @return the long
      */
-    public static double volume_L(double pressure_kPa, double amount_mol, double temperature_K)
+    public static long volume_L(long pressure_kPa, long amount_mol, long temperature_K)
     {
         if(pressure_kPa == 0){
             return 0;
         }
-        return (amount_mol * GAS_CONSTANT_L_kPa_K * temperature_K) / pressure_kPa;
+        return (amount_mol * Consts.GAS_CONSTANT_L_kPa_K * temperature_K) / pressure_kPa;
     }
 
     public static void readElements(String file) throws FileNotFoundException
@@ -172,10 +173,10 @@ public class ChemUtilities {
             {
                 element = new ElementProperties(array.getJSONObject(i));
                 element.map();
-                Logger.getLogger(Element.class.getName()).log(Level.INFO, "Loaded: {0}", element);
+                Logger.getLogger(ChemUtilities.class.getName()).log(Level.INFO, "Loaded: {0}", element);
             } catch (JSONException ex)
             {
-                Logger.getLogger(Element.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ChemUtilities.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -190,10 +191,10 @@ public class ChemUtilities {
             {
                 compound = new CompoundProperties(array.getJSONObject(i));
                 compound.map();
-                Logger.getLogger(Element.class.getName()).log(Level.INFO, "Loaded: {0}", compound);
+                Logger.getLogger(ChemUtilities.class.getName()).log(Level.INFO, "Loaded: {0}", compound);
             } catch (JSONException ex)
             {
-                Logger.getLogger(Element.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ChemUtilities.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 

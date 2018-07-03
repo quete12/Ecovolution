@@ -11,44 +11,44 @@ package ch.schaermedia.ecovolution.general.math;
  */
 public class LinearFunction implements Function {
 
-    private final double varA;
-    private final double varB;
+    private final long varA;
+    private final long varB;
 
-    public LinearFunction(double p1x, double p1y, double p2x, double p2y)
+    public LinearFunction(long p1x, long p1y, long p2x, long p2y)
     {
         this.varA = findVarA(p1x, p1y, p2x, p2y);
         this.varB = findVarB(varA, p2x, p2y);
     }
 
-    public LinearFunction(double varA, double varB)
+    public LinearFunction(long varA, long varB)
     {
         this.varA = varA;
         this.varB = varB;
     }
 
-    public LinearFunction shiftLeft(double n)
+    public LinearFunction shiftLeft(long n)
     {
-        double newB = varB + varA * n;
+        long newB = varB + varA * n;
         return new LinearFunction(varA, newB);
     }
 
-    public LinearFunction shiftRight(double n)
+    public LinearFunction shiftRight(long n)
     {
-        double newB = varB - varA * n;
+        long newB = varB - varA * n;
         return new LinearFunction(varA, newB);
     }
 
-    public double y(double x)
+    public long y(long x)
     {
         return varA * x + varB;
     }
 
-    public double x(double y)
+    public long x(long y)
     {
         return (y - varB) / varA;
     }
 
-    public boolean isPointLeft(double px, double py)
+    public boolean isPointLeft(long px, long py)
     {
         if (varA > 0)
         {
@@ -59,7 +59,7 @@ public class LinearFunction implements Function {
         }
     }
 
-    public boolean isPointOnOrOver(double px, double py)
+    public boolean isPointOnOrOver(long px, long py)
     {
         if (varA > 0)
         {
@@ -70,12 +70,12 @@ public class LinearFunction implements Function {
         }
     }
 
-    private double findVarB(double varA, double px, double py)
+    private long findVarB(long varA, long px, long py)
     {
         return py - (varA * px);
     }
 
-    private double findVarA(double p1X, double p1Y, double p2X, double p2Y)
+    private long findVarA(long p1X, long p1Y, long p2X, long p2Y)
     {
         return (p2Y - p1Y) / (p2X - p1X);
     }
@@ -92,12 +92,12 @@ public class LinearFunction implements Function {
         return varA > 0;
     }
 
-    public double getVarA()
+    public long getVarA()
     {
         return varA;
     }
 
-    public double getVarB()
+    public long getVarB()
     {
         return varB;
     }
