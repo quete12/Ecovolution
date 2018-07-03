@@ -11,9 +11,11 @@ package ch.schaermedia.ecovolution.environment.world;
  */
 public class World {
 
-    private final int numberOfLayers = 2;
-    private final int neighbourRange = 3;
-    private final int neighbourSquare = (2 * neighbourRange + 1) * (2 * neighbourRange + 1);
+    public static final int NUMBER_OF_LAYERS = 2;
+    public static final int NEIGHBOUR_RANGE = 3;
+    public static final int NEIGHBOUR_SQUARED = (2 * NEIGHBOUR_RANGE + 1) * (2 * NEIGHBOUR_RANGE + 1);
+    public static final double HORIZONTAL_SPREAD_PERCENTAGE = 1.0 / (double) NEIGHBOUR_SQUARED;
+
     private Tile[][] grid;
     private final int width;
     private final int height;
@@ -25,7 +27,15 @@ public class World {
         initGrid();
     }
 
-    public void update(){
+    public void update()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                grid[x][y].calculate();
+            }
+        }
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -42,7 +52,7 @@ public class World {
             for (int y = 0; y < height; y++)
             {
                 //TODO: replace with TileGenerator
-                grid[x][y] = new Tile(x, y, numberOfLayers);
+                grid[x][y] = new Tile(x, y, NUMBER_OF_LAYERS);
             }
         }
         for (int x = 0; x < width; x++)
@@ -56,14 +66,14 @@ public class World {
 
     private void initNeighboursFor(int x, int y)
     {
-        for (int xoffs = -neighbourRange; xoffs <= neighbourRange; xoffs++)
+        for (int xoffs = -NEIGHBOUR_RANGE; xoffs <= NEIGHBOUR_RANGE; xoffs++)
         {
             int mx = x + xoffs;
             if (mx < 0 || mx >= width || xoffs == 0)
             {
                 continue;
             }
-            for (int yoffs = -neighbourRange; yoffs <= neighbourRange; yoffs++)
+            for (int yoffs = -NEIGHBOUR_RANGE; yoffs <= NEIGHBOUR_RANGE; yoffs++)
             {
                 int my = y + yoffs;
                 if (my < 0 || my >= height || yoffs == 0)

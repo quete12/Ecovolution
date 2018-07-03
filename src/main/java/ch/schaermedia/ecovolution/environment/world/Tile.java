@@ -26,6 +26,7 @@ public class Tile {
         this.yIdx = yIdx;
         this.layers = new LayerMixture[numLayers];
         initLayers();
+        initTopBottom();
     }
 
     public void update(){
@@ -33,6 +34,10 @@ public class Tile {
         {
             layers[i].update(LAYER_VOLUME_L);
         }
+    }
+
+    public void calculate(){
+
     }
 
     public void addAsNeighbour(Tile neighbour)
@@ -53,6 +58,9 @@ public class Tile {
         {
             layers[i] = new LayerMixture();
         }
+    }
+
+    private void initTopBottom(){
         for (int i = 0; i < layers.length; i++)
         {
             if (i > 0)

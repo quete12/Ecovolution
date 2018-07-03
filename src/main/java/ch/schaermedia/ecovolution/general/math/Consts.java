@@ -13,12 +13,22 @@ public class Consts {
 
     public static final int PRESCISION = 1000000;
 
-    public static final long STANDARD_PRESSURE_kPa = (long) (101.325 * PRESCISION);
-    public static final long GAS_CONSTANT_L_kPa_K = (long) (8.3144598 * PRESCISION);
-    public static final long CELSIUS_TO_KELVIN_CONVERSION = (long) (273.15 * PRESCISION);
+    public static final long STANDARD_PRESSURE_kPa = toLong(101.325);
+    public static final long GAS_CONSTANT_L_kPa_K = toLong(8.3144598);
+    public static final long CELSIUS_TO_KELVIN_CONVERSION = toLong(273.15);
 
     public static final int WORLD_WIDTH = 30;
     public static final int SPREAD_RANGE = 3;
     public static final int WORLD_HEIGHT = 30;
+
+    public static double toDouble(long value)
+    {
+        return value / (double) PRESCISION;
+    }
+
+    public static long toLong(double value)
+    {
+        return (long) (value * PRESCISION);
+    }
 
 }
