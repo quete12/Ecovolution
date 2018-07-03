@@ -6,6 +6,8 @@
 package ch.schaermedia.ecovolution.environment.chem.compound;
 
 import ch.schaermedia.ecovolution.environment.chem.AtmosphericEnity;
+import ch.schaermedia.ecovolution.environment.chem.ChemUtilities;
+import ch.schaermedia.ecovolution.general.math.Consts;
 
 /**
  *
@@ -14,9 +16,11 @@ import ch.schaermedia.ecovolution.environment.chem.AtmosphericEnity;
 public class LayerMixture extends AtmosphericEnity {
 
     private final PhaseMixture[] phases;
+    private final long layerVolume_L;
 
-    public LayerMixture()
+    public LayerMixture(long layerVolume_L)
     {
+        this.layerVolume_L = layerVolume_L;
         phases = new PhaseMixture[Phase.values().length];
         initPhaseMixes();
     }
@@ -45,23 +49,85 @@ public class LayerMixture extends AtmosphericEnity {
         }
     }
 
-    public void addAsNeighbour(LayerMixture neighbour){
+    public void addAsNeighbour(LayerMixture neighbour)
+    {
         for (int i = 0; i < phases.length; i++)
         {
             phases[i].addAsNeighbour(neighbour.getMixtureForPhase(i));
         }
     }
 
-    public PhaseMixture getMixtureForPhase(Phase phase){
+    public void spreadHorizontal()
+    {
+        for (PhaseMixture phase : phases)
+        {
+            phase.spreadHorizontal();
+        }
+    }
+
+    public long spreadToLower(int phase, double percentage)
+    {
+        return phases[phase].spreadToLower(percentage);
+    }
+
+    public long spreadToHigher(int phase, double percentage)
+    {
+        return phases[phase].spreadToHigher(percentage);
+    }
+
+    public long spreadToLower(double percentage)
+    {
+        long sum = 0;
+        for (PhaseMixture phase : phases)
+        {
+            sum += phase.spreadToLower(percentage);
+        }
+        return sum;
+    }
+
+    public long spreadToHigher(double percentage)
+    {
+        long sum = 0;
+        for (PhaseMixture phase : phases)
+        {
+            sum += phase.spreadToHigher(percentage);
+        }
+        return sum;
+    }
+
+    public PhaseMixture getMixtureForPhase(Phase phase)
+    {
         return getMixtureForPhase(phase.idx);
     }
-    public PhaseMixture getMixtureForPhase(int phase){
+
+    public PhaseMixture getMixtureForPhase(int phase)
+    {
         return phases[phase];
     }
 
-    public void update(long totalVolume_L)
+    public void update()
     {
-        updateStats(pressure_kPa,totalVolume_L);
+        updateStats(pressure_kPa, layerVolume_L);
+    }
+
+    public long molesOverVolume()
+    {
+        long diff = volume_L - layerVolume_L;
+        if (diff <= 0)
+        {
+            return 0;
+        }
+        return ChemUtilities.moles(Consts.STANDARD_PRESSURE_kPa, diff, temperature_k);
+    }
+
+    public long molesUnderVolume()
+    {
+        long diff = layerVolume_L - volume_L;
+        if (diff <= 0)
+        {
+            return 0;
+        }
+        return ChemUtilities.moles(Consts.STANDARD_PRESSURE_kPa, diff, temperature_k);
     }
 
     @Override

@@ -7,6 +7,7 @@ package ch.schaermedia.ecovolution.environment.chem.compound;
 
 import ch.schaermedia.ecovolution.environment.chem.AtmosphericEnity;
 import ch.schaermedia.ecovolution.environment.chem.properties.CompoundProperties;
+import ch.schaermedia.ecovolution.environment.world.World;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,32 +32,36 @@ public class PhaseMixture extends AtmosphericEnity {
         neighbours = new ArrayList();
     }
 
-    public long spreadToHigher(double percentage, long target)
-    {
-        return spreadToHigher(percentage, target, true);
-    }
-
     public long spreadToHigher(double percentage)
     {
-        return spreadToHigher(percentage, -1, false);
+        return spreadTo(higher, percentage);
     }
 
-    private long spreadToHigher(double percentage, long target, boolean limitToTarget)
+    public long spreadToLower(double percentage)
     {
-        if (higher == null)
+        return spreadTo(lower, percentage);
+    }
+
+    public void spreadHorizontal()
+    {
+        for (PhaseMixture neighbour : neighbours)
+        {
+            spreadTo(neighbour, World.HORIZONTAL_SPREAD_PERCENTAGE);
+        }
+    }
+
+    private long spreadTo(PhaseMixture spreadTo, double percentage)
+    {
+        if (spreadTo == null)
         {
             return 0;
         }
         long totalSpread = 0;
         for (Map.Entry<String, Compound> entry : composition.entrySet())
         {
-            Compound other = higher.getCompound(entry.getKey());
+            Compound other = spreadTo.getCompound(entry.getKey());
             Compound compound = entry.getValue();
             totalSpread += compound.splitTo(other, percentage);
-            if (limitToTarget && totalSpread >= target)
-            {
-                break;
-            }
         }
         return totalSpread;
     }

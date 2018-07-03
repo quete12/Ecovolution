@@ -14,7 +14,7 @@ import ch.schaermedia.ecovolution.environment.chem.compound.LayerMixture;
 public class Tile {
 
     public static final long SIZE = 100;
-    public static final long LAYER_VOLUME_L = SIZE * SIZE * SIZE;
+    public static final long LAYER_VOLUME_L = Tile.SIZE * Tile.SIZE * Tile.SIZE;
     private final int xIdx;
     private final int yIdx;
 
@@ -29,15 +29,66 @@ public class Tile {
         initTopBottom();
     }
 
-    public void update(){
+    public void update()
+    {
         for (int i = 0; i < layers.length; i++)
         {
-            layers[i].update(LAYER_VOLUME_L);
+            layers[i].update();
         }
     }
 
-    public void calculate(){
+    public void calculate()
+    {
+        spreadToHigher();
+        spreadToLower();
+        spreadHorizontal();
+    }
 
+    private void spreadHorizontal()
+    {
+        for (LayerMixture layer : layers)
+        {
+            layer.spreadHorizontal();
+        }
+    }
+
+    private void spreadToHigher()
+    {
+        for (int i = 0; i < layers.length - 1; i++)
+        {
+            LayerMixture layer = layers[i];
+            long molesOverVolume = layer.molesOverVolume();
+            if (molesOverVolume == 0)
+            {
+                continue;
+            }
+            double percentage = molesOverVolume / layer.getAmount_mol();
+            if (percentage > 1)
+            {
+                percentage = 1;
+            }
+            layer.spreadToHigher(percentage);
+        }
+    }
+
+    private void spreadToLower()
+    {
+        for (int i = 1; i < layers.length; i++)
+        {
+            LayerMixture layer = layers[i];
+            LayerMixture lower = layers[i - 1];
+            long molesOverVolume = lower.molesUnderVolume();
+            if (molesOverVolume == 0)
+            {
+                continue;
+            }
+            double percentage = molesOverVolume / layer.getAmount_mol();
+            if (percentage > 1)
+            {
+                percentage = 1;
+            }
+            layer.spreadToLower(percentage);
+        }
     }
 
     public void addAsNeighbour(Tile neighbour)
@@ -48,7 +99,8 @@ public class Tile {
         }
     }
 
-    public LayerMixture getLayer(int layer){
+    public LayerMixture getLayer(int layer)
+    {
         return layers[layer];
     }
 
@@ -56,11 +108,12 @@ public class Tile {
     {
         for (int i = 0; i < layers.length; i++)
         {
-            layers[i] = new LayerMixture();
+            layers[i] = new LayerMixture(LAYER_VOLUME_L);
         }
     }
 
-    private void initTopBottom(){
+    private void initTopBottom()
+    {
         for (int i = 0; i < layers.length; i++)
         {
             if (i > 0)
