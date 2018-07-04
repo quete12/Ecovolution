@@ -42,6 +42,7 @@ public class SublimationBorder extends PhaseBorder {
 
     private void initBordersZeroToTriple(ElementProperties properties)
     {
+        try{
         sublimationMin[0] = new LinearFunction(
                 0,
                 0,
@@ -52,6 +53,10 @@ public class SublimationBorder extends PhaseBorder {
                 0,
                 properties.maxTriplePointSublimationEnergy(),
                 properties.getTriplePointPressure_kPa());
+        }catch(Exception ex){
+            System.out.println("Props: " + properties);
+            throw ex;
+        }
 
     }
 

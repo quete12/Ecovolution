@@ -22,7 +22,9 @@ public class MeltingBorder extends PhaseBorder {
     public MeltingBorder(ElementProperties properties)
     {
         super(false);
+        System.out.println("Init MeltingBorders for: " + properties);
         initMeltingBorders(properties);
+        System.out.println("Finished MeltingBorders");
     }
 
     private void initMeltingBorders(ElementProperties properties)

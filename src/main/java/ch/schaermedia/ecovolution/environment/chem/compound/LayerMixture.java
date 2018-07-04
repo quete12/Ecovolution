@@ -112,6 +112,9 @@ public class LayerMixture extends AtmosphericEnity {
 
     public long molesOverVolume()
     {
+        if(temperature_k == 0){
+            return 0;
+        }
         long diff = volume_L - layerVolume_L;
         if (diff <= 0)
         {
@@ -122,6 +125,9 @@ public class LayerMixture extends AtmosphericEnity {
 
     public long molesUnderVolume()
     {
+        if(temperature_k == 0){
+            return 0;
+        }
         long diff = layerVolume_L - volume_L;
         if (diff <= 0)
         {

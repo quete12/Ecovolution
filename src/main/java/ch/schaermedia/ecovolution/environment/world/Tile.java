@@ -18,6 +18,13 @@ public class Tile {
     private final int xIdx;
     private final int yIdx;
 
+    private long amount_mol;
+    private long energy_kj;
+
+    private long temperature_k;
+    private long pressure_kPa;
+    private long volume_L;
+
     private final LayerMixture[] layers;
 
     public Tile(int xIdx, int yIdx, int numLayers)
@@ -31,10 +38,18 @@ public class Tile {
 
     public void update()
     {
-        for (int i = 0; i < layers.length; i++)
+        clearStats();
+        long temperatureSum = 0;
+        for (LayerMixture layer : layers)
         {
-            layers[i].update();
+            layer.update();
+            amount_mol += layer.getAmount_mol();
+            energy_kj += layer.getEnergy_kj();
+            pressure_kPa += layer.getPressure_kPa();
+            volume_L += layer.getVolume_L();
+            temperatureSum += layer.getTemperature_k();
         }
+        temperature_k = temperatureSum / layers.length;
     }
 
     public void calculate()
@@ -125,5 +140,44 @@ public class Tile {
                 layers[i].setHigher(layers[i + 1]);
             }
         }
+    }
+
+    private void clearStats()
+    {
+        amount_mol = 0;
+        energy_kj = 0;
+        temperature_k = 0;
+        pressure_kPa = 0;
+        volume_L = 0;
+    }
+
+    public int getxIdx()
+    {
+        return xIdx;
+    }
+
+    public int getyIdx()
+    {
+        return yIdx;
+    }
+
+    public long getAmount_mol()
+    {
+        return amount_mol;
+    }
+
+    public long getTemperature_k()
+    {
+        return temperature_k;
+    }
+
+    public long getPressure_kPa()
+    {
+        return pressure_kPa;
+    }
+
+    public long getVolume_L()
+    {
+        return volume_L;
     }
 }

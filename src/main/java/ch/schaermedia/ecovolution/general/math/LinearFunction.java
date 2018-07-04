@@ -11,13 +11,15 @@ package ch.schaermedia.ecovolution.general.math;
  */
 public class LinearFunction implements Function {
 
-    private final long varA;
-    private final long varB;
+    private final double varA;
+    private final double varB;
 
     public LinearFunction(long p1x, long p1y, long p2x, long p2y)
     {
+        System.out.println("Creating function: P1("+p1x+"|"+p1y+") P2("+p2x+"|"+p2y+")");
         this.varA = findVarA(p1x, p1y, p2x, p2y);
         this.varB = findVarB(varA, p2x, p2y);
+        System.out.println(this);
     }
 
     public LinearFunction(long varA, long varB)
@@ -26,26 +28,14 @@ public class LinearFunction implements Function {
         this.varB = varB;
     }
 
-    public LinearFunction shiftLeft(long n)
-    {
-        long newB = varB + varA * n;
-        return new LinearFunction(varA, newB);
-    }
-
-    public LinearFunction shiftRight(long n)
-    {
-        long newB = varB - varA * n;
-        return new LinearFunction(varA, newB);
-    }
-
     public long y(long x)
     {
-        return varA * x + varB;
+        return (long) (varA * x + varB);
     }
 
     public long x(long y)
     {
-        return (y - varB) / varA;
+        return (long) ((y - varB) / varA);
     }
 
     public boolean isPointLeft(long px, long py)
@@ -70,14 +60,22 @@ public class LinearFunction implements Function {
         }
     }
 
-    private long findVarB(long varA, long px, long py)
+    private double findVarB(double varA, long px, long py)
     {
         return py - (varA * px);
     }
 
-    private long findVarA(long p1X, long p1Y, long p2X, long p2Y)
+    private double findVarA(long p1X, long p1Y, long p2X, long p2Y)
     {
-        return (p2Y - p1Y) / (p2X - p1X);
+        try
+        {
+            return (double)(p2Y - p1Y) / (double)(p2X - p1X);
+        }
+        catch (Exception ex)
+        {
+            System.out.println("p1: " + p1X + "|" + p1Y + " p2: " + p2X + "|" + p2Y);
+            throw ex;
+        }
     }
 
     @Override
@@ -92,12 +90,12 @@ public class LinearFunction implements Function {
         return varA > 0;
     }
 
-    public long getVarA()
+    public double getVarA()
     {
         return varA;
     }
 
-    public long getVarB()
+    public double getVarB()
     {
         return varB;
     }

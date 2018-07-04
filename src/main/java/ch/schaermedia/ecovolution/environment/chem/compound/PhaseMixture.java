@@ -109,6 +109,9 @@ public class PhaseMixture extends AtmosphericEnity {
     public void updateStats(long externalPressure_kPa, long totalVolume_L)
     {
         clearStats();
+        if(composition.isEmpty()){
+            return;
+        }
         long temperatureSum = 0;
         for (Compound compound : composition.values())
         {

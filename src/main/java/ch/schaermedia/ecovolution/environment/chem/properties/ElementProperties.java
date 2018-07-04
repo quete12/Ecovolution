@@ -56,7 +56,24 @@ public class ElementProperties {
 
     private void initDiagrams()
     {
+        if (!meetsDiagramConditions())
+        {
+            System.out.println("No Diagram Initialized for: " + this);
+            return;
+        }
         energy_Pressure_Diagram = new PhaseDiagram_Energy_Pressure(this);
+    }
+
+    private boolean meetsDiagramConditions()
+    {
+        return triplePointHeat_K != 0
+                && triplePointPressure_kPa != 0
+                && criticalPointHeat_K != 0
+                && criticalPointPressure_kPa != 0
+                && meltingPoint_K != 0
+                && boilingPoint_K != 0
+                && fusionHeat_kj != 0
+                && vaporizationHeat_kj != 0;
     }
 
     private void readProperties(JSONObject object)
@@ -84,7 +101,7 @@ public class ElementProperties {
     @Override
     public String toString()
     {
-        return "ElementProperties{" + "name=" + name + ", code=" + code + ", orderNumber=" + orderNumber + ", defaultPhase=" + defaultPhase + ", specificHeatCapacity_kj_mol_K=" + specificHeatCapacity_kj_mol_K + ", meltingPoint_K=" + meltingPoint_K + ", boilingPoint_K=" + boilingPoint_K + ", fusionHeat_kj=" + fusionHeat_kj + ", vaporizationHeat_kj=" + vaporizationHeat_kj + '}';
+        return "ElementProperties{" + "name=" + name + ", code=" + code + ", orderNumber=" + orderNumber + ", defaultPhase=" + defaultPhase + ", specificHeatCapacity_kj_mol_K=" + specificHeatCapacity_kj_mol_K + ", meltingPoint_K=" + meltingPoint_K + ", boilingPoint_K=" + boilingPoint_K + ", fusionHeat_kj=" + fusionHeat_kj + ", vaporizationHeat_kj=" + vaporizationHeat_kj + ", triplePointHeat_K=" + triplePointHeat_K + ", triplePointPressure_kPa=" + triplePointPressure_kPa + ", criticalPointHeat_K=" + criticalPointHeat_K + ", criticalPointPressure_kPa=" + criticalPointPressure_kPa + ", energy_Pressure_Diagram=" + energy_Pressure_Diagram + '}';
     }
 
     public String getName()

@@ -47,6 +47,7 @@ public class World {
 
     private void initGrid()
     {
+        grid = new Tile[width][height];
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -83,5 +84,20 @@ public class World {
                 grid[x][y].addAsNeighbour(grid[mx][my]);
             }
         }
+    }
+
+    public Tile[][] getGrid()
+    {
+        return grid;
+    }
+
+    public int getWidth()
+    {
+        return width;
+    }
+
+    public int getHeight()
+    {
+        return height;
     }
 }
