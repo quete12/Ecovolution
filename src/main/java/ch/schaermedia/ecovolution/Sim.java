@@ -26,9 +26,9 @@ import processing.core.PApplet;
  */
 public class Sim extends PApplet {
 
-    private static final int FRAMERATE = 5;
+    private static final int FRAMERATE = 60;
     private World world;
-    private WorldRenderer renderer;
+    private WorldRenderer[] renderers;
 
     @Override
     public void settings()
@@ -44,9 +44,16 @@ public class Sim extends PApplet {
 
         pushMatrix();
         scale(0.1f);
-        renderer.render(world);
-        image(renderer.getGraphics(), 0, 0);
+        int xOffsFactor = (int) ((world.getWidth()+1)*Tile.SIZE);
+        for (int i = 0; i < renderers.length; i++)
+        {
+            WorldRenderer renderer = renderers[i];
+            renderer.render(world);
+            image(renderer.getGraphics(), i*xOffsFactor, 0);
+        }
         popMatrix();
+        fill(0);
+        text("Amount_moles: " + Consts.toDouble(world.getAmount_mol()), 1200, 100);
     }
 
     @Override
@@ -72,11 +79,16 @@ public class Sim extends PApplet {
 
     private void rendererSetup()
     {
-        renderer = new WorldRenderer(
-                createGraphics(
-                        (int) Tile.SIZE * world.getWidth(),
-                        (int) Tile.SIZE * world.getHeight()),
-                new TileVolumeRenderer());
+        renderers = new WorldRenderer[World.NUMBER_OF_LAYERS];
+        for (int i = 0; i < renderers.length; i++)
+        {
+            renderers[i] = new WorldRenderer(
+                    createGraphics(
+                            (int) Tile.SIZE * world.getWidth(),
+                            (int) Tile.SIZE * world.getHeight()),
+                    new TileVolumeRenderer(i));
+
+        }
     }
 
     private void windowSetup()
@@ -84,6 +96,7 @@ public class Sim extends PApplet {
         surface.setResizable(true);
         surface.setTitle("Evolution Simulation");
         surface.setFrameRate(FRAMERATE);
+        textSize(30);
     }
 
     public static void main(String[] args)
@@ -97,7 +110,8 @@ public class Sim extends PApplet {
         Tile tile = world.getGrid()[0][0];
         LayerMixture layer = tile.getLayer(0);
         PhaseMixture solids = layer.getMixtureForPhase(Phase.SOLID);
-        Compound water = solids.getCompound("H2O");water.add(10000*Consts.PRESCISION, 1000*Consts.PRESCISION);
+        Compound water = solids.getCompound("H2O");
+        water.add(10000 * Consts.PRESCISION, 1000 * Consts.PRESCISION);
     }
 
 }

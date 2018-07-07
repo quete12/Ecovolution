@@ -152,4 +152,13 @@ public class LayerMixture extends AtmosphericEnity {
         }
         temperature_k = temperatureSum / phases.length;
     }
+
+    @Override
+    public void importBuffers()
+    {
+        for (PhaseMixture phase : phases)
+        {
+            phase.importBuffers();
+        }
+    }
 }

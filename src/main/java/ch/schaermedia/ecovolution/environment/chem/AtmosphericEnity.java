@@ -19,6 +19,8 @@ public abstract class AtmosphericEnity {
 
     public abstract void updateStats(long externalPressure_kPa, long totalVolume_L);
 
+    public abstract void importBuffers();
+
     protected void clearStats(){
         amount_mol = 0;
         energy_kj = 0;

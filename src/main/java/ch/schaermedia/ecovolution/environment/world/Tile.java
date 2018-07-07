@@ -56,6 +56,7 @@ public class Tile {
     {
         spreadToHigher();
         spreadToLower();
+        importBuffers();
         spreadHorizontal();
     }
 
@@ -64,6 +65,13 @@ public class Tile {
         for (LayerMixture layer : layers)
         {
             layer.spreadHorizontal();
+        }
+    }
+
+    private void importBuffers(){
+        for (LayerMixture layer : layers)
+        {
+            layer.importBuffers();
         }
     }
 

@@ -86,17 +86,17 @@ public class VaporizationBorder extends PhaseBorder{
     {
         if (!hasDualFunction)
         {
-            return vaporizationMax[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return vaporizationMax[0].isPointUnder(energy_kj_mol, pressure_kPa);
         }
 
         if (isSteepFirst(vaporizationMax))
         {
-            return vaporizationMax[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa)
-                    && vaporizationMax[1].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return vaporizationMax[0].isPointUnder(energy_kj_mol, pressure_kPa)
+                    && vaporizationMax[1].isPointUnder(energy_kj_mol, pressure_kPa);
         } else
         {
-            return vaporizationMax[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa)
-                    || vaporizationMax[1].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return vaporizationMax[0].isPointUnder(energy_kj_mol, pressure_kPa)
+                    || vaporizationMax[1].isPointUnder(energy_kj_mol, pressure_kPa);
         }
     }
 
@@ -108,17 +108,17 @@ public class VaporizationBorder extends PhaseBorder{
         }
         if (!hasDualFunction)
         {
-            return vaporizationMin[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return vaporizationMin[0].isPointUnder(energy_kj_mol, pressure_kPa);
         }
 
         if (isSteepFirst(vaporizationMin))
         {
-            return vaporizationMin[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa)
-                    && vaporizationMin[1].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return vaporizationMin[0].isPointUnder(energy_kj_mol, pressure_kPa)
+                    && vaporizationMin[1].isPointUnder(energy_kj_mol, pressure_kPa);
         } else
         {
-            return vaporizationMin[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa)
-                    || vaporizationMin[1].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return vaporizationMin[0].isPointUnder(energy_kj_mol, pressure_kPa)
+                    || vaporizationMin[1].isPointUnder(energy_kj_mol, pressure_kPa);
         }
     }
 

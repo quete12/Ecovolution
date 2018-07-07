@@ -42,7 +42,6 @@ public class SublimationBorder extends PhaseBorder {
 
     private void initBordersZeroToTriple(ElementProperties properties)
     {
-        try{
         sublimationMin[0] = new LinearFunction(
                 0,
                 0,
@@ -53,10 +52,6 @@ public class SublimationBorder extends PhaseBorder {
                 0,
                 properties.maxTriplePointSublimationEnergy(),
                 properties.getTriplePointPressure_kPa());
-        }catch(Exception ex){
-            System.out.println("Props: " + properties);
-            throw ex;
-        }
 
     }
 
@@ -92,17 +87,17 @@ public class SublimationBorder extends PhaseBorder {
     {
         if (!hasDualFunction)
         {
-            return sublimationMax[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return sublimationMax[0].isPointUnder(energy_kj_mol, pressure_kPa);
         }
 
         if (isSteepFirst(sublimationMax))
         {
-            return sublimationMax[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa)
-                    && sublimationMax[1].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return sublimationMax[0].isPointUnder(energy_kj_mol, pressure_kPa)
+                    && sublimationMax[1].isPointUnder(energy_kj_mol, pressure_kPa);
         } else
         {
-            return sublimationMax[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa)
-                    || sublimationMax[1].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return sublimationMax[0].isPointUnder(energy_kj_mol, pressure_kPa)
+                    || sublimationMax[1].isPointUnder(energy_kj_mol, pressure_kPa);
         }
     }
 
@@ -114,17 +109,17 @@ public class SublimationBorder extends PhaseBorder {
         }
         if (!hasDualFunction)
         {
-            return sublimationMin[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return sublimationMin[0].isPointUnder(energy_kj_mol, pressure_kPa);
         }
 
         if (isSteepFirst(sublimationMin))
         {
-            return sublimationMin[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa)
-                    && sublimationMin[1].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return sublimationMin[0].isPointUnder(energy_kj_mol, pressure_kPa)
+                    && sublimationMin[1].isPointUnder(energy_kj_mol, pressure_kPa);
         } else
         {
-            return sublimationMin[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa)
-                    || sublimationMin[1].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return sublimationMin[0].isPointUnder(energy_kj_mol, pressure_kPa)
+                    || sublimationMin[1].isPointUnder(energy_kj_mol, pressure_kPa);
         }
     }
 

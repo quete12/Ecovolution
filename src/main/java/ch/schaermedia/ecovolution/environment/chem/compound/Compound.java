@@ -31,7 +31,8 @@ public class Compound extends AtmosphericEnity {
 
     public long splitTo(Compound other, double percentage)
     {
-        if(percentage<0){
+        if (percentage < 0)
+        {
             throw new RuntimeException("Negative percentage split!!");
         }
         long amountDiff = (long) (amount_mol * percentage);
@@ -45,13 +46,16 @@ public class Compound extends AtmosphericEnity {
     public void add(long amount_mol, long energy_kj)
     {
         String error = "";
-        if(amount_mol<0){
+        if (amount_mol < 0)
+        {
             error += "Trying to remove moles: " + amount_mol + "\n";
         }
-        if(energy_kj<0){
+        if (energy_kj < 0)
+        {
             error += "Trying to remove energy: " + energy_kj + "\n";
         }
-        if(!error.isEmpty()){
+        if (!error.isEmpty())
+        {
             throw new RuntimeException(error);
         }
         amount_mol_buffer += amount_mol;
@@ -61,6 +65,17 @@ public class Compound extends AtmosphericEnity {
     @Override
     public void updateStats(long externalPressure_kPa, long totalVolume_L)
     {
+        importBuffers();
+        if (amount_mol > 0)
+        {
+            updateThermodynamicStats(externalPressure_kPa, totalVolume_L);
+        }
+    }
+
+    @Override
+    public void importBuffers()
+    {
+        //prev is for debugging purposes and should be removed once the Error with negatives is solved
         String prev = this.toString();
         amount_mol += amount_mol_buffer;
         energy_kj += energy_kj_buffer;
@@ -69,11 +84,21 @@ public class Compound extends AtmosphericEnity {
             System.out.println("Error when updating: " + prev + "\nto: " + this);
             throw new RuntimeException("Negative Moles or Energy!!");
         }
+        amount_mol_buffer = 0;
+        energy_kj_buffer = 0;
+    }
+
+    private void updateThermodynamicStats(long externalPressure_kPa, long totalVolume_L)
+    {
         PhaseDiagram_Energy_Pressure diag = properties.getEnergy_Pressure_Diagram();
         Phase phaseAt = diag.getPhaseAt(energy_kj, externalPressure_kPa);
         phaseChanged = phaseAt.idx != phase.idx;
         phase = phaseAt;
         temperature_k = diag.getTemperature_K_at(energy_kj, externalPressure_kPa, phase);
+        if (temperature_k < 0)
+        {
+            throw new RuntimeException("Negative temperature with: " + this + " temperature: " + temperature_k);
+        }
         volume_L = ChemUtilities.volume_L(externalPressure_kPa, amount_mol, temperature_k);
         pressure_kPa = ChemUtilities.pressure_kPa(totalVolume_L, amount_mol, temperature_k);
     }

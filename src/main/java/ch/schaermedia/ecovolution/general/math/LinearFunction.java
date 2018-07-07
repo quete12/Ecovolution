@@ -16,10 +16,8 @@ public class LinearFunction implements Function {
 
     public LinearFunction(long p1x, long p1y, long p2x, long p2y)
     {
-        System.out.println("Creating function: P1("+p1x+"|"+p1y+") P2("+p2x+"|"+p2y+")");
         this.varA = findVarA(p1x, p1y, p2x, p2y);
         this.varB = findVarB(varA, p2x, p2y);
-        System.out.println(this);
     }
 
     public LinearFunction(long varA, long varB)

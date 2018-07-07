@@ -61,6 +61,7 @@ public class ChemUtilities {
         long result = a / b;
         if (result < 0)
         {
+            System.out.println("a=" + pressure_kPa + " * " + volume_L + ", b=" + Consts.GAS_CONSTANT_L_kPa_K + " * " + temperature_K);
             System.out.println("a=" + a + ", b=" + b + ", result=" + result);
         }
         return result;

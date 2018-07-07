@@ -129,4 +129,14 @@ public class PhaseMixture extends AtmosphericEnity {
         }
         temperature_k = temperatureSum / composition.size();
     }
+
+    @Override
+    public void importBuffers()
+    {
+        for (Compound compound : composition.values())
+        {
+            compound.importBuffers();
+        }
+    }
+
 }

@@ -22,9 +22,7 @@ public class MeltingBorder extends PhaseBorder {
     public MeltingBorder(ElementProperties properties)
     {
         super(false);
-        System.out.println("Init MeltingBorders for: " + properties);
         initMeltingBorders(properties);
-        System.out.println("Finished MeltingBorders");
     }
 
     private void initMeltingBorders(ElementProperties properties)
@@ -46,7 +44,7 @@ public class MeltingBorder extends PhaseBorder {
 
     public boolean isMelted(long energy_kj_mol, long pressure_kPa)
     {
-        return meltingMax.isPointOnOrRight(energy_kj_mol, pressure_kPa);
+        return meltingMax.isPointRight(energy_kj_mol, pressure_kPa);
     }
 
     public boolean isMelting(long energy_kj_mol, long pressure_kPa)
@@ -55,7 +53,7 @@ public class MeltingBorder extends PhaseBorder {
         {
             return false;
         }
-        return meltingMin.isPointOnOrRight(energy_kj_mol, pressure_kPa);
+        return meltingMin.isPointRight(energy_kj_mol, pressure_kPa);
     }
 
     @Override

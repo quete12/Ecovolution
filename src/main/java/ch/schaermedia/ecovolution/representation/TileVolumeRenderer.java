@@ -49,11 +49,11 @@ public class TileVolumeRenderer implements TileRenderer {
         int fill;
         if (volume_L > tileVolume)
         {
-            float percentage = (float) (1 - (volume_L / tileVolume));
+            float percentage = (float) (1 - ((double) volume_L / (double) tileVolume));
             fill = g.lerpColor(g.color(255), g.color(255, 0, 0), percentage);
         } else
         {
-            float percentage = (float) (volume_L / tileVolume);
+            float percentage = (float) ((double) volume_L / (double) tileVolume);
             fill = g.lerpColor(g.color(0), g.color(255), percentage);
         }
         g.fill(fill);
@@ -66,11 +66,11 @@ public class TileVolumeRenderer implements TileRenderer {
         int fill;
         if (volume_L > Tile.LAYER_VOLUME_L)
         {
-            float percentage = (float) (1 - (volume_L / Tile.LAYER_VOLUME_L));
+            float percentage = (float) (1 - ((double) volume_L / (double) Tile.LAYER_VOLUME_L));
             fill = g.lerpColor(g.color(255), g.color(255, 0, 0), percentage);
         } else
         {
-            float percentage = (float) (volume_L / Tile.LAYER_VOLUME_L);
+            float percentage = (float) ((double) volume_L / (double) Tile.LAYER_VOLUME_L);
             fill = g.lerpColor(g.color(0), g.color(255), percentage);
         }
         g.fill(fill);

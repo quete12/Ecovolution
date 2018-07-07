@@ -20,6 +20,8 @@ public class World {
     private final int width;
     private final int height;
 
+    private long amount_mol;
+
     public World(int width, int height)
     {
         this.width = width;
@@ -36,11 +38,13 @@ public class World {
                 grid[x][y].calculate();
             }
         }
+        amount_mol = 0;
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
                 grid[x][y].update();
+                amount_mol += grid[x][y].getAmount_mol();
             }
         }
     }
@@ -99,5 +103,10 @@ public class World {
     public int getHeight()
     {
         return height;
+    }
+
+    public long getAmount_mol()
+    {
+        return amount_mol;
     }
 }
