@@ -5,8 +5,8 @@
  */
 package ch.schaermedia.ecovolution.environment.chem.phasediagram;
 
-import ch.schaermedia.ecovolution.environment.chem.CompoundMix;
-import ch.schaermedia.ecovolution.environment.chem.ElementProperties;
+import ch.schaermedia.ecovolution.environment.chem.properties.ElementProperties;
+import ch.schaermedia.ecovolution.general.math.Consts;
 import ch.schaermedia.ecovolution.general.math.LinearFunction;
 
 /**
@@ -61,47 +61,47 @@ public class SublimationBorder extends PhaseBorder {
                 0,
                 0,
                 properties.minBoilingEnergy() - properties.getFusionHeat_kj(),
-                CompoundMix.STATIC_PRESSURE_kPa);
+                Consts.STANDARD_PRESSURE_kPa);
         sublimationMax[0] = new LinearFunction(
                 0,
                 0,
                 properties.maxBoilingEnergy(),
-                CompoundMix.STATIC_PRESSURE_kPa);
+                Consts.STANDARD_PRESSURE_kPa);
     }
 
     private void initBordersBoilingToTriple(ElementProperties properties)
     {
         sublimationMin[1] = new LinearFunction(
                 properties.minBoilingEnergy() - properties.getFusionHeat_kj(),
-                CompoundMix.STATIC_PRESSURE_kPa,
+                Consts.STANDARD_PRESSURE_kPa,
                 properties.minTriplePointEnergy(),
                 properties.getTriplePointPressure_kPa());
         sublimationMax[1] = new LinearFunction(
                 properties.maxBoilingEnergy(),
-                CompoundMix.STATIC_PRESSURE_kPa,
+                Consts.STANDARD_PRESSURE_kPa,
                 properties.maxTriplePointSublimationEnergy(),
                 properties.getTriplePointPressure_kPa());
     }
 
-    public boolean isSublimated(double energy_kj_mol, double pressure_kPa)
+    public boolean isSublimated(long energy_kj_mol, long pressure_kPa)
     {
         if (!hasDualFunction)
         {
-            return sublimationMax[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return sublimationMax[0].isPointUnder(energy_kj_mol, pressure_kPa);
         }
 
         if (isSteepFirst(sublimationMax))
         {
-            return sublimationMax[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa)
-                    && sublimationMax[1].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return sublimationMax[0].isPointUnder(energy_kj_mol, pressure_kPa)
+                    && sublimationMax[1].isPointUnder(energy_kj_mol, pressure_kPa);
         } else
         {
-            return sublimationMax[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa)
-                    || sublimationMax[1].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return sublimationMax[0].isPointUnder(energy_kj_mol, pressure_kPa)
+                    || sublimationMax[1].isPointUnder(energy_kj_mol, pressure_kPa);
         }
     }
 
-    public boolean isSublimating(double energy_kj_mol, double pressure_kPa)
+    public boolean isSublimating(long energy_kj_mol, long pressure_kPa)
     {
         if (isSublimated(energy_kj_mol, pressure_kPa))
         {
@@ -109,22 +109,22 @@ public class SublimationBorder extends PhaseBorder {
         }
         if (!hasDualFunction)
         {
-            return sublimationMin[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return sublimationMin[0].isPointUnder(energy_kj_mol, pressure_kPa);
         }
 
         if (isSteepFirst(sublimationMin))
         {
-            return sublimationMin[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa)
-                    && sublimationMin[1].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return sublimationMin[0].isPointUnder(energy_kj_mol, pressure_kPa)
+                    && sublimationMin[1].isPointUnder(energy_kj_mol, pressure_kPa);
         } else
         {
-            return sublimationMin[0].isPointOnOrUnder(energy_kj_mol, pressure_kPa)
-                    || sublimationMin[1].isPointOnOrUnder(energy_kj_mol, pressure_kPa);
+            return sublimationMin[0].isPointUnder(energy_kj_mol, pressure_kPa)
+                    || sublimationMin[1].isPointUnder(energy_kj_mol, pressure_kPa);
         }
     }
 
     @Override
-    public double getMinEnergy_kj_mol(double pressure_kPa)
+    public long getMinEnergy_kj_mol(long pressure_kPa)
     {
         if (!hasDualFunction)
         {

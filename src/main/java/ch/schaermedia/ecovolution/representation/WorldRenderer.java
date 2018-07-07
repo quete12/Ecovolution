@@ -5,8 +5,8 @@
  */
 package ch.schaermedia.ecovolution.representation;
 
-import ch.schaermedia.ecovolution.environment.basic.Tile;
-import ch.schaermedia.ecovolution.environment.basic.World;
+import ch.schaermedia.ecovolution.environment.world.Tile;
+import ch.schaermedia.ecovolution.environment.world.World;
 import processing.core.PGraphics;
 
 /**
@@ -15,33 +15,33 @@ import processing.core.PGraphics;
  */
 public class WorldRenderer {
 
-    private final TileRenderer tileRenderer;
-    private final PGraphics g;
+    private final PGraphics graphics;
+    private final TileRenderer subRenderer;
 
-    public WorldRenderer(TileRenderer tileRenderer,PGraphics g)
+    public WorldRenderer(PGraphics graphics, TileRenderer tileRenderer)
     {
-        this.tileRenderer = tileRenderer;
-        this.g = g;
+        this.graphics = graphics;
+        this.subRenderer = tileRenderer;
     }
 
     public void render(World world)
     {
-        g.beginDraw();
+        graphics.beginDraw();
         Tile[][] grid = world.getGrid();
-        for (Tile[] tiles : grid)
+        for (int x = 0; x < world.getWidth(); x++)
         {
-            for (Tile tile : tiles)
+            for (int y = 0; y < world.getHeight(); y++)
             {
-                tileRenderer.render(tile, g);
+                subRenderer.render(graphics, grid[x][y]);
             }
         }
-        g.endDraw();
+        graphics.endDraw();
     }
 
-    public PGraphics getG()
+    public PGraphics getGraphics()
     {
-        return g;
+        return graphics;
     }
 
-    
+
 }

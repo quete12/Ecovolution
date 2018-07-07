@@ -5,8 +5,8 @@
  */
 package ch.schaermedia.ecovolution.environment.chem.phasediagram;
 
-import ch.schaermedia.ecovolution.environment.chem.CompoundMix;
-import ch.schaermedia.ecovolution.environment.chem.ElementProperties;
+import ch.schaermedia.ecovolution.environment.chem.properties.ElementProperties;
+import ch.schaermedia.ecovolution.general.math.Consts;
 import ch.schaermedia.ecovolution.general.math.Function;
 import ch.schaermedia.ecovolution.general.math.LinearFunction;
 
@@ -31,10 +31,10 @@ public class MeltingBorder extends PhaseBorder {
                 properties.minTriplePointEnergy(),
                 properties.getTriplePointPressure_kPa(),
                 properties.minMeltingPointEnergy(),
-                CompoundMix.STATIC_PRESSURE_kPa);
+                Consts.STANDARD_PRESSURE_kPa);
 
-        double highPressure = properties.getCriticalPointPressure_kPa();
-        double meltingEnergyAtHighPressure = meltingMin.x(highPressure);
+        long highPressure = properties.getCriticalPointPressure_kPa();
+        long meltingEnergyAtHighPressure = meltingMin.x(highPressure);
         meltingMax = new LinearFunction(
                 properties.maxTriplePointMeltingEnergy(),
                 properties.getTriplePointPressure_kPa(),
@@ -42,22 +42,22 @@ public class MeltingBorder extends PhaseBorder {
                 highPressure);
     }
 
-    public boolean isMelted(double energy_kj_mol, double pressure_kPa)
+    public boolean isMelted(long energy_kj_mol, long pressure_kPa)
     {
-        return meltingMax.isPointOnOrRight(energy_kj_mol, pressure_kPa);
+        return meltingMax.isPointRight(energy_kj_mol, pressure_kPa);
     }
 
-    public boolean isMelting(double energy_kj_mol, double pressure_kPa)
+    public boolean isMelting(long energy_kj_mol, long pressure_kPa)
     {
         if (isMelted(energy_kj_mol, pressure_kPa))
         {
             return false;
         }
-        return meltingMin.isPointOnOrRight(energy_kj_mol, pressure_kPa);
+        return meltingMin.isPointRight(energy_kj_mol, pressure_kPa);
     }
 
     @Override
-    public double getMinEnergy_kj_mol(double pressure_kPa)
+    public long getMinEnergy_kj_mol(long pressure_kPa)
     {
         return meltingMin.x(pressure_kPa);
     }

@@ -19,7 +19,7 @@ public abstract class PhaseBorder {
         this.hasDualFunction = hasDualFunction;
     }
 
-    public abstract double getMinEnergy_kj_mol(double pressure_kPa);
+    public abstract long getMinEnergy_kj_mol(long pressure_kPa);
 
     protected boolean isSteepFirst(LinearFunction[] functions)
     {

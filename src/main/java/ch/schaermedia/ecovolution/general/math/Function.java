@@ -11,58 +11,58 @@ package ch.schaermedia.ecovolution.general.math;
  */
 public interface Function{
 
-    public double x(double y);
+    public long x(long y);
 
-    public double y(double x);
+    public long y(long x);
 
     public boolean isPositive();
     public boolean isNegative();
 
-    default public boolean isPointOnOrLeft(double x, double y)
+    default public boolean isPointOnOrLeft(long x, long y)
     {
-        double fx = x(y);
+        long fx = x(y);
         return x <= fx;
     }
 
-    default public boolean isPointLeft(double x, double y)
+    default public boolean isPointLeft(long x, long y)
     {
-        double fx = x(y);
+        long fx = x(y);
         return x < fx;
     }
 
-    default public boolean isPointOnOrRight(double x, double y)
+    default public boolean isPointOnOrRight(long x, long y)
     {
-        double fx = x(y);
+        long fx = x(y);
         return x >= fx;
     }
 
-    default public boolean isPointRight(double x, double y)
+    default public boolean isPointRight(long x, long y)
     {
-        double fx = x(y);
+        long fx = x(y);
         return x > fx;
     }
 
-    default public boolean isPointOnOrOver(double x, double y)
+    default public boolean isPointOnOrOver(long x, long y)
     {
-        double fy = y(x);
+        long fy = y(x);
         return y >= fy;
     }
 
-    default public boolean isPointOver(double x, double y)
+    default public boolean isPointOver(long x, long y)
     {
-        double fy = y(x);
+        long fy = y(x);
         return y > fy;
     }
 
-    default public boolean isPointOnOrUnder(double x, double y)
+    default public boolean isPointOnOrUnder(long x, long y)
     {
-        double fy = y(x);
+        long fy = y(x);
         return y <= fy;
     }
 
-    default public boolean isPointUnder(double x, double y)
+    default public boolean isPointUnder(long x, long y)
     {
-        double fy = y(x);
+        long fy = y(x);
         return y < fy;
     }
 }
