@@ -66,6 +66,11 @@ public class PhaseMixture extends AtmosphericEnity {
         return totalSpread;
     }
 
+    /**
+     *
+     * @param code
+     * @return the compound for the given code if present, else a new Compound is created and linked with this phaseMixture.
+     */
     public Compound getCompound(String code)
     {
         Compound result;

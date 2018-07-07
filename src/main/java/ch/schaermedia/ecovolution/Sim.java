@@ -6,8 +6,13 @@
 package ch.schaermedia.ecovolution;
 
 import ch.schaermedia.ecovolution.environment.chem.ChemUtilities;
+import ch.schaermedia.ecovolution.environment.chem.compound.Compound;
+import ch.schaermedia.ecovolution.environment.chem.compound.LayerMixture;
+import ch.schaermedia.ecovolution.environment.chem.compound.Phase;
+import ch.schaermedia.ecovolution.environment.chem.compound.PhaseMixture;
 import ch.schaermedia.ecovolution.environment.world.Tile;
 import ch.schaermedia.ecovolution.environment.world.World;
+import ch.schaermedia.ecovolution.general.math.Consts;
 import ch.schaermedia.ecovolution.representation.TileVolumeRenderer;
 import ch.schaermedia.ecovolution.representation.WorldRenderer;
 import java.io.FileNotFoundException;
@@ -21,7 +26,7 @@ import processing.core.PApplet;
  */
 public class Sim extends PApplet {
 
-    private static final int FRAMERATE = 60;
+    private static final int FRAMERATE = 5;
     private World world;
     private WorldRenderer renderer;
 
@@ -89,6 +94,10 @@ public class Sim extends PApplet {
     private void worldSetup()
     {
         world = new World(30, 30);
+        Tile tile = world.getGrid()[0][0];
+        LayerMixture layer = tile.getLayer(0);
+        PhaseMixture solids = layer.getMixtureForPhase(Phase.SOLID);
+        Compound water = solids.getCompound("H2O");water.add(10000*Consts.PRESCISION, 1000*Consts.PRESCISION);
     }
 
 }

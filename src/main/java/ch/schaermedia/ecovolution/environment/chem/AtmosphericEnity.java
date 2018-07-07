@@ -29,6 +29,9 @@ public abstract class AtmosphericEnity {
 
     public long getAmount_mol()
     {
+        if(amount_mol <0){
+            throw new RuntimeException("Has negative amount");
+        }
         return amount_mol;
     }
 

@@ -23,7 +23,6 @@ import org.json.JSONTokener;
  */
 public class ChemUtilities {
 
-
     //<editor-fold desc="static calculations">
     /**
      *
@@ -57,7 +56,14 @@ public class ChemUtilities {
      */
     public static long moles(long pressure_kPa, long volume_L, long temperature_K)
     {
-        return pressure_kPa * volume_L / (Consts.GAS_CONSTANT_L_kPa_K * temperature_K);
+        long a = pressure_kPa * volume_L;
+        long b = Consts.GAS_CONSTANT_L_kPa_K * temperature_K;
+        long result = a / b;
+        if (result < 0)
+        {
+            System.out.println("a=" + a + ", b=" + b + ", result=" + result);
+        }
+        return result;
     }
 
     /**
@@ -80,7 +86,8 @@ public class ChemUtilities {
      */
     public static long pressure_kPa(long volume_L, long amount_mol, long temperature_K)
     {
-        if(volume_L == 0){
+        if (volume_L == 0)
+        {
             return 0;
         }
         return (amount_mol * Consts.GAS_CONSTANT_L_kPa_K * temperature_K) / volume_L;
@@ -95,7 +102,8 @@ public class ChemUtilities {
      */
     public static long temperature_K(long pressure_kPa, long volume_L, long amount_mol)
     {
-        if(amount_mol == 0){
+        if (amount_mol == 0)
+        {
             return 0;
         }
         return pressure_kPa * volume_L / (amount_mol * Consts.GAS_CONSTANT_L_kPa_K);
@@ -142,7 +150,8 @@ public class ChemUtilities {
      */
     public static long volume_L(long pressure_kPa, long amount_mol, long temperature_K)
     {
-        if(pressure_kPa == 0){
+        if (pressure_kPa == 0)
+        {
             return 0;
         }
         return (amount_mol * Consts.GAS_CONSTANT_L_kPa_K * temperature_K) / pressure_kPa;
@@ -157,7 +166,8 @@ public class ChemUtilities {
             readElements(root);
             readCompounds(root);
             readReactions(root);
-        } catch (FileNotFoundException ex)
+        }
+        catch (FileNotFoundException ex)
         {
             throw ex;
         }
@@ -174,7 +184,8 @@ public class ChemUtilities {
                 element = new ElementProperties(array.getJSONObject(i));
                 element.map();
                 Logger.getLogger(ChemUtilities.class.getName()).log(Level.INFO, "Loaded: {0}", element);
-            } catch (JSONException ex)
+            }
+            catch (JSONException ex)
             {
                 Logger.getLogger(ChemUtilities.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -192,7 +203,8 @@ public class ChemUtilities {
                 compound = new CompoundProperties(array.getJSONObject(i));
                 compound.map();
                 Logger.getLogger(ChemUtilities.class.getName()).log(Level.INFO, "Loaded: {0}", compound);
-            } catch (JSONException ex)
+            }
+            catch (JSONException ex)
             {
                 Logger.getLogger(ChemUtilities.class.getName()).log(Level.SEVERE, null, ex);
             }

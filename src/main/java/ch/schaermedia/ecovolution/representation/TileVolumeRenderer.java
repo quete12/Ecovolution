@@ -46,7 +46,7 @@ public class TileVolumeRenderer implements TileRenderer {
     {
         long volume_L = tile.getVolume_L();
         long tileVolume = Tile.LAYER_VOLUME_L * World.NUMBER_OF_LAYERS;
-        int fill = 0;
+        int fill;
         if (volume_L > tileVolume)
         {
             float percentage = (float) (1 - (volume_L / tileVolume));
@@ -63,7 +63,7 @@ public class TileVolumeRenderer implements TileRenderer {
     {
         LayerMixture layerMix = tile.getLayer(layer);
         long volume_L = layerMix.getVolume_L();
-        int fill = 0;
+        int fill;
         if (volume_L > Tile.LAYER_VOLUME_L)
         {
             float percentage = (float) (1 - (volume_L / Tile.LAYER_VOLUME_L));

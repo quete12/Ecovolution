@@ -20,7 +20,7 @@ public class Compound extends AtmosphericEnity {
 
     private long amount_mol_buffer;
     private long energy_kj_buffer;
-    private Phase phase;
+    private Phase phase = Phase.SOLID;
 
     private boolean phaseChanged = false;
 
@@ -31,9 +31,12 @@ public class Compound extends AtmosphericEnity {
 
     public long splitTo(Compound other, double percentage)
     {
+        if(percentage<0){
+            throw new RuntimeException("Negative percentage split!!");
+        }
         long amountDiff = (long) (amount_mol * percentage);
         amount_mol_buffer -= amountDiff;
-        long energyDiff = (long) (amount_mol * percentage);
+        long energyDiff = (long) (energy_kj * percentage);
         energy_kj_buffer -= energyDiff;
         other.add(amountDiff, energyDiff);
         return amountDiff;
@@ -41,6 +44,16 @@ public class Compound extends AtmosphericEnity {
 
     public void add(long amount_mol, long energy_kj)
     {
+        String error = "";
+        if(amount_mol<0){
+            error += "Trying to remove moles: " + amount_mol + "\n";
+        }
+        if(energy_kj<0){
+            error += "Trying to remove energy: " + energy_kj + "\n";
+        }
+        if(!error.isEmpty()){
+            throw new RuntimeException(error);
+        }
         amount_mol_buffer += amount_mol;
         energy_kj_buffer += energy_kj;
     }
@@ -48,8 +61,14 @@ public class Compound extends AtmosphericEnity {
     @Override
     public void updateStats(long externalPressure_kPa, long totalVolume_L)
     {
+        String prev = this.toString();
         amount_mol += amount_mol_buffer;
         energy_kj += energy_kj_buffer;
+        if (amount_mol < 0 || energy_kj < 0)
+        {
+            System.out.println("Error when updating: " + prev + "\nto: " + this);
+            throw new RuntimeException("Negative Moles or Energy!!");
+        }
         PhaseDiagram_Energy_Pressure diag = properties.getEnergy_Pressure_Diagram();
         Phase phaseAt = diag.getPhaseAt(energy_kj, externalPressure_kPa);
         phaseChanged = phaseAt.idx != phase.idx;
@@ -67,6 +86,12 @@ public class Compound extends AtmosphericEnity {
     public Phase getPhase()
     {
         return phase;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Compound{" + "code=" + properties.getCode() + ", amount_mol_buffer=" + amount_mol_buffer + ", energy_kj_buffer=" + energy_kj_buffer + ", amount_mol=" + amount_mol + ", energy_kj=" + energy_kj + ", phase=" + phase + ", phaseChanged=" + phaseChanged + '}';
     }
 
 }

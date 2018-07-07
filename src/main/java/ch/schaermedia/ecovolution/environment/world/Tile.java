@@ -77,6 +77,9 @@ public class Tile {
             {
                 continue;
             }
+            if(molesOverVolume<0){
+                throw new RuntimeException("negative moles over volume");
+            }
             double percentage = molesOverVolume / layer.getAmount_mol();
             if (percentage > 1)
             {
@@ -91,6 +94,9 @@ public class Tile {
         for (int i = 1; i < layers.length; i++)
         {
             LayerMixture layer = layers[i];
+            if(layer.getAmount_mol() == 0){
+                continue;
+            }
             LayerMixture lower = layers[i - 1];
             long molesOverVolume = lower.molesUnderVolume();
             if (molesOverVolume == 0)
