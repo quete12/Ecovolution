@@ -53,7 +53,8 @@ public class Sim extends PApplet {
         }
         popMatrix();
         fill(0);
-        text("Amount_moles: " + Consts.toDouble(world.getAmount_mol()), 1200, 100);
+        text("FPS: " + frameRate, 1200, 100);
+        text("Amount_moles: " + Consts.toDouble(world.getAmount_mol()), 1200, 150);
     }
 
     @Override

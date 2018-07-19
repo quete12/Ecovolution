@@ -52,15 +52,8 @@ public class Tile {
         temperature_k = temperatureSum / layers.length;
     }
 
-    public void calculate()
-    {
-        spreadToHigher();
-        spreadToLower();
-        importBuffers();
-        spreadHorizontal();
-    }
 
-    private void spreadHorizontal()
+    public void spreadHorizontal()
     {
         for (LayerMixture layer : layers)
         {
@@ -68,14 +61,14 @@ public class Tile {
         }
     }
 
-    private void importBuffers(){
+    public void importBuffers(){
         for (LayerMixture layer : layers)
         {
             layer.importBuffers();
         }
     }
 
-    private void spreadToHigher()
+    public void spreadToHigher()
     {
         for (int i = 0; i < layers.length - 1; i++)
         {
@@ -97,7 +90,7 @@ public class Tile {
         }
     }
 
-    private void spreadToLower()
+    public void spreadToLower()
     {
         for (int i = 1; i < layers.length; i++)
         {
