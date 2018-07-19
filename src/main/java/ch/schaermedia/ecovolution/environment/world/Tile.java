@@ -55,6 +55,7 @@ public class Tile {
     public void calculate()
     {
         spreadToHigher();
+        importBuffers();
         spreadToLower();
         importBuffers();
         spreadHorizontal();
@@ -68,7 +69,8 @@ public class Tile {
         }
     }
 
-    private void importBuffers(){
+    private void importBuffers()
+    {
         for (LayerMixture layer : layers)
         {
             layer.importBuffers();
@@ -80,18 +82,23 @@ public class Tile {
         for (int i = 0; i < layers.length - 1; i++)
         {
             LayerMixture layer = layers[i];
+            if (layer.getAmount_mol() == 0)
+            {
+                continue;
+            }
             long molesOverVolume = layer.molesOverVolume();
             if (molesOverVolume == 0)
             {
                 continue;
             }
-            if(molesOverVolume<0){
+            if (molesOverVolume < 0)
+            {
                 throw new RuntimeException("negative moles over volume");
             }
             double percentage = molesOverVolume / layer.getAmount_mol();
-            if (percentage > 1)
+            if (percentage > 1.0)
             {
-                percentage = 1;
+                percentage = 1.0;
             }
             layer.spreadToHigher(percentage);
         }
@@ -102,7 +109,8 @@ public class Tile {
         for (int i = 1; i < layers.length; i++)
         {
             LayerMixture layer = layers[i];
-            if(layer.getAmount_mol() == 0){
+            if (layer.getAmount_mol() == 0)
+            {
                 continue;
             }
             LayerMixture lower = layers[i - 1];

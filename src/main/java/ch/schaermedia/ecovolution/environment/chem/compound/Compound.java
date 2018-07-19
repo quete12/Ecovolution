@@ -43,7 +43,7 @@ public class Compound extends AtmosphericEnity {
         return amountDiff;
     }
 
-    public void add(long amount_mol, long energy_kj)
+    public synchronized void add(long amount_mol, long energy_kj)
     {
         String error = "";
         if (amount_mol < 0)

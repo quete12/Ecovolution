@@ -11,7 +11,7 @@ package ch.schaermedia.ecovolution.environment.world;
  */
 public class World {
 
-    public static final int NUMBER_OF_LAYERS = 2;
+    public static final int NUMBER_OF_LAYERS = 3;
     public static final int NEIGHBOUR_RANGE = 3;
     public static final int NEIGHBOUR_SQUARED = (2 * NEIGHBOUR_RANGE + 1) * (2 * NEIGHBOUR_RANGE + 1);
     public static final double HORIZONTAL_SPREAD_PERCENTAGE = 1.0 / (double) NEIGHBOUR_SQUARED;
@@ -36,6 +36,7 @@ public class World {
             for (int y = 0; y < height; y++)
             {
                 grid[x][y].calculate();
+                amount_mol += grid[x][y].getAmount_mol();
             }
         }
         amount_mol = 0;

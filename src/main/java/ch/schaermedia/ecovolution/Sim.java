@@ -53,7 +53,8 @@ public class Sim extends PApplet {
         }
         popMatrix();
         fill(0);
-        text("Amount_moles: " + Consts.toDouble(world.getAmount_mol()), 1200, 100);
+        text("FPS: " + frameRate, 1200, 100);
+        text("Amount_moles: " + Consts.toDouble(world.getAmount_mol()), 1200, 150);
     }
 
     @Override
@@ -112,6 +113,8 @@ public class Sim extends PApplet {
         PhaseMixture solids = layer.getMixtureForPhase(Phase.SOLID);
         Compound water = solids.getCompound("H2O");
         water.add(10000 * Consts.PRESCISION, 1000 * Consts.PRESCISION);
+        Compound o2 = solids.getCompound("O2");
+        o2.add(10000 * Consts.PRESCISION, 1000 * Consts.PRESCISION);
     }
 
 }
