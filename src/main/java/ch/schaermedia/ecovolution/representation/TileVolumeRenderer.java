@@ -54,7 +54,7 @@ public class TileVolumeRenderer implements TileRenderer {
         } else
         {
             float percentage = (float) ((double) volume_L / (double) tileVolume);
-            fill = g.lerpColor(g.color(0), g.color(255), percentage);
+            fill = g.lerpColor(g.color(0,0,255), g.color(255), percentage);
         }
         g.fill(fill);
     }
@@ -71,7 +71,7 @@ public class TileVolumeRenderer implements TileRenderer {
         } else
         {
             float percentage = (float) ((double) volume_L / (double) Tile.LAYER_VOLUME_L);
-            fill = g.lerpColor(g.color(0), g.color(255), percentage);
+            fill = g.lerpColor(g.color(0,0,255), g.color(255), percentage);
         }
         g.fill(fill);
     }

@@ -52,16 +52,7 @@ public class Tile {
         temperature_k = temperatureSum / layers.length;
     }
 
-    public void calculate()
-    {
-        spreadToHigher();
-        importBuffers();
-        spreadToLower();
-        importBuffers();
-        spreadHorizontal();
-    }
-
-    private void spreadHorizontal()
+    public void spreadHorizontal()
     {
         for (LayerMixture layer : layers)
         {
@@ -69,7 +60,7 @@ public class Tile {
         }
     }
 
-    private void importBuffers()
+    public void importBuffers()
     {
         for (LayerMixture layer : layers)
         {
@@ -77,8 +68,9 @@ public class Tile {
         }
     }
 
-    private void spreadToHigher()
+    public boolean spreadToHigher()
     {
+        boolean didSpread = false;
         for (int i = 0; i < layers.length - 1; i++)
         {
             LayerMixture layer = layers[i];
@@ -101,11 +93,14 @@ public class Tile {
                 percentage = 1.0;
             }
             layer.spreadToHigher(percentage);
+            didSpread = true;
         }
+        return didSpread;
     }
 
-    private void spreadToLower()
+    public boolean spreadToLower()
     {
+        boolean didSpread = false;
         for (int i = 1; i < layers.length; i++)
         {
             LayerMixture layer = layers[i];
@@ -119,13 +114,19 @@ public class Tile {
             {
                 continue;
             }
+            if (molesOverVolume < 0)
+            {
+                throw new RuntimeException("negative moles under volume");
+            }
             double percentage = molesOverVolume / layer.getAmount_mol();
             if (percentage > 1)
             {
                 percentage = 1;
             }
             layer.spreadToLower(percentage);
+            didSpread = true;
         }
+        return didSpread;
     }
 
     public void addAsNeighbour(Tile neighbour)

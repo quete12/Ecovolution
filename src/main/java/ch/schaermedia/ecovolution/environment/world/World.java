@@ -13,7 +13,8 @@ public class World {
 
     public static final int NUMBER_OF_LAYERS = 3;
     public static final int NEIGHBOUR_RANGE = 3;
-    public static final int NEIGHBOUR_SQUARED = (2 * NEIGHBOUR_RANGE + 1) * (2 * NEIGHBOUR_RANGE + 1);
+    private static final int NEIGHBOUR_SQARE_SIDE = 2 * NEIGHBOUR_RANGE + 1;
+    public static final int NEIGHBOUR_SQUARED = NEIGHBOUR_SQARE_SIDE * NEIGHBOUR_SQARE_SIDE;
     public static final double HORIZONTAL_SPREAD_PERCENTAGE = 1.0 / (double) NEIGHBOUR_SQUARED;
 
     private Tile[][] grid;
@@ -31,14 +32,7 @@ public class World {
 
     public void update()
     {
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                grid[x][y].calculate();
-                amount_mol += grid[x][y].getAmount_mol();
-            }
-        }
+        calculate();
         amount_mol = 0;
         for (int x = 0; x < width; x++)
         {
@@ -46,6 +40,59 @@ public class World {
             {
                 grid[x][y].update();
                 amount_mol += grid[x][y].getAmount_mol();
+            }
+        }
+    }
+
+    public void calculate()
+    {
+        spreadToHigher();
+        importBuffers();
+        spreadToLower();
+        importBuffers();
+        spreadHorizontal();
+    }
+
+    private void spreadToHigher()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                grid[x][y].spreadToHigher();
+            }
+        }
+    }
+
+    private void spreadHorizontal()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                grid[x][y].spreadHorizontal();
+            }
+        }
+    }
+
+    private void importBuffers()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                grid[x][y].importBuffers();
+            }
+        }
+    }
+
+    private void spreadToLower()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                grid[x][y].spreadToLower();
             }
         }
     }

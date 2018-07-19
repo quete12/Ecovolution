@@ -107,7 +107,7 @@ public class Sim extends PApplet {
 
     private void worldSetup()
     {
-        world = new World(30, 30);
+        world = new World(20, 20);
         Tile tile = world.getGrid()[0][0];
         LayerMixture layer = tile.getLayer(0);
         PhaseMixture solids = layer.getMixtureForPhase(Phase.SOLID);
