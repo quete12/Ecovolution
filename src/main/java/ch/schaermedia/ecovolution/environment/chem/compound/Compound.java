@@ -65,6 +65,10 @@ public class Compound extends AtmosphericEnity {
     @Override
     public void updateStats(long externalPressure_kPa, long totalVolume_L)
     {
+        //For debuggung only!!!
+        //TODO: REMOVE after Testing!!!!
+        energy_kj_buffer+=10;
+
         importBuffers();
         if (amount_mol > 0)
         {

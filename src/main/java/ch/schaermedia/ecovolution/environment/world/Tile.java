@@ -27,6 +27,8 @@ public class Tile {
 
     private final LayerMixture[] layers;
 
+    private boolean didSpreadVertically = false;
+
     public Tile(int xIdx, int yIdx, int numLayers)
     {
         this.xIdx = xIdx;
@@ -50,6 +52,7 @@ public class Tile {
             temperatureSum += layer.getTemperature_k();
         }
         temperature_k = temperatureSum / layers.length;
+        didSpreadVertically = false;
     }
 
     public void spreadHorizontal()
@@ -68,9 +71,11 @@ public class Tile {
         }
     }
 
-    public boolean spreadToHigher()
+    public void spreadToHigher()
     {
-        boolean didSpread = false;
+        if(didSpreadVertically){
+            return;
+        }
         for (int i = 0; i < layers.length - 1; i++)
         {
             LayerMixture layer = layers[i];
@@ -87,20 +92,25 @@ public class Tile {
             {
                 throw new RuntimeException("negative moles over volume");
             }
+            LayerMixture upperLayer = layers[i+1];
+            if(layer.getPressure_kPa() < upperLayer.getPressure_kPa()){
+                continue;
+            }
             double percentage = molesOverVolume / layer.getAmount_mol();
-            if (percentage > 1.0)
+            if (percentage > 0.95)
             {
-                percentage = 1.0;
+                percentage = 0.95;
             }
             layer.spreadToHigher(percentage);
-            didSpread = true;
+            //didSpreadVertically = true;
         }
-        return didSpread;
     }
 
-    public boolean spreadToLower()
+    public void spreadToLower()
     {
-        boolean didSpread = false;
+        if(didSpreadVertically){
+            return;
+        }
         for (int i = 1; i < layers.length; i++)
         {
             LayerMixture layer = layers[i];
@@ -119,14 +129,13 @@ public class Tile {
                 throw new RuntimeException("negative moles under volume");
             }
             double percentage = molesOverVolume / layer.getAmount_mol();
-            if (percentage > 1)
+            if (percentage > 1.0)
             {
-                percentage = 1;
+                percentage = 1.0;
             }
             layer.spreadToLower(percentage);
-            didSpread = true;
+            //didSpreadVertically = true;
         }
-        return didSpread;
     }
 
     public void addAsNeighbour(Tile neighbour)
