@@ -32,22 +32,22 @@ public class PhaseMixture extends AtmosphericEnity {
         neighbours = new ArrayList();
     }
 
-    public long spreadToHigher(double percentage)
+    public void spreadToHigher(double percentage)
     {
-        return spreadTo(higher, percentage);
+        spreadTo(higher, percentage);
     }
 
-    public long spreadToLower(double percentage)
+    public void spreadToLower(double percentage)
     {
-        return spreadTo(lower, percentage);
+        spreadTo(lower, percentage);
     }
 
     public void spreadHorizontal()
     {
-        for (PhaseMixture neighbour : neighbours)
+        neighbours.forEach((neighbour) ->
         {
             spreadTo(neighbour, World.HORIZONTAL_SPREAD_PERCENTAGE);
-        }
+        });
     }
 
     private long spreadTo(PhaseMixture spreadTo, double percentage)

@@ -67,7 +67,7 @@ public class Compound extends AtmosphericEnity {
     {
         //For debuggung only!!!
         //TODO: REMOVE after Testing!!!!
-        energy_kj_buffer+=10;
+        energy_kj_buffer+=100;
 
         importBuffers();
         if (amount_mol > 0)

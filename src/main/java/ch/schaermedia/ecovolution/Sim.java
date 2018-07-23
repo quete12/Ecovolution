@@ -13,6 +13,7 @@ import ch.schaermedia.ecovolution.environment.chem.compound.PhaseMixture;
 import ch.schaermedia.ecovolution.environment.world.Tile;
 import ch.schaermedia.ecovolution.environment.world.World;
 import ch.schaermedia.ecovolution.general.math.Consts;
+import ch.schaermedia.ecovolution.representation.TilePressureRenderer;
 import ch.schaermedia.ecovolution.representation.TileVolumeRenderer;
 import ch.schaermedia.ecovolution.representation.WorldRenderer;
 import java.io.FileNotFoundException;
@@ -28,7 +29,7 @@ public class Sim extends PApplet {
 
     private static final int FRAMERATE = 60;
     private World world;
-    private WorldRenderer[] renderers;
+    private WorldRenderer[][] renderers;
 
     @Override
     public void settings()
@@ -44,12 +45,16 @@ public class Sim extends PApplet {
 
         pushMatrix();
         scale(0.1f);
-        int xOffsFactor = (int) ((world.getWidth()+1)*Tile.SIZE);
+        int xOffsFactor = (int) ((world.getWidth() + 1) * Tile.SIZE);
+        int yOffsFactor = (int) ((world.getHeight() + 1) * Tile.SIZE);
         for (int i = 0; i < renderers.length; i++)
         {
-            WorldRenderer renderer = renderers[i];
-            renderer.render(world);
-            image(renderer.getGraphics(), i*xOffsFactor, 0);
+            for (int j = 0; j < renderers[i].length; j++)
+            {
+                WorldRenderer renderer = renderers[i][j];
+                renderer.render(world);
+                image(renderer.getGraphics(), i * xOffsFactor, j * yOffsFactor);
+            }
         }
         popMatrix();
         fill(0);
@@ -71,8 +76,7 @@ public class Sim extends PApplet {
         try
         {
             ChemUtilities.readElements("res/Chemics.json");
-        }
-        catch (FileNotFoundException ex)
+        } catch (FileNotFoundException ex)
         {
             Logger.getLogger(Sim.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -80,15 +84,23 @@ public class Sim extends PApplet {
 
     private void rendererSetup()
     {
-        renderers = new WorldRenderer[World.NUMBER_OF_LAYERS];
+        renderers = new WorldRenderer[World.NUMBER_OF_LAYERS][2];
         for (int i = 0; i < renderers.length; i++)
         {
-            renderers[i] = new WorldRenderer(
+            renderers[i][0] = new WorldRenderer(
                     createGraphics(
                             (int) Tile.SIZE * world.getWidth(),
-                            (int) Tile.SIZE * world.getHeight()),
+                            (int) Tile.SIZE * world.getHeight(),
+                            P2D
+                    ),
                     new TileVolumeRenderer(i));
-
+            renderers[i][1] = new WorldRenderer(
+                    createGraphics(
+                            (int) Tile.SIZE * world.getWidth(),
+                            (int) Tile.SIZE * world.getHeight(),
+                            P2D
+                    ),
+                    new TilePressureRenderer(i));
         }
     }
 
@@ -107,7 +119,7 @@ public class Sim extends PApplet {
 
     private void worldSetup()
     {
-        world = new World(20, 20);
+        world = new World(50, 50);
         Tile tile = world.getGrid()[0][0];
         LayerMixture layer = tile.getLayer(0);
         PhaseMixture solids = layer.getMixtureForPhase(Phase.SOLID);

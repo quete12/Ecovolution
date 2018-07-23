@@ -18,9 +18,15 @@ public class LayerMixture extends AtmosphericEnity {
     private final PhaseMixture[] phases;
     private final long layerVolume_L;
 
-    public LayerMixture(long layerVolume_L)
+    private LayerMixture higher;
+    private LayerMixture lower;
+
+    private final int layerIdx;
+
+    public LayerMixture(long layerVolume_L, int layerIdx)
     {
         this.layerVolume_L = layerVolume_L;
+        this.layerIdx = layerIdx;
         phases = new PhaseMixture[Phase.values().length];
         initPhaseMixes();
     }
@@ -35,6 +41,7 @@ public class LayerMixture extends AtmosphericEnity {
 
     public void setHigher(LayerMixture higher)
     {
+        this.higher = higher;
         for (int i = 0; i < phases.length; i++)
         {
             phases[i].setHigher(higher.getMixtureForPhase(i));
@@ -43,6 +50,7 @@ public class LayerMixture extends AtmosphericEnity {
 
     public void setLower(LayerMixture lower)
     {
+        this.lower = lower;
         for (int i = 0; i < phases.length; i++)
         {
             phases[i].setLower(lower.getMixtureForPhase(i));
@@ -65,34 +73,30 @@ public class LayerMixture extends AtmosphericEnity {
         }
     }
 
-    public long spreadToLower(int phase, double percentage)
+    public void spreadToLower(int phase, double percentage)
     {
-        return phases[phase].spreadToLower(percentage);
+        phases[phase].spreadToLower(percentage);
     }
 
-    public long spreadToHigher(int phase, double percentage)
+    public void spreadToHigher(int phase, double percentage)
     {
-        return phases[phase].spreadToHigher(percentage);
+        phases[phase].spreadToHigher(percentage);
     }
 
-    public long spreadToLower(double percentage)
+    public void spreadToLower(double percentage)
     {
-        long sum = 0;
         for (PhaseMixture phase : phases)
         {
-            sum += phase.spreadToLower(percentage);
+            phase.spreadToLower(percentage);
         }
-        return sum;
     }
 
-    public long spreadToHigher(double percentage)
+    public void spreadToHigher(double percentage)
     {
-        long sum = 0;
         for (PhaseMixture phase : phases)
         {
-            sum += phase.spreadToHigher(percentage);
+            phase.spreadToHigher(percentage);
         }
-        return sum;
     }
 
     public PhaseMixture getMixtureForPhase(Phase phase)
@@ -112,7 +116,8 @@ public class LayerMixture extends AtmosphericEnity {
 
     public long molesOverVolume()
     {
-        if(temperature_k == 0){
+        if (temperature_k == 0)
+        {
             return 0;
         }
         long diff = volume_L - layerVolume_L;
@@ -125,7 +130,8 @@ public class LayerMixture extends AtmosphericEnity {
 
     public long molesUnderVolume()
     {
-        if(temperature_k == 0){
+        if (temperature_k == 0)
+        {
             return 0;
         }
         long diff = layerVolume_L - volume_L;
@@ -160,5 +166,30 @@ public class LayerMixture extends AtmosphericEnity {
         {
             phase.importBuffers();
         }
+    }
+
+    public LayerMixture getHigher()
+    {
+        return higher;
+    }
+
+    public LayerMixture getLower()
+    {
+        return lower;
+    }
+
+    public boolean hasHigher()
+    {
+        return higher != null;
+    }
+
+    public boolean hasLower()
+    {
+        return lower != null;
+    }
+
+    public int getLayerIdx()
+    {
+        return layerIdx;
     }
 }

@@ -5,6 +5,14 @@
  */
 package ch.schaermedia.ecovolution.environment.world;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Quentin
@@ -21,6 +29,8 @@ public class World {
     private final int width;
     private final int height;
 
+    private final ExecutorService threadPool;
+
     private long amount_mol;
 
     public World(int width, int height)
@@ -28,11 +38,17 @@ public class World {
         this.width = width;
         this.height = height;
         initGrid();
+        this.threadPool = Executors.newFixedThreadPool(8);
     }
 
     public void update()
     {
+        //calculateParallel();
         calculate();
+        updateTiles();
+    }
+
+    private void updateTiles(){
         amount_mol = 0;
         for (int x = 0; x < width; x++)
         {
@@ -47,9 +63,9 @@ public class World {
     public void calculate()
     {
         spreadToHigher();
-        importBuffers();
+        updateTiles();
         spreadToLower();
-        importBuffers();
+        updateTiles();
         spreadHorizontal();
     }
 
@@ -95,6 +111,122 @@ public class World {
                 grid[x][y].spreadToLower();
             }
         }
+    }
+
+    public void calculateParallel()
+    {
+        spreadToHigherParallel();
+        importBuffersParallel();
+        spreadToLowerParallel();
+        importBuffersParallel();
+        spreadHorizontalParallel();
+    }
+
+    private void importBuffersParallel()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                grid[x][y].importBuffers();
+            }
+        }
+    }
+
+    private void spreadToHigherParallel()
+    {
+        List<Callable<Void>> tasks = new ArrayList();
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                tasks.add(new SpreadTask(SpreadTask.SpreadType.TO_HIGHER, grid[x][y]));
+            }
+        }
+        try
+        {
+            threadPool.invokeAll(tasks);
+        } catch (InterruptedException ex)
+        {
+            Logger.getLogger(World.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void spreadHorizontalParallel()
+    {
+        List<Callable<Void>> tasks = new ArrayList();
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                tasks.add(new SpreadTask(SpreadTask.SpreadType.HORIZONTAL, grid[x][y]));
+            }
+        }
+        try
+        {
+            threadPool.invokeAll(tasks);
+        } catch (InterruptedException ex)
+        {
+            Logger.getLogger(World.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void spreadToLowerParallel()
+    {
+        List<Callable<Void>> tasks = new ArrayList();
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                tasks.add(new SpreadTask(SpreadTask.SpreadType.TO_LOWER, grid[x][y]));
+            }
+        }
+        try
+        {
+            threadPool.invokeAll(tasks);
+        } catch (InterruptedException ex)
+        {
+            Logger.getLogger(World.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private static class SpreadTask implements Callable<Void> {
+
+        private enum SpreadType {
+            HORIZONTAL,
+            TO_LOWER,
+            TO_HIGHER,;
+        }
+
+        private final SpreadType type;
+        private final Tile tile;
+
+        public SpreadTask(SpreadType type, Tile tile)
+        {
+            this.type = type;
+            this.tile = tile;
+        }
+
+        @Override
+        public Void call() throws Exception
+        {
+            switch (type)
+            {
+                case HORIZONTAL:
+                    tile.spreadHorizontal();
+                    break;
+                case TO_LOWER:
+                    tile.spreadToLower();
+                    break;
+                case TO_HIGHER:
+                    tile.spreadToHigher();
+                    break;
+                default:
+                    throw new AssertionError(type.name());
+            }
+            return null;
+        }
+
     }
 
     private void initGrid()

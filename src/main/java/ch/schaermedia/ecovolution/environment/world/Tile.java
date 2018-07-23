@@ -6,6 +6,8 @@
 package ch.schaermedia.ecovolution.environment.world;
 
 import ch.schaermedia.ecovolution.environment.chem.compound.LayerMixture;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -25,7 +27,7 @@ public class Tile {
     private long pressure_kPa;
     private long volume_L;
 
-    private final LayerMixture[] layers;
+    private final List<LayerMixture> layers;
 
     private boolean didSpreadVertically = false;
 
@@ -33,8 +35,8 @@ public class Tile {
     {
         this.xIdx = xIdx;
         this.yIdx = yIdx;
-        this.layers = new LayerMixture[numLayers];
-        initLayers();
+        this.layers = new ArrayList();
+        initLayers(numLayers);
         initTopBottom();
     }
 
@@ -42,134 +44,136 @@ public class Tile {
     {
         clearStats();
         long temperatureSum = 0;
-        for (LayerMixture layer : layers)
+        temperatureSum = layers.stream().map((layer) ->
         {
             layer.update();
+            return layer;
+        }).map((layer) ->
+        {
             amount_mol += layer.getAmount_mol();
+            return layer;
+        }).map((layer) ->
+        {
             energy_kj += layer.getEnergy_kj();
+            return layer;
+        }).map((layer) ->
+        {
             pressure_kPa += layer.getPressure_kPa();
+            return layer;
+        }).map((layer) ->
+        {
             volume_L += layer.getVolume_L();
-            temperatureSum += layer.getTemperature_k();
-        }
-        temperature_k = temperatureSum / layers.length;
+            return layer;
+        }).map((layer) -> layer.getTemperature_k()).reduce(temperatureSum, (accumulator, _item) -> accumulator + _item);
+        temperature_k = temperatureSum / layers.size();
         didSpreadVertically = false;
     }
 
     public void spreadHorizontal()
     {
-        for (LayerMixture layer : layers)
+        layers.forEach((layer) ->
         {
             layer.spreadHorizontal();
-        }
+        });
     }
 
     public void importBuffers()
     {
-        for (LayerMixture layer : layers)
+        layers.forEach((layer) ->
         {
             layer.importBuffers();
-        }
+        });
     }
 
     public void spreadToHigher()
     {
-        if(didSpreadVertically){
+        if (didSpreadVertically)
+        {
             return;
         }
-        for (int i = 0; i < layers.length - 1; i++)
+        layers.stream().filter((layer) -> layer.hasHigher()).filter((layer) -> !(layer.getAmount_mol() == 0)).forEachOrdered((layer) ->
         {
-            LayerMixture layer = layers[i];
-            if (layer.getAmount_mol() == 0)
-            {
-                continue;
-            }
             long molesOverVolume = layer.molesOverVolume();
-            if (molesOverVolume == 0)
+            if (!(molesOverVolume == 0))
             {
-                continue;
+                if (molesOverVolume < 0)
+                {
+                    throw new RuntimeException("negative moles over volume");
+                }
+                LayerMixture higherLayer = layer.getHigher();
+                if (!(layer.getPressure_kPa() < higherLayer.getPressure_kPa()))
+                {
+                    double percentage = molesOverVolume / layer.getAmount_mol();
+                    if (percentage > 0.95)
+                    {
+                        percentage = 0.95;
+                    }
+                    layer.spreadToHigher(percentage);
+                    //didSpreadVertically = true;
+                }
             }
-            if (molesOverVolume < 0)
-            {
-                throw new RuntimeException("negative moles over volume");
-            }
-            LayerMixture upperLayer = layers[i+1];
-            if(layer.getPressure_kPa() < upperLayer.getPressure_kPa()){
-                continue;
-            }
-            double percentage = molesOverVolume / layer.getAmount_mol();
-            if (percentage > 0.95)
-            {
-                percentage = 0.95;
-            }
-            layer.spreadToHigher(percentage);
-            //didSpreadVertically = true;
-        }
+        });
     }
 
     public void spreadToLower()
     {
-        if(didSpreadVertically){
+        if (didSpreadVertically)
+        {
             return;
         }
-        for (int i = 1; i < layers.length; i++)
+        layers.stream().filter((layer) -> layer.hasLower()).filter((layer) -> !(layer.getAmount_mol() == 0)).forEachOrdered((layer) ->
         {
-            LayerMixture layer = layers[i];
-            if (layer.getAmount_mol() == 0)
-            {
-                continue;
-            }
-            LayerMixture lower = layers[i - 1];
+            LayerMixture lower = layer.getLower();
             long molesOverVolume = lower.molesUnderVolume();
-            if (molesOverVolume == 0)
+            if (!(molesOverVolume == 0))
             {
-                continue;
+                if (molesOverVolume < 0)
+                {
+                    throw new RuntimeException("negative moles under volume");
+                }
+                double percentage = molesOverVolume / layer.getAmount_mol();
+                if (percentage > 1.0)
+                {
+                    percentage = 1.0;
+                }
+                layer.spreadToLower(percentage);
+                //didSpreadVertically = true;
             }
-            if (molesOverVolume < 0)
-            {
-                throw new RuntimeException("negative moles under volume");
-            }
-            double percentage = molesOverVolume / layer.getAmount_mol();
-            if (percentage > 1.0)
-            {
-                percentage = 1.0;
-            }
-            layer.spreadToLower(percentage);
-            //didSpreadVertically = true;
-        }
+        });
     }
 
     public void addAsNeighbour(Tile neighbour)
     {
-        for (int i = 0; i < layers.length; i++)
+        layers.forEach((layer) ->
         {
-            layers[i].addAsNeighbour(neighbour.getLayer(i));
-        }
+            layer.addAsNeighbour(neighbour.getLayer(layer.getLayerIdx()));
+        });
     }
 
     public LayerMixture getLayer(int layer)
     {
-        return layers[layer];
+        return layers.get(layer);
     }
 
-    private void initLayers()
+    private void initLayers(int numLayers)
     {
-        for (int i = 0; i < layers.length; i++)
+        for (int i = 0; i < numLayers; i++)
         {
-            layers[i] = new LayerMixture(LAYER_VOLUME_L);
+            layers.add(new LayerMixture(LAYER_VOLUME_L, i));
         }
     }
 
     private void initTopBottom()
     {
-        for (int i = 0; i < layers.length; i++)
+        for (int i = 0; i < layers.size(); i++)
         {
             if (i > 0)
             {
-                layers[i].setLower(layers[i - 1]);
+                layers.get(i).setLower(layers.get(i - 1));
             }
-            if (i < layers.length - 1)
+            if (i < layers.size() - 1)
             {
-                layers[i].setHigher(layers[i + 1]);
+                layers.get(i).setHigher(layers.get(i + 1));
             }
         }
     }
