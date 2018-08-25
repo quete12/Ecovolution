@@ -19,6 +19,11 @@ import java.util.logging.Logger;
  */
 public class World {
 
+    private enum UpdateState {
+        VERTICAL,
+        HORIZONTAL,;
+    }
+
     public static final int NUMBER_OF_LAYERS = 3;
     public static final int NEIGHBOUR_RANGE = 4;
     private static final int NEIGHBOUR_SQARE_SIDE = 2 * NEIGHBOUR_RANGE + 1;
@@ -31,42 +36,66 @@ public class World {
 
     private final ExecutorService threadPool;
 
-    private long amount_mol;
+    private UpdateState state;
 
     public World(int width, int height)
     {
         this.width = width;
         this.height = height;
+        this.state = UpdateState.HORIZONTAL;
         initGrid();
         this.threadPool = Executors.newFixedThreadPool(8);
     }
 
     public void update()
     {
-        //calculateParallel();
-        calculate();
-        updateTiles();
+        spreadAndUpdateTiles();
     }
 
-    private void updateTiles(){
-        amount_mol = 0;
+    private void nextState()
+    {
+        switch (state)
+        {
+            case VERTICAL:
+                state = UpdateState.HORIZONTAL;
+                break;
+            case HORIZONTAL:
+                state = UpdateState.VERTICAL;
+                break;
+            default:
+                throw new AssertionError(state.name());
+        }
+    }
+
+    private void spreadAndUpdateTiles()
+    {
+        switch (state)
+        {
+            case VERTICAL:
+                spreadToHigher();
+                updateTiles();
+                spreadToLower();
+                updateTiles();
+                break;
+            case HORIZONTAL:
+                spreadHorizontal();
+                updateTiles();
+                break;
+            default:
+                throw new AssertionError(state.name());
+        }
+        nextState();
+    }
+
+    private void updateTiles()
+    {
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
                 grid[x][y].update();
-                amount_mol += grid[x][y].getAmount_mol();
             }
         }
-    }
-
-    public void calculate()
-    {
-        spreadToHigher();
-        updateTiles();
-        spreadToLower();
-        updateTiles();
-        spreadHorizontal();
     }
 
     private void spreadToHigher()
@@ -91,17 +120,6 @@ public class World {
         }
     }
 
-    private void importBuffers()
-    {
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                grid[x][y].importBuffers();
-            }
-        }
-    }
-
     private void spreadToLower()
     {
         for (int x = 0; x < width; x++)
@@ -113,17 +131,24 @@ public class World {
         }
     }
 
-    public void calculateParallel()
+    private void updateParallel()
     {
-        spreadToHigherParallel();
-        importBuffersParallel();
-        spreadToLowerParallel();
-        importBuffersParallel();
-        spreadHorizontalParallel();
-    }
-
-    private void importBuffersParallel()
-    {
+        List<Callable<Object>> tasks = new ArrayList();
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                tasks.add(Executors.callable(grid[x][y]::update));
+            }
+        }
+        try
+        {
+            threadPool.invokeAll(tasks);
+        }
+        catch (InterruptedException ex)
+        {
+            Logger.getLogger(World.class.getName()).log(Level.SEVERE, null, ex);
+        }
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -131,102 +156,6 @@ public class World {
                 grid[x][y].importBuffers();
             }
         }
-    }
-
-    private void spreadToHigherParallel()
-    {
-        List<Callable<Void>> tasks = new ArrayList();
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                tasks.add(new SpreadTask(SpreadTask.SpreadType.TO_HIGHER, grid[x][y]));
-            }
-        }
-        try
-        {
-            threadPool.invokeAll(tasks);
-        } catch (InterruptedException ex)
-        {
-            Logger.getLogger(World.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private void spreadHorizontalParallel()
-    {
-        List<Callable<Void>> tasks = new ArrayList();
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                tasks.add(new SpreadTask(SpreadTask.SpreadType.HORIZONTAL, grid[x][y]));
-            }
-        }
-        try
-        {
-            threadPool.invokeAll(tasks);
-        } catch (InterruptedException ex)
-        {
-            Logger.getLogger(World.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private void spreadToLowerParallel()
-    {
-        List<Callable<Void>> tasks = new ArrayList();
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                tasks.add(new SpreadTask(SpreadTask.SpreadType.TO_LOWER, grid[x][y]));
-            }
-        }
-        try
-        {
-            threadPool.invokeAll(tasks);
-        } catch (InterruptedException ex)
-        {
-            Logger.getLogger(World.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private static class SpreadTask implements Callable<Void> {
-
-        private enum SpreadType {
-            HORIZONTAL,
-            TO_LOWER,
-            TO_HIGHER,;
-        }
-
-        private final SpreadType type;
-        private final Tile tile;
-
-        public SpreadTask(SpreadType type, Tile tile)
-        {
-            this.type = type;
-            this.tile = tile;
-        }
-
-        @Override
-        public Void call() throws Exception
-        {
-            switch (type)
-            {
-                case HORIZONTAL:
-                    tile.spreadHorizontal();
-                    break;
-                case TO_LOWER:
-                    tile.spreadToLower();
-                    break;
-                case TO_HIGHER:
-                    tile.spreadToHigher();
-                    break;
-                default:
-                    throw new AssertionError(type.name());
-            }
-            return null;
-        }
-
     }
 
     private void initGrid()
@@ -283,10 +212,5 @@ public class World {
     public int getHeight()
     {
         return height;
-    }
-
-    public long getAmount_mol()
-    {
-        return amount_mol;
     }
 }

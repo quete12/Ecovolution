@@ -43,21 +43,8 @@ public class Compound extends AtmosphericEnity {
         return amountDiff;
     }
 
-    public synchronized void add(long amount_mol, long energy_kj)
+    public void add(long amount_mol, long energy_kj)
     {
-        String error = "";
-        if (amount_mol < 0)
-        {
-            error += "Trying to remove moles: " + amount_mol + "\n";
-        }
-        if (energy_kj < 0)
-        {
-            error += "Trying to remove energy: " + energy_kj + "\n";
-        }
-        if (!error.isEmpty())
-        {
-            throw new RuntimeException(error);
-        }
         amount_mol_buffer += amount_mol;
         energy_kj_buffer += energy_kj;
     }
@@ -65,10 +52,6 @@ public class Compound extends AtmosphericEnity {
     @Override
     public void updateStats(long externalPressure_kPa, long totalVolume_L)
     {
-        //For debuggung only!!!
-        //TODO: REMOVE after Testing!!!!
-        energy_kj_buffer+=100;
-
         importBuffers();
         if (amount_mol > 0)
         {
@@ -80,14 +63,14 @@ public class Compound extends AtmosphericEnity {
     public void importBuffers()
     {
         //prev is for debugging purposes and should be removed once the Error with negatives is solved
-        String prev = this.toString();
+//        String prev = this.toString();
         amount_mol += amount_mol_buffer;
         energy_kj += energy_kj_buffer;
-        if (amount_mol < 0 || energy_kj < 0)
-        {
-            System.out.println("Error when updating: " + prev + "\nto: " + this);
-            throw new RuntimeException("Negative Moles or Energy!!");
-        }
+//        if (amount_mol < 0 || energy_kj < 0)
+//        {
+//            System.out.println("Error when updating: " + prev + "\nto: " + this);
+//            throw new RuntimeException("Negative Moles or Energy!!");
+//        }
         amount_mol_buffer = 0;
         energy_kj_buffer = 0;
     }

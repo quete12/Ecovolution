@@ -41,25 +41,37 @@ public class Sim extends PApplet {
     public void draw()
     {
         background(255);
+        long updateStart = System.currentTimeMillis();
         world.update();
-
+        long updateDuration = System.currentTimeMillis() - updateStart;
         pushMatrix();
-        scale(0.1f);
+        scale(0.01f);
         int xOffsFactor = (int) ((world.getWidth() + 1) * Tile.SIZE);
         int yOffsFactor = (int) ((world.getHeight() + 1) * Tile.SIZE);
-        for (int i = 0; i < renderers.length; i++)
+        long renderStart = System.currentTimeMillis();
+        int i = 0;
+
+        for (int j = 0; j < renderers[i].length; j++)
         {
-            for (int j = 0; j < renderers[i].length; j++)
-            {
-                WorldRenderer renderer = renderers[i][j];
-                renderer.render(world);
-                image(renderer.getGraphics(), i * xOffsFactor, j * yOffsFactor);
-            }
+            WorldRenderer renderer = renderers[i][j];
+            renderer.render(world);
+            image(renderer.getGraphics(), i * xOffsFactor, j * yOffsFactor);
         }
+//        for (int i = 0; i < renderers.length; i++)
+//        {
+//            for (int j = 0; j < renderers[i].length; j++)
+//            {
+//                WorldRenderer renderer = renderers[i][j];
+//                renderer.render(world);
+//                image(renderer.getGraphics(), i * xOffsFactor, j * yOffsFactor);
+//            }
+//        }
+        long renderDuration = System.currentTimeMillis() - renderStart;
         popMatrix();
         fill(0);
         text("FPS: " + frameRate, 1200, 100);
-        text("Amount_moles: " + Consts.toDouble(world.getAmount_mol()), 1200, 150);
+        text("Update: " + updateDuration, 1200, 150);
+        text("Rendering: " + renderDuration, 1200, 200);
     }
 
     @Override
@@ -76,7 +88,8 @@ public class Sim extends PApplet {
         try
         {
             ChemUtilities.readElements("res/Chemics.json");
-        } catch (FileNotFoundException ex)
+        }
+        catch (FileNotFoundException ex)
         {
             Logger.getLogger(Sim.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -119,14 +132,13 @@ public class Sim extends PApplet {
 
     private void worldSetup()
     {
-        world = new World(50, 50);
+        world = new World(100, 100);
         Tile tile = world.getGrid()[0][0];
         LayerMixture layer = tile.getLayer(0);
         PhaseMixture solids = layer.getMixtureForPhase(Phase.SOLID);
         Compound water = solids.getCompound("H2O");
-        water.add(10000 * Consts.PRESCISION, 1000 * Consts.PRESCISION);
-        Compound o2 = solids.getCompound("O2");
-        o2.add(10000 * Consts.PRESCISION, 1000 * Consts.PRESCISION);
+        water.add(100000 * Consts.PRESCISION, 10000 * Consts.PRESCISION);
+        Compound o2 = solids.getCompound("CO2");
+        o2.add(200000 * Consts.PRESCISION, 10000 * Consts.PRESCISION);
     }
-
 }

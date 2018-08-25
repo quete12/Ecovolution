@@ -17,9 +17,9 @@ public class Consts {
     public static final long GAS_CONSTANT_L_kPa_K = toLong(8.3144598);
     public static final long CELSIUS_TO_KELVIN_CONVERSION = toLong(273.15);
 
-    public static final int WORLD_WIDTH = 30;
+    public static final int WORLD_WIDTH = 40;
     public static final int SPREAD_RANGE = 3;
-    public static final int WORLD_HEIGHT = 30;
+    public static final int WORLD_HEIGHT = 40;
 
     public static double toDouble(long value)
     {
