@@ -5,14 +5,6 @@
  */
 package ch.schaermedia.ecovolution.environment.world;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  *
  * @author Quentin
@@ -34,8 +26,6 @@ public class World {
     private final int width;
     private final int height;
 
-    private final ExecutorService threadPool;
-
     private UpdateState state;
 
     public World(int width, int height)
@@ -44,7 +34,6 @@ public class World {
         this.height = height;
         this.state = UpdateState.HORIZONTAL;
         initGrid();
-        this.threadPool = Executors.newFixedThreadPool(8);
     }
 
     public void update()
@@ -127,33 +116,6 @@ public class World {
             for (int y = 0; y < height; y++)
             {
                 grid[x][y].spreadToLower();
-            }
-        }
-    }
-
-    private void updateParallel()
-    {
-        List<Callable<Object>> tasks = new ArrayList();
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                tasks.add(Executors.callable(grid[x][y]::update));
-            }
-        }
-        try
-        {
-            threadPool.invokeAll(tasks);
-        }
-        catch (InterruptedException ex)
-        {
-            Logger.getLogger(World.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                grid[x][y].importBuffers();
             }
         }
     }

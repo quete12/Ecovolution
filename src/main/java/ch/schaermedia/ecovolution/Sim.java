@@ -12,6 +12,7 @@ import ch.schaermedia.ecovolution.environment.chem.compound.Phase;
 import ch.schaermedia.ecovolution.environment.chem.compound.PhaseMixture;
 import ch.schaermedia.ecovolution.environment.world.Tile;
 import ch.schaermedia.ecovolution.environment.world.World;
+import ch.schaermedia.ecovolution.general.AtmosphericUpdater;
 import ch.schaermedia.ecovolution.general.math.Consts;
 import ch.schaermedia.ecovolution.representation.TilePressureRenderer;
 import ch.schaermedia.ecovolution.representation.TileVolumeRenderer;
@@ -30,8 +31,10 @@ public class Sim extends PApplet {
     private static final int FRAMERATE = 60;
     private World world;
     private WorldRenderer[][] renderers;
+    private AtmosphericUpdater atmosUpdater;
 
     @Override
+
     public void settings()
     {
         size(1900, 1000, P2D);
@@ -41,37 +44,30 @@ public class Sim extends PApplet {
     public void draw()
     {
         background(255);
-        long updateStart = System.currentTimeMillis();
-        world.update();
-        long updateDuration = System.currentTimeMillis() - updateStart;
         pushMatrix();
-        scale(0.01f);
+        scale(0.05f);
         int xOffsFactor = (int) ((world.getWidth() + 1) * Tile.SIZE);
         int yOffsFactor = (int) ((world.getHeight() + 1) * Tile.SIZE);
-        long renderStart = System.currentTimeMillis();
-        int i = 0;
-
-        for (int j = 0; j < renderers[i].length; j++)
+        long renderStart = System.nanoTime();
+        for (int i = 0; i < renderers.length; i++)
         {
-            WorldRenderer renderer = renderers[i][j];
-            renderer.render(world);
-            image(renderer.getGraphics(), i * xOffsFactor, j * yOffsFactor);
+            for (int j = 0; j < renderers[i].length; j++)
+            {
+                WorldRenderer renderer = renderers[i][j];
+                renderer.render(world);
+                image(renderer.getGraphics(), i * xOffsFactor, j * yOffsFactor);
+            }
         }
-//        for (int i = 0; i < renderers.length; i++)
-//        {
-//            for (int j = 0; j < renderers[i].length; j++)
-//            {
-//                WorldRenderer renderer = renderers[i][j];
-//                renderer.render(world);
-//                image(renderer.getGraphics(), i * xOffsFactor, j * yOffsFactor);
-//            }
-//        }
-        long renderDuration = System.currentTimeMillis() - renderStart;
+        long renderDuration = System.nanoTime()- renderStart;
         popMatrix();
         fill(0);
         text("FPS: " + frameRate, 1200, 100);
-        text("Update: " + updateDuration, 1200, 150);
         text("Rendering: " + renderDuration, 1200, 200);
+
+        if (!atmosUpdater.isRunning())
+        {
+            new Thread(atmosUpdater).start();
+        }
     }
 
     @Override
@@ -81,6 +77,7 @@ public class Sim extends PApplet {
         chemSetup();
         worldSetup();
         rendererSetup();
+        threadSetup();
     }
 
     private void chemSetup()
@@ -132,7 +129,7 @@ public class Sim extends PApplet {
 
     private void worldSetup()
     {
-        world = new World(100, 100);
+        world = new World(55, 55);
         Tile tile = world.getGrid()[0][0];
         LayerMixture layer = tile.getLayer(0);
         PhaseMixture solids = layer.getMixtureForPhase(Phase.SOLID);
@@ -140,5 +137,10 @@ public class Sim extends PApplet {
         water.add(100000 * Consts.PRESCISION, 10000 * Consts.PRESCISION);
         Compound o2 = solids.getCompound("CO2");
         o2.add(200000 * Consts.PRESCISION, 10000 * Consts.PRESCISION);
+    }
+
+    private void threadSetup()
+    {
+        atmosUpdater = new AtmosphericUpdater(world);
     }
 }
