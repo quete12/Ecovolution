@@ -32,7 +32,6 @@ public class TilePressureRenderer implements TileRenderer {
     @Override
     public void render(PGraphics g, Tile tile)
     {
-        g.noStroke();
         if (layer == -1)
         {
             prepareForTileRendering(g, tile);
@@ -65,7 +64,7 @@ public class TilePressureRenderer implements TileRenderer {
         LayerMixture layerMix = tile.getLayer(layer);
         long pressure_kPa = layerMix.getPressure_kPa();
         int fill;
-        if (pressure_kPa > Tile.LAYER_VOLUME_L)
+        if (pressure_kPa > Consts.STANDARD_PRESSURE_kPa)
         {
             float percentage = (float) (((double) pressure_kPa / (double) Consts.STANDARD_PRESSURE_kPa) - 1.0);
             fill = g.lerpColor(g.color(255), g.color(255, 0, 0), percentage);

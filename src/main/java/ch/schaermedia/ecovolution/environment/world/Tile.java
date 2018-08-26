@@ -28,15 +28,15 @@ public class Tile {
     private long volume_L;
 
     private final List<LayerMixture> layers;
-
-    private boolean didSpreadVertically = false;
+    private final int numLayers;
 
     public Tile(int xIdx, int yIdx, int numLayers)
     {
         this.xIdx = xIdx;
         this.yIdx = yIdx;
         this.layers = new ArrayList();
-        initLayers(numLayers);
+        this.numLayers = numLayers;
+        initLayers();
         initTopBottom();
     }
 
@@ -65,8 +65,7 @@ public class Tile {
             volume_L += layer.getVolume_L();
             return layer;
         }).map((layer) -> layer.getTemperature_k()).reduce(temperatureSum, (accumulator, _item) -> accumulator + _item);
-        temperature_k = temperatureSum / layers.size();
-        didSpreadVertically = false;
+        temperature_k = temperatureSum / numLayers;
     }
 
     public void spreadHorizontal()
@@ -77,20 +76,8 @@ public class Tile {
         });
     }
 
-    public void importBuffers()
-    {
-        layers.forEach((layer) ->
-        {
-            layer.importBuffers();
-        });
-    }
-
     public void spreadToHigher()
     {
-        if (didSpreadVertically)
-        {
-            return;
-        }
         layers.stream().filter((layer) -> layer.hasHigher()).filter((layer) -> !(layer.getAmount_mol() == 0)).forEachOrdered((layer) ->
         {
             long molesOverVolume = layer.molesOverVolume();
@@ -117,10 +104,6 @@ public class Tile {
 
     public void spreadToLower()
     {
-        if (didSpreadVertically)
-        {
-            return;
-        }
         layers.stream().filter((layer) -> layer.hasLower()).filter((layer) -> !(layer.getAmount_mol() == 0)).forEachOrdered((layer) ->
         {
             LayerMixture lower = layer.getLower();
@@ -155,7 +138,7 @@ public class Tile {
         return layers.get(layer);
     }
 
-    private void initLayers(int numLayers)
+    private void initLayers()
     {
         for (int i = 0; i < numLayers; i++)
         {
