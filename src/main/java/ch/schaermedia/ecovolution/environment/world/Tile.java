@@ -21,8 +21,6 @@ public class Tile {
     private final int yIdx;
 
     private long amount_mol;
-    private long energy_kj;
-
     private long temperature_k;
     private long pressure_kPa;
     private long volume_L;
@@ -30,12 +28,15 @@ public class Tile {
     private final List<LayerMixture> layers;
     private final int numLayers;
 
-    public Tile(int xIdx, int yIdx, int numLayers)
+    private int height;
+
+    public Tile(int xIdx, int yIdx, int numLayers, int height)
     {
         this.xIdx = xIdx;
         this.yIdx = yIdx;
         this.layers = new ArrayList();
         this.numLayers = numLayers;
+        this.height = height;
         initLayers();
         initTopBottom();
     }
@@ -51,10 +52,6 @@ public class Tile {
         }).map((layer) ->
         {
             amount_mol += layer.getAmount_mol();
-            return layer;
-        }).map((layer) ->
-        {
-            energy_kj += layer.getEnergy_kj();
             return layer;
         }).map((layer) ->
         {
@@ -164,7 +161,6 @@ public class Tile {
     private void clearStats()
     {
         amount_mol = 0;
-        energy_kj = 0;
         temperature_k = 0;
         pressure_kPa = 0;
         volume_L = 0;
@@ -198,5 +194,10 @@ public class Tile {
     public long getVolume_L()
     {
         return volume_L;
+    }
+
+    public int getHeight()
+    {
+        return height;
     }
 }

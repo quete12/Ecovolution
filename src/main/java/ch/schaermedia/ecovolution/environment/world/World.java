@@ -25,14 +25,16 @@ public class World {
     private Tile[][] grid;
     private final int width;
     private final int height;
+    private final TileGenerator generator;
 
     private UpdateState state;
 
-    public World(int width, int height)
+    public World(int width, int height,TileGenerator generator)
     {
         this.width = width;
         this.height = height;
         this.state = UpdateState.HORIZONTAL;
+        this.generator = generator;
         initGrid();
     }
 
@@ -127,8 +129,7 @@ public class World {
         {
             for (int y = 0; y < height; y++)
             {
-                //TODO: replace with TileGenerator
-                grid[x][y] = new Tile(x, y, NUMBER_OF_LAYERS);
+                grid[x][y] = generator.generate(x, y, NUMBER_OF_LAYERS);
             }
         }
         for (int x = 0; x < width; x++)
