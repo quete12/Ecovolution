@@ -24,12 +24,14 @@ public class PhaseMixture extends AtmosphericEnity {
     private PhaseMixture higher;
     private PhaseMixture lower;
     private List<PhaseMixture> neighbours;
+    private List<Compound> phaseChanged;
 
     public PhaseMixture(int phase)
     {
         this.phase = phase;
         composition = new HashMap<>();
         neighbours = new ArrayList();
+        phaseChanged = new ArrayList();
     }
 
     public void spreadToHigher(double percentage)
@@ -69,7 +71,8 @@ public class PhaseMixture extends AtmosphericEnity {
     /**
      *
      * @param code
-     * @return the compound for the given code if present, else a new Compound is created and linked with this phaseMixture.
+     * @return the compound for the given code if present, else a new Compound
+     * is created and linked with this phaseMixture.
      */
     public Compound getCompound(String code)
     {
@@ -79,7 +82,7 @@ public class PhaseMixture extends AtmosphericEnity {
             result = composition.get(code);
         } else
         {
-            result = new Compound(CompoundProperties.getPropertiesFromCode(code));
+            result = new Compound(CompoundProperties.getPropertiesFromCode(code), Phase.fromIdx(phase));
             composition.put(code, result);
         }
         return result;
@@ -114,29 +117,63 @@ public class PhaseMixture extends AtmosphericEnity {
     public void updateStats(long externalPressure_kPa, long totalVolume_L)
     {
         clearStats();
-        if(composition.isEmpty()){
+        phaseChanged.clear();
+        if (composition.isEmpty())
+        {
             return;
         }
         long temperatureSum = 0;
         for (Compound compound : composition.values())
         {
             compound.updateStats(externalPressure_kPa, totalVolume_L);
+            if (compound.hasPhaseChanged())
+            {
+                phaseChanged.add(compound);
+            }
             amount_mol += compound.getAmount_mol();
             energy_kj += compound.getEnergy_kj();
             pressure_kPa += compound.getPressure_kPa();
             volume_L += compound.getVolume_L();
+            heatCapacity_kj_K += compound.getHeatCapacity_kj_K();
             temperatureSum += compound.getTemperature_k();
         }
         temperature_k = temperatureSum / composition.size();
+        if (pressure_kPa < 0)
+        {
+            throw new RuntimeException("negative Pressure!");
+        }
     }
 
-    @Override
-    public void importBuffers()
+    private void removeCompound(Compound comp)
     {
+        composition.remove(comp.getCode());
+    }
+
+    public List<Compound> getAndRemovePhaseChanged()
+    {
+        phaseChanged.forEach((compound) ->
+        {
+            removeCompound(compound);
+        });
+        return phaseChanged;
+    }
+
+    public void add(Compound compound)
+    {
+        getCompound(compound.getCode()).add(compound.getAmount_mol(), compound.getEnergy_kj());
+    }
+
+    public long addEnergy(long energy_kj)
+    {
+        long added = 0;
         for (Compound compound : composition.values())
         {
-            compound.importBuffers();
+            double percentage = (double) compound.getHeatCapacity_kj_K() / (double) heatCapacity_kj_K;
+            long energyToAdd = (long) (energy_kj * percentage);
+            compound.add(0, energyToAdd);
+            added += energyToAdd;
         }
+        return energy_kj - added;
     }
 
 }

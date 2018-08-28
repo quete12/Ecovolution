@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class Tile {
 
-    public static final long SIZE = 100;
+    public static final long SIZE = 50;
     public static final long LAYER_VOLUME_L = Tile.SIZE * Tile.SIZE * Tile.SIZE;
     private final int xIdx;
     private final int yIdx;
@@ -62,12 +62,7 @@ public class Tile {
                 LayerMixture higherLayer = layer.getHigher();
                 if (layer.getPressure_kPa() > higherLayer.getPressure_kPa())
                 {
-                    double percentage = molesOverVolume / layer.getAmount_mol();
-                    if (percentage > 0.95)
-                    {
-                        percentage = 0.95;
-                    }
-                    layer.spreadToHigher(percentage);
+                    layer.spreadToHigher(molesOverVolume);
                 }
             }
         });
@@ -78,15 +73,10 @@ public class Tile {
         layers.stream().filter((layer) -> layer.hasLower()).filter((layer) -> layer.getAmount_mol() > 0).forEachOrdered((layer) ->
         {
             LayerMixture lower = layer.getLower();
-            long molesOverVolume = lower.molesUnderVolume();
-            if (molesOverVolume > 0)
+            long molesUnderVolume = lower.molesUnderVolume();
+            if (molesUnderVolume > 0)
             {
-                double percentage = molesOverVolume / layer.getAmount_mol();
-                if (percentage > 1.0)
-                {
-                    percentage = 1.0;
-                }
-                layer.spreadToLower(percentage);
+                layer.spreadToLower(molesUnderVolume);
             }
         });
     }

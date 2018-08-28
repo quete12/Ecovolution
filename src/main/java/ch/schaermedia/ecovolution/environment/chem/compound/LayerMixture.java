@@ -8,6 +8,7 @@ package ch.schaermedia.ecovolution.environment.chem.compound;
 import ch.schaermedia.ecovolution.environment.chem.AtmosphericEnity;
 import ch.schaermedia.ecovolution.environment.chem.ChemUtilities;
 import ch.schaermedia.ecovolution.general.math.Consts;
+import java.util.List;
 
 /**
  *
@@ -67,36 +68,27 @@ public class LayerMixture extends AtmosphericEnity {
 
     public void spreadHorizontal()
     {
-        for (PhaseMixture phase : phases)
-        {
-            phase.spreadHorizontal();
-        }
+        phases[Phase.LIQUID.idx].spreadHorizontal();
+        phases[Phase.GAS.idx].spreadHorizontal();
+        phases[Phase.SUPERCRITICAL_FLUID.idx].spreadHorizontal();
     }
 
-    public void spreadToLower(int phase, double percentage)
+    public void spreadToLower(long amount_mol)
     {
-        phases[phase].spreadToLower(percentage);
+        //Only gases can be spread
+        PhaseMixture gases = phases[Phase.GAS.idx];
+        double percentage = (double) amount_mol / (double) gases.getAmount_mol();
+        percentage = Math.min(percentage, 1.0);
+        gases.spreadToLower(percentage);
     }
 
-    public void spreadToHigher(int phase, double percentage)
+    public void spreadToHigher(long amount_mol)
     {
-        phases[phase].spreadToHigher(percentage);
-    }
-
-    public void spreadToLower(double percentage)
-    {
-        for (PhaseMixture phase : phases)
-        {
-            phase.spreadToLower(percentage);
-        }
-    }
-
-    public void spreadToHigher(double percentage)
-    {
-        for (PhaseMixture phase : phases)
-        {
-            phase.spreadToHigher(percentage);
-        }
+        //Only allow gases to expand upwards
+        PhaseMixture gases = phases[Phase.GAS.idx];
+        double percentage = (double) amount_mol / (double) gases.getAmount_mol();
+        percentage = Math.min(percentage, 1.0);
+        gases.spreadToHigher(percentage);
     }
 
     public PhaseMixture getMixtureForPhase(Phase phase)
@@ -111,7 +103,44 @@ public class LayerMixture extends AtmosphericEnity {
 
     public void update()
     {
-        updateStats(pressure_kPa, layerVolume_L);
+        updateStats(pressure_kPa, Consts.toLong(layerVolume_L));
+        updateCompoundPhases();
+        rainAndHail();
+    }
+
+    private void updateCompoundPhases()
+    {
+        List<Compound> phaseChanged = null;
+        for (PhaseMixture phase : phases)
+        {
+            if (phaseChanged == null)
+            {
+                phaseChanged = phase.getAndRemovePhaseChanged();
+            } else
+            {
+                phaseChanged.addAll(phase.getAndRemovePhaseChanged());
+            }
+        }
+        if(phaseChanged == null){
+            System.out.println("Escapeing phasechange!");
+            return;
+        }
+        for (Compound compound : phaseChanged)
+        {
+            System.out.println("Performing Phasechange! " + compound);
+            phases[compound.getPhase().idx].add(compound);
+        }
+    }
+
+    private void rainAndHail()
+    {
+        if (layerIdx == 0)
+        {
+            //No hail or rain from the lowest layer
+            return;
+        }
+        phases[Phase.SOLID.idx].spreadToLower(1.0);
+        phases[Phase.LIQUID.idx].spreadToLower(1.0);
     }
 
     public long molesOverVolume()
@@ -154,18 +183,27 @@ public class LayerMixture extends AtmosphericEnity {
             energy_kj += phaseMix.getEnergy_kj();
             pressure_kPa += phaseMix.getPressure_kPa();
             volume_L += phaseMix.getVolume_L();
+            heatCapacity_kj_K += phaseMix.getHeatCapacity_kj_K();
             temperatureSum += phaseMix.getTemperature_k();
         }
         temperature_k = temperatureSum / phases.length;
+        if (pressure_kPa < 0)
+        {
+            throw new RuntimeException("negative Pressure!");
+        }
     }
 
-    @Override
-    public void importBuffers()
+    public long addEnergy(long energy_kj)
     {
+        long added = 0;
         for (PhaseMixture phase : phases)
         {
-            phase.importBuffers();
+            double percentage = (double) phase.getHeatCapacity_kj_K() / (double) heatCapacity_kj_K;
+            long energyToAdd = (long) (energy_kj * percentage);
+            added -= phase.addEnergy(energyToAdd);
+            added += energyToAdd;
         }
+        return energy_kj - added;
     }
 
     public LayerMixture getHigher()

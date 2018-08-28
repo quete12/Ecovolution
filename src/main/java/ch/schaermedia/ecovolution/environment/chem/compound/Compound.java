@@ -29,6 +29,12 @@ public class Compound extends AtmosphericEnity {
         this.properties = properties;
     }
 
+    public Compound(CompoundProperties properties, Phase phase)
+    {
+        this.properties = properties;
+        this.phase = phase;
+    }
+
     public long splitTo(Compound other, double percentage)
     {
         if (percentage < 0)
@@ -53,24 +59,17 @@ public class Compound extends AtmosphericEnity {
     public void updateStats(long externalPressure_kPa, long totalVolume_L)
     {
         importBuffers();
+        heatCapacity_kj_K = amount_mol * properties.getSpecificHeatCapacity_kj_mol_K();
         if (amount_mol > 0)
         {
             updateThermodynamicStats(externalPressure_kPa, totalVolume_L);
         }
     }
 
-    @Override
     public void importBuffers()
     {
-        //prev is for debugging purposes and should be removed once the Error with negatives is solved
-//        String prev = this.toString();
         amount_mol += amount_mol_buffer;
         energy_kj += energy_kj_buffer;
-//        if (amount_mol < 0 || energy_kj < 0)
-//        {
-//            System.out.println("Error when updating: " + prev + "\nto: " + this);
-//            throw new RuntimeException("Negative Moles or Energy!!");
-//        }
         amount_mol_buffer = 0;
         energy_kj_buffer = 0;
     }
@@ -78,16 +77,21 @@ public class Compound extends AtmosphericEnity {
     private void updateThermodynamicStats(long externalPressure_kPa, long totalVolume_L)
     {
         PhaseDiagram_Energy_Pressure diag = properties.getEnergy_Pressure_Diagram();
-        Phase phaseAt = diag.getPhaseAt(energy_kj, externalPressure_kPa);
+        long energyPerMol = (long) ((double) energy_kj / (double) amount_mol);
+        Phase phaseAt = diag.getPhaseAt(energyPerMol, externalPressure_kPa);
         phaseChanged = phaseAt.idx != phase.idx;
         phase = phaseAt;
-        temperature_k = diag.getTemperature_K_at(energy_kj, externalPressure_kPa, phase);
+        temperature_k = diag.getTemperature_K_at(energyPerMol, externalPressure_kPa, phase);
         if (temperature_k < 0)
         {
             throw new RuntimeException("Negative temperature with: " + this + " temperature: " + temperature_k);
         }
         volume_L = ChemUtilities.volume_L(externalPressure_kPa, amount_mol, temperature_k);
         pressure_kPa = ChemUtilities.pressure_kPa(totalVolume_L, amount_mol, temperature_k);
+        if (pressure_kPa < 0)
+        {
+            throw new RuntimeException("negative Pressure! Calculated from volume: " + totalVolume_L + " moles: " + amount_mol + " temperature: " + temperature_k + " phase: " + phase);
+        }
     }
 
     public boolean hasPhaseChanged()
@@ -98,6 +102,11 @@ public class Compound extends AtmosphericEnity {
     public Phase getPhase()
     {
         return phase;
+    }
+
+    public String getCode()
+    {
+        return properties.getCode();
     }
 
     @Override

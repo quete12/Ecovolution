@@ -19,4 +19,16 @@ public enum Phase {
         this.idx = idx;
     }
 
+    public static Phase fromIdx(int idx)
+    {
+        for (Phase value : values())
+        {
+            if (value.idx == idx)
+            {
+                return value;
+            }
+        }
+        return null;
+    }
+
 }

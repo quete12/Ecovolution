@@ -15,7 +15,9 @@ import ch.schaermedia.ecovolution.environment.world.Tile;
 import ch.schaermedia.ecovolution.environment.world.World;
 import ch.schaermedia.ecovolution.general.AtmosphericUpdater;
 import ch.schaermedia.ecovolution.general.math.Consts;
-import ch.schaermedia.ecovolution.representation.TileHeightRenderer;
+import ch.schaermedia.ecovolution.representation.TileMolRenderer;
+import ch.schaermedia.ecovolution.representation.TilePressureRenderer;
+import ch.schaermedia.ecovolution.representation.TileVolumeRenderer;
 import ch.schaermedia.ecovolution.representation.WorldRenderer;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
@@ -30,7 +32,7 @@ public class Sim extends PApplet {
 
     private static final int FRAMERATE = 60;
     private World world;
-    private WorldRenderer renderer;
+    private WorldRenderer[][] renderers;
     private AtmosphericUpdater atmosUpdater;
 
     @Override
@@ -45,17 +47,43 @@ public class Sim extends PApplet {
     {
         background(255);
         pushMatrix();
-        scale(0.1f);
+        scale(0.25f);
         long renderStart = System.currentTimeMillis();
 
-        renderer.render(world);
-        image(renderer.getGraphics(), Tile.SIZE, Tile.SIZE);
+        int xOffsFactor = (int) ((world.getWidth() + 1) * Tile.SIZE);
+        int yOffsFactor = (int) ((world.getHeight() + 1) * Tile.SIZE);
+//        int i = 0;
 
+//        for (int j = 0; j < renderers[i].length; j++)
+//        {
+//            WorldRenderer renderer = renderers[i][j];
+//            renderer.render(world);
+//            image(renderer.getGraphics(), i * xOffsFactor, j * yOffsFactor);
+//        }
+        for (int i = 0; i < renderers.length; i++)
+        {
+            for (int j = 0; j < renderers[i].length; j++)
+            {
+                WorldRenderer renderer = renderers[i][j];
+                renderer.render(world);
+                image(renderer.getGraphics(), i * xOffsFactor, j * yOffsFactor);
+            }
+        }
+
+//
+//        renderer.render(world);
+//        image(renderer.getGraphics(), Tile.SIZE, Tile.SIZE);
         long renderDuration = System.currentTimeMillis() - renderStart;
         popMatrix();
+        LayerMixture layer = world.getGrid()[0][0].getLayer(0);
+        long unadded = layer.addEnergy(Consts.toLong(1000));
+
         fill(0);
         text("FPS: " + frameRate, 1200, 100);
-        text("Rendering: " + renderDuration, 1200, 200);
+        text("Rendering: " + renderDuration, 1200, 150);
+        text("Not added: " + unadded, 1200, 200);
+        text("Temp At [0][0][0]: " + Consts.toDouble(layer.getTemperature_k()) +" K", 1200, 250);
+        text("Pressure At [0][0][0]: " + Consts.toDouble(layer.getPressure_kPa()) + " kPa", 1200, 300);
 
         if (!atmosUpdater.isRunning())
         {
@@ -88,34 +116,41 @@ public class Sim extends PApplet {
     private void rendererSetup()
     {
 
-        renderer = new WorldRenderer(
-                createGraphics(
-                        (int) Tile.SIZE * world.getWidth(),
-                        (int) Tile.SIZE * world.getHeight(),
-                        P2D
-                ),
-                new TileHeightRenderer());
+//        renderer = new WorldRenderer(
+//                createGraphics(
+//                        (int) Tile.SIZE * world.getWidth(),
+//                        (int) Tile.SIZE * world.getHeight(),
+//                        P2D
+//                ),
+//                new TileHeightRenderer());
         /*
         Renderer Setup for per layer pressure and volume display
          */
-//        renderers = new WorldRenderer[World.NUMBER_OF_LAYERS][2];
-//        for (int i = 0; i < renderers.length; i++)
-//        {
-//            renderers[i][0] = new WorldRenderer(
-//                    createGraphics(
-//                            (int) Tile.SIZE * world.getWidth(),
-//                            (int) Tile.SIZE * world.getHeight(),
-//                            P2D
-//                    ),
-//                    new TileVolumeRenderer(i));
-//            renderers[i][1] = new WorldRenderer(
-//                    createGraphics(
-//                            (int) Tile.SIZE * world.getWidth(),
-//                            (int) Tile.SIZE * world.getHeight(),
-//                            P2D
-//                    ),
-//                    new TilePressureRenderer(i));
-//        }
+        renderers = new WorldRenderer[World.NUMBER_OF_LAYERS][3];
+        for (int i = 0; i < renderers.length; i++)
+        {
+            renderers[i][0] = new WorldRenderer(
+                    createGraphics(
+                            (int) Tile.SIZE * world.getWidth(),
+                            (int) Tile.SIZE * world.getHeight(),
+                            P2D
+                    ),
+                    new TileVolumeRenderer(i));
+            renderers[i][1] = new WorldRenderer(
+                    createGraphics(
+                            (int) Tile.SIZE * world.getWidth(),
+                            (int) Tile.SIZE * world.getHeight(),
+                            P2D
+                    ),
+                    new TilePressureRenderer(i));
+            renderers[i][2] = new WorldRenderer(
+                    createGraphics(
+                            (int) Tile.SIZE * world.getWidth(),
+                            (int) Tile.SIZE * world.getHeight(),
+                            P2D
+                    ),
+                    new TileMolRenderer(i));
+        }
     }
 
     private void windowSetup()
@@ -133,14 +168,14 @@ public class Sim extends PApplet {
 
     private void worldSetup()
     {
-        world = new World(55, 55, new DefaultWorldGen(this));
+        world = new World(30, 30, new DefaultWorldGen(this));
         Tile tile = world.getGrid()[0][0];
         LayerMixture layer = tile.getLayer(0);
         PhaseMixture solids = layer.getMixtureForPhase(Phase.SOLID);
         Compound water = solids.getCompound("H2O");
-        water.add(100000 * Consts.PRESCISION, 10000 * Consts.PRESCISION);
+        water.add(1000 * Consts.PRESCISION, 500 * Consts.PRESCISION);
         Compound o2 = solids.getCompound("CO2");
-        o2.add(200000 * Consts.PRESCISION, 10000 * Consts.PRESCISION);
+        o2.add(2000 * Consts.PRESCISION, 500 * Consts.PRESCISION);
     }
 
     private void threadSetup()

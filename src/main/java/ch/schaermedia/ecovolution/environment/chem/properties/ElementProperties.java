@@ -82,15 +82,15 @@ public class ElementProperties {
         code = object.getString("symbol");
         orderNumber = object.optInt("number");
         defaultPhase = Phase.valueOf(object.getString("phase").toUpperCase());
-        specificHeatCapacity_kj_mol_K = (long) (object.getDouble("specificHeatCapacity") * Consts.PRESCISION);
-        meltingPoint_K = (long) (object.optDouble("meltingPoint") * Consts.PRESCISION);
-        boilingPoint_K = (long) (object.optDouble("boilingPoint") * Consts.PRESCISION);
-        fusionHeat_kj = (long) (object.optDouble("fusionHeat") * Consts.PRESCISION);
-        vaporizationHeat_kj = (long) (object.optDouble("vaporizationHeat") * Consts.PRESCISION);
-        triplePointHeat_K = (long) (object.optDouble("triplePointHeat") * Consts.PRESCISION);
-        triplePointPressure_kPa = (long) (object.optDouble("triplePointPressure") * Consts.PRESCISION);
-        criticalPointHeat_K = (long) (object.optDouble("criticalPointHeat") * Consts.PRESCISION);
-        criticalPointPressure_kPa = (long) (object.optDouble("criticalPointPressure") * Consts.PRESCISION);
+        specificHeatCapacity_kj_mol_K = Consts.toLong(object.getDouble("specificHeatCapacity"));
+        meltingPoint_K = Consts.toLong(object.optDouble("meltingPoint"));
+        boilingPoint_K = Consts.toLong(object.optDouble("boilingPoint"));
+        fusionHeat_kj = Consts.toLong(object.optDouble("fusionHeat"));
+        vaporizationHeat_kj = Consts.toLong(object.optDouble("vaporizationHeat"));
+        triplePointHeat_K = Consts.toLong(object.optDouble("triplePointHeat"));
+        triplePointPressure_kPa = Consts.toLong(object.optDouble("triplePointPressure"));
+        criticalPointHeat_K = Consts.toLong(object.optDouble("criticalPointHeat"));
+        criticalPointPressure_kPa = Consts.toLong(object.optDouble("criticalPointPressure"));
     }
 
     public void map()

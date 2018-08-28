@@ -91,7 +91,7 @@ public class ChemUtilities {
         {
             return 0;
         }
-        return (amount_mol * Consts.GAS_CONSTANT_L_kPa_K * temperature_K) / volume_L;
+        return (amount_mol * Consts.GAS_CONSTANT_L_kPa_K * temperature_K) / (volume_L * Consts.PRESCISION * Consts.PRESCISION);
     }
 
     /**
@@ -155,7 +155,7 @@ public class ChemUtilities {
         {
             return 0;
         }
-        return (amount_mol * Consts.GAS_CONSTANT_L_kPa_K * temperature_K) / pressure_kPa;
+        return (amount_mol * Consts.GAS_CONSTANT_L_kPa_K * temperature_K) / (pressure_kPa * Consts.PRESCISION * Consts.PRESCISION);
     }
 
     public static void readElements(String file) throws FileNotFoundException

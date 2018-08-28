@@ -13,11 +13,11 @@ import processing.core.PGraphics;
  *
  * @author Quentin
  */
-public class TileVolumeRenderer implements TileRenderer {
+public class TileMolRenderer implements TileRenderer {
 
     private final int layer;
 
-    public TileVolumeRenderer(int layer)
+    public TileMolRenderer(int layer)
     {
         this.layer = layer;
     }
@@ -25,7 +25,6 @@ public class TileVolumeRenderer implements TileRenderer {
     @Override
     public void render(PGraphics g, Tile tile)
     {
-        g.noStroke();
         prepareForLayerRendering(g, tile);
         g.rect(tile.getxIdx() * Tile.SIZE, tile.getyIdx() * Tile.SIZE, Tile.SIZE, Tile.SIZE);
     }
@@ -33,18 +32,19 @@ public class TileVolumeRenderer implements TileRenderer {
     private void prepareForLayerRendering(PGraphics g, Tile tile)
     {
         LayerMixture layerMix = tile.getLayer(layer);
-        long volume_L = layerMix.getVolume_L();
+        long moles = layerMix.getAmount_mol();
+        long molLimit = 10000000;
         int fill;
-        if (volume_L == 0)
+        if (moles == 0)
         {
             fill = 0;
-        } else if (volume_L > Tile.LAYER_VOLUME_L)
+        } else if (moles > molLimit)
         {
-            float percentage = (float) (((double) volume_L / (double) Tile.LAYER_VOLUME_L) - 1.0);
+            float percentage = (float) (((double) moles / (double) molLimit) - 1.0);
             fill = g.lerpColor(g.color(255), g.color(255, 0, 0), percentage);
         } else
         {
-            float percentage = (float) ((double) volume_L / (double) Tile.LAYER_VOLUME_L);
+            float percentage = (float) ((double) moles / (double) molLimit);
             fill = g.lerpColor(g.color(0, 0, 255), g.color(255), percentage);
         }
         g.fill(fill);

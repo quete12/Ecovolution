@@ -17,9 +17,9 @@ public abstract class AtmosphericEnity {
     protected long pressure_kPa;
     protected long volume_L;
 
-    public abstract void updateStats(long externalPressure_kPa, long totalVolume_L);
+    protected long heatCapacity_kj_K;
 
-    public abstract void importBuffers();
+    public abstract void updateStats(long externalPressure_kPa, long totalVolume_L);
 
     protected void clearStats(){
         amount_mol = 0;
@@ -27,6 +27,7 @@ public abstract class AtmosphericEnity {
         temperature_k = 0;
         pressure_kPa = 0;
         volume_L = 0;
+        heatCapacity_kj_K = 0;
     }
 
     public long getAmount_mol()
@@ -52,5 +53,10 @@ public abstract class AtmosphericEnity {
     public long getVolume_L()
     {
         return volume_L;
+    }
+
+    public long getHeatCapacity_kj_K()
+    {
+        return heatCapacity_kj_K;
     }
 }

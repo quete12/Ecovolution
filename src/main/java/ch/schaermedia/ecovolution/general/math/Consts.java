@@ -11,7 +11,7 @@ package ch.schaermedia.ecovolution.general.math;
  */
 public class Consts {
 
-    public static final int PRESCISION = 50000;
+    public static final int PRESCISION = 25000;
 
     public static final long STANDARD_PRESSURE_kPa = toLong(101.325);
     public static final long GAS_CONSTANT_L_kPa_K = toLong(8.3144598);
