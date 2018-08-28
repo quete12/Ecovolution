@@ -20,11 +20,6 @@ public class Tile {
     private final int xIdx;
     private final int yIdx;
 
-    private long amount_mol;
-    private long temperature_k;
-    private long pressure_kPa;
-    private long volume_L;
-
     private final List<LayerMixture> layers;
     private final int numLayers;
 
@@ -43,26 +38,10 @@ public class Tile {
 
     public void update()
     {
-        clearStats();
-        long temperatureSum = 0;
-        temperatureSum = layers.stream().map((layer) ->
+        layers.forEach((layer) ->
         {
             layer.update();
-            return layer;
-        }).map((layer) ->
-        {
-            amount_mol += layer.getAmount_mol();
-            return layer;
-        }).map((layer) ->
-        {
-            pressure_kPa += layer.getPressure_kPa();
-            return layer;
-        }).map((layer) ->
-        {
-            volume_L += layer.getVolume_L();
-            return layer;
-        }).map((layer) -> layer.getTemperature_k()).reduce(temperatureSum, (accumulator, _item) -> accumulator + _item);
-        temperature_k = temperatureSum / numLayers;
+        });
     }
 
     public void spreadHorizontal()
@@ -75,17 +54,13 @@ public class Tile {
 
     public void spreadToHigher()
     {
-        layers.stream().filter((layer) -> layer.hasHigher()).filter((layer) -> !(layer.getAmount_mol() == 0)).forEachOrdered((layer) ->
+        layers.stream().filter((layer) -> layer.hasHigher()).filter((layer) -> layer.getAmount_mol() > 0).forEachOrdered((layer) ->
         {
             long molesOverVolume = layer.molesOverVolume();
-            if (!(molesOverVolume == 0))
+            if (molesOverVolume > 0)
             {
-                if (molesOverVolume < 0)
-                {
-                    throw new RuntimeException("negative moles over volume");
-                }
                 LayerMixture higherLayer = layer.getHigher();
-                if (!(layer.getPressure_kPa() < higherLayer.getPressure_kPa()))
+                if (layer.getPressure_kPa() > higherLayer.getPressure_kPa())
                 {
                     double percentage = molesOverVolume / layer.getAmount_mol();
                     if (percentage > 0.95)
@@ -93,7 +68,6 @@ public class Tile {
                         percentage = 0.95;
                     }
                     layer.spreadToHigher(percentage);
-                    //didSpreadVertically = true;
                 }
             }
         });
@@ -101,23 +75,18 @@ public class Tile {
 
     public void spreadToLower()
     {
-        layers.stream().filter((layer) -> layer.hasLower()).filter((layer) -> !(layer.getAmount_mol() == 0)).forEachOrdered((layer) ->
+        layers.stream().filter((layer) -> layer.hasLower()).filter((layer) -> layer.getAmount_mol() > 0).forEachOrdered((layer) ->
         {
             LayerMixture lower = layer.getLower();
             long molesOverVolume = lower.molesUnderVolume();
-            if (!(molesOverVolume == 0))
+            if (molesOverVolume > 0)
             {
-                if (molesOverVolume < 0)
-                {
-                    throw new RuntimeException("negative moles under volume");
-                }
                 double percentage = molesOverVolume / layer.getAmount_mol();
                 if (percentage > 1.0)
                 {
                     percentage = 1.0;
                 }
                 layer.spreadToLower(percentage);
-                //didSpreadVertically = true;
             }
         });
     }
@@ -158,14 +127,6 @@ public class Tile {
         }
     }
 
-    private void clearStats()
-    {
-        amount_mol = 0;
-        temperature_k = 0;
-        pressure_kPa = 0;
-        volume_L = 0;
-    }
-
     public int getxIdx()
     {
         return xIdx;
@@ -174,26 +135,6 @@ public class Tile {
     public int getyIdx()
     {
         return yIdx;
-    }
-
-    public long getAmount_mol()
-    {
-        return amount_mol;
-    }
-
-    public long getTemperature_k()
-    {
-        return temperature_k;
-    }
-
-    public long getPressure_kPa()
-    {
-        return pressure_kPa;
-    }
-
-    public long getVolume_L()
-    {
-        return volume_L;
     }
 
     public int getHeight()
