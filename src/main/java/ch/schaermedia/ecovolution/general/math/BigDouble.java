@@ -5,13 +5,15 @@
  */
 package ch.schaermedia.ecovolution.general.math;
 
+import java.math.BigInteger;
+
 /**
  *
  * @author Quentin
  */
 public class BigDouble {
 
-    private static final long PRESCISION = 10000;
+    private static final long PRESCISION = 1000000;
 
     private long value;
     private long fraction;
@@ -139,6 +141,30 @@ public class BigDouble {
     }
 
     public BigDouble div(long value, long fraction, BigDouble result)
+    {
+        BigInteger bigPrescision = new BigInteger(Long.toString(PRESCISION));
+        BigInteger bigOtherValue = new BigInteger(Long.toString(value));
+        bigOtherValue = bigOtherValue.multiply(bigPrescision);
+        BigInteger bigOtherFraction = new BigInteger(Long.toString(fraction));
+        bigOtherValue = bigOtherValue.add(bigOtherFraction);
+
+        BigInteger bigMyValue = new BigInteger(Long.toString(this.value));
+        bigMyValue = bigMyValue.multiply(bigPrescision);
+        BigInteger bigMyFraction = new BigInteger(Long.toString(this.fraction));
+        bigMyValue = bigMyValue.add(bigMyFraction);
+
+        BigInteger bigRes = bigMyValue.multiply(bigPrescision).divide(bigOtherValue);
+        long res = bigRes.longValue();
+        long val = res / PRESCISION;
+        long frac = res - (val * PRESCISION);
+
+        result.setFraction(frac);
+        result.setValue(val);
+        return result;
+    }
+
+    @Deprecated
+    public BigDouble olddiv(long value, long fraction, BigDouble result)
     {
         if (value < 0)
         {
