@@ -11,7 +11,7 @@ package ch.schaermedia.ecovolution.general.math;
  */
 public class BigDouble {
 
-    private static final long PRESCISION = 1000000;
+    private static final long PRESCISION = 10000;
 
     private long value;
     private long fraction;
@@ -26,6 +26,10 @@ public class BigDouble {
     {
         this.value = (long) doubleVal;
         this.fraction = (long) ((doubleVal - this.value) * PRESCISION);
+        if (value < 0 && fraction > 0)
+        {
+            fraction *= -1;
+        }
     }
 
     public BigDouble(long value, long fraction)
@@ -132,6 +136,39 @@ public class BigDouble {
     public BigDouble mul(BigDouble other)
     {
         return mul(other.getValue(), other.getFraction(), this);
+    }
+
+    public BigDouble div(long value, long fraction, BigDouble result)
+    {
+        if (value < 0)
+        {
+            throw new RuntimeException("Dividing by a negative Number!");
+        }
+        long divval = this.value * PRESCISION;
+        long divfrac = this.fraction;
+        if (divval < 0 && divfrac > 0)
+        {
+            divfrac *= -1;
+        }
+        long dividend = divval + divfrac;
+        System.out.println("Dividend before division: " + dividend);
+        dividend *= PRESCISION;
+        long divisor = (value * PRESCISION) + fraction;
+        System.out.println("Dividing: " + Long.toUnsignedString(dividend) + " by " + divisor);
+        System.out.println("Max Value: " + Long.toUnsignedString(0-1));
+        long res = Long.divideUnsigned(dividend, divisor);
+        System.out.println("Res: " + res);
+        long val = res / PRESCISION;
+        long frac = res - (val * PRESCISION);
+
+        result.setFraction(frac);
+        result.setValue(val);
+        return result;
+    }
+
+    public BigDouble div(BigDouble other)
+    {
+        return div(other.getValue(), other.getFraction(), this);
     }
 
     public long getValue()
