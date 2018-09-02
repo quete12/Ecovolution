@@ -11,12 +11,16 @@ import java.math.BigInteger;
  *
  * @author Quentin
  */
-public class BigDouble {
+public class BigDouble implements Comparable<BigDouble> {
 
     private static final long PRESCISION = 1000000;
 
+    public static final BigDouble ONE = new BigDouble(1.0).setImmutable();
+    public static final BigDouble NEG_ONE = new BigDouble(-1.0).setImmutable();
+
     private long value;
     private long fraction;
+    private boolean immutable = false;
 
     public BigDouble()
     {
@@ -32,6 +36,12 @@ public class BigDouble {
         {
             fraction *= -1;
         }
+    }
+
+    private BigDouble setImmutable()
+    {
+        immutable = true;
+        return this;
     }
 
     public BigDouble(long value, long fraction)
@@ -50,6 +60,10 @@ public class BigDouble {
             val += 1;
         }
         val += this.value + value;
+        if (immutable && result == this)
+        {
+            result = new BigDouble();
+        }
         result.setFraction(frac);
         result.setValue(val);
         return result;
@@ -70,6 +84,27 @@ public class BigDouble {
         return add(value, fraction, result);
     }
 
+    @Override
+    public int compareTo(BigDouble o)
+    {
+        if (this.value > o.getValue())
+        {
+            return 1;
+        } else if (this.value < o.getValue())
+        {
+            return -1;
+        } else if (this.fraction > o.getFraction())
+        {
+            return 1;
+        } else if (this.fraction < o.getFraction())
+        {
+            return -1;
+        } else
+        {
+            return 0;
+        }
+    }
+
     public BigDouble sub(long value, long fraction, BigDouble result)
     {
         long frac = this.fraction - fraction;
@@ -80,6 +115,10 @@ public class BigDouble {
             val -= 1;
         }
         val += this.value - value;
+        if (immutable && result == this)
+        {
+            result = new BigDouble();
+        }
         result.setFraction(frac);
         result.setValue(val);
         return result;
@@ -87,17 +126,17 @@ public class BigDouble {
 
     public BigDouble sub(long value, long fraction)
     {
-        return add(value, fraction, this);
+        return sub(value, fraction, this);
     }
 
     public BigDouble sub(BigDouble other)
     {
-        return add(other.getValue(), other.getFraction(), this);
+        return sub(other.getValue(), other.getFraction(), this);
     }
 
     public BigDouble sub(BigDouble other, BigDouble result)
     {
-        return add(value, fraction, result);
+        return sub(value, fraction, result);
     }
 
     public BigDouble mul(long value, long fraction, BigDouble result)
@@ -130,14 +169,28 @@ public class BigDouble {
                 val += 1;
             }
         }
+        if (immutable && result == this)
+        {
+            result = new BigDouble();
+        }
         result.setFraction(frac);
         result.setValue(val);
         return result;
     }
 
+    public BigDouble mul(long value, long fraction)
+    {
+        return mul(value, fraction, this);
+    }
+
     public BigDouble mul(BigDouble other)
     {
         return mul(other.getValue(), other.getFraction(), this);
+    }
+
+    public BigDouble mul(BigDouble other, BigDouble result)
+    {
+        return mul(value, fraction, result);
     }
 
     public BigDouble div(long value, long fraction, BigDouble result)
@@ -158,43 +211,54 @@ public class BigDouble {
         long val = res / PRESCISION;
         long frac = res - (val * PRESCISION);
 
+        if (immutable && result == this)
+        {
+            result = new BigDouble();
+        }
         result.setFraction(frac);
         result.setValue(val);
         return result;
     }
 
-    @Deprecated
-    public BigDouble olddiv(long value, long fraction, BigDouble result)
+    public BigDouble div(long value, long fraction)
     {
-        if (value < 0)
-        {
-            throw new RuntimeException("Dividing by a negative Number!");
-        }
-        long divval = this.value * PRESCISION;
-        long divfrac = this.fraction;
-        if (divval < 0 && divfrac > 0)
-        {
-            divfrac *= -1;
-        }
-        long dividend = divval + divfrac;
-        System.out.println("Dividend before division: " + dividend);
-        dividend *= PRESCISION;
-        long divisor = (value * PRESCISION) + fraction;
-        System.out.println("Dividing: " + Long.toUnsignedString(dividend) + " by " + divisor);
-        System.out.println("Max Value: " + Long.toUnsignedString(0-1));
-        long res = Long.divideUnsigned(dividend, divisor);
-        System.out.println("Res: " + res);
-        long val = res / PRESCISION;
-        long frac = res - (val * PRESCISION);
-
-        result.setFraction(frac);
-        result.setValue(val);
-        return result;
+        return div(value, fraction, this);
     }
 
     public BigDouble div(BigDouble other)
     {
         return div(other.getValue(), other.getFraction(), this);
+    }
+
+    public BigDouble div(BigDouble other, BigDouble result)
+    {
+        return div(value, fraction, result);
+    }
+
+    public void limitHigh(BigDouble limit)
+    {
+        if (compareTo(limit) > 0)
+        {
+            set(limit);
+        }
+    }
+
+    public void limitLow(BigDouble limit)
+    {
+        if (compareTo(limit) < 0)
+        {
+            set(limit);
+        }
+    }
+
+    public void set(BigDouble val)
+    {
+        if (immutable)
+        {
+            return;
+        }
+        this.value = val.getValue();
+        this.fraction = val.getFraction();
     }
 
     public long getValue()
@@ -215,6 +279,31 @@ public class BigDouble {
     public void setFraction(long fraction)
     {
         this.fraction = fraction;
+    }
+
+    public boolean isPositive()
+    {
+        return this.value > 0;
+    }
+
+    public boolean isNegative()
+    {
+        return this.value < 0;
+    }
+
+    public boolean isZero()
+    {
+        return this.value == 0 && this.fraction == 0;
+    }
+
+    public boolean isNotZero(){
+        return this.value != 0 || this.fraction != 0;
+    }
+
+    public void clear()
+    {
+        this.value = 0;
+        this.fraction = 0;
     }
 
     @Override

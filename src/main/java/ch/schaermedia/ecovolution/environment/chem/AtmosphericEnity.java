@@ -5,57 +5,59 @@
  */
 package ch.schaermedia.ecovolution.environment.chem;
 
+import ch.schaermedia.ecovolution.general.math.BigDouble;
+
 /**
  *
  * @author Quentin
  */
 public abstract class AtmosphericEnity {
-    protected long amount_mol;
-    protected long energy_kj;
+    protected BigDouble amount_mol;
+    protected BigDouble energy_kj;
 
-    protected long temperature_k;
-    protected long pressure_kPa;
-    protected long volume_L;
+    protected BigDouble temperature_k;
+    protected BigDouble pressure_kPa;
+    protected BigDouble volume_L;
 
-    protected long heatCapacity_kj_K;
+    protected BigDouble heatCapacity_kj_K;
 
-    public abstract void updateStats(long externalPressure_kPa, long totalVolume_L);
+    public abstract void updateStats(BigDouble externalPressure_kPa, BigDouble totalVolume_L);
 
     protected void clearStats(){
-        amount_mol = 0;
-        energy_kj = 0;
-        temperature_k = 0;
-        pressure_kPa = 0;
-        volume_L = 0;
-        heatCapacity_kj_K = 0;
+        amount_mol.clear();
+        energy_kj.clear();
+        temperature_k.clear();
+        pressure_kPa.clear();
+        volume_L.clear();
+        heatCapacity_kj_K.clear();
     }
 
-    public long getAmount_mol()
+    public BigDouble getAmount_mol()
     {
         return amount_mol;
     }
 
-    public long getEnergy_kj()
+    public BigDouble getEnergy_kj()
     {
         return energy_kj;
     }
 
-    public long getTemperature_k()
+    public BigDouble getTemperature_k()
     {
         return temperature_k;
     }
 
-    public long getPressure_kPa()
+    public BigDouble getPressure_kPa()
     {
         return pressure_kPa;
     }
 
-    public long getVolume_L()
+    public BigDouble getVolume_L()
     {
         return volume_L;
     }
 
-    public long getHeatCapacity_kj_K()
+    public BigDouble getHeatCapacity_kj_K()
     {
         return heatCapacity_kj_K;
     }

@@ -7,6 +7,7 @@ package ch.schaermedia.ecovolution.environment.chem.properties;
 
 import ch.schaermedia.ecovolution.environment.chem.compound.Phase;
 import ch.schaermedia.ecovolution.environment.chem.phasediagram.PhaseDiagram_Energy_Pressure;
+import ch.schaermedia.ecovolution.general.math.BigDouble;
 import ch.schaermedia.ecovolution.general.math.Consts;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,17 +31,17 @@ public class ElementProperties {
     private int orderNumber;
     private Phase defaultPhase;
 
-    private long specificHeatCapacity_kj_mol_K;
+    private BigDouble specificHeatCapacity_kj_mol_K;
 
-    private long meltingPoint_K;
-    private long boilingPoint_K;
-    private long fusionHeat_kj;
-    private long vaporizationHeat_kj;
+    private BigDouble meltingPoint_K;
+    private BigDouble boilingPoint_K;
+    private BigDouble fusionHeat_kj;
+    private BigDouble vaporizationHeat_kj;
 
-    private long triplePointHeat_K;
-    private long triplePointPressure_kPa;
-    private long criticalPointHeat_K;
-    private long criticalPointPressure_kPa;
+    private BigDouble triplePointHeat_K;
+    private BigDouble triplePointPressure_kPa;
+    private BigDouble criticalPointHeat_K;
+    private BigDouble criticalPointPressure_kPa;
 
     private PhaseDiagram_Energy_Pressure energy_Pressure_Diagram;
 
@@ -66,14 +67,14 @@ public class ElementProperties {
 
     private boolean meetsDiagramConditions()
     {
-        return triplePointHeat_K != 0
-                && triplePointPressure_kPa != 0
-                && criticalPointHeat_K != 0
-                && criticalPointPressure_kPa != 0
-                && meltingPoint_K != 0
-                && boilingPoint_K != 0
-                && fusionHeat_kj != 0
-                && vaporizationHeat_kj != 0;
+        return triplePointHeat_K.isNotZero()
+                && triplePointPressure_kPa.isNotZero()
+                && criticalPointHeat_K.isNotZero()
+                && criticalPointPressure_kPa.isNotZero()
+                && meltingPoint_K.isNotZero()
+                && boilingPoint_K.isNotZero()
+                && fusionHeat_kj.isNotZero()
+                && vaporizationHeat_kj.isNotZero();
     }
 
     private void readProperties(JSONObject object)
@@ -82,15 +83,15 @@ public class ElementProperties {
         code = object.getString("symbol");
         orderNumber = object.optInt("number");
         defaultPhase = Phase.valueOf(object.getString("phase").toUpperCase());
-        specificHeatCapacity_kj_mol_K = Consts.toLong(object.getDouble("specificHeatCapacity"));
-        meltingPoint_K = Consts.toLong(object.optDouble("meltingPoint"));
-        boilingPoint_K = Consts.toLong(object.optDouble("boilingPoint"));
-        fusionHeat_kj = Consts.toLong(object.optDouble("fusionHeat"));
-        vaporizationHeat_kj = Consts.toLong(object.optDouble("vaporizationHeat"));
-        triplePointHeat_K = Consts.toLong(object.optDouble("triplePointHeat"));
-        triplePointPressure_kPa = Consts.toLong(object.optDouble("triplePointPressure"));
-        criticalPointHeat_K = Consts.toLong(object.optDouble("criticalPointHeat"));
-        criticalPointPressure_kPa = Consts.toLong(object.optDouble("criticalPointPressure"));
+        specificHeatCapacity_kj_mol_K = new BigDouble(object.getDouble("specificHeatCapacity"));
+        meltingPoint_K = new BigDouble(object.optDouble("meltingPoint"));
+        boilingPoint_K = new BigDouble(object.optDouble("boilingPoint"));
+        fusionHeat_kj = new BigDouble(object.optDouble("fusionHeat"));
+        vaporizationHeat_kj = new BigDouble(object.optDouble("vaporizationHeat"));
+        triplePointHeat_K = new BigDouble(object.optDouble("triplePointHeat"));
+        triplePointPressure_kPa = new BigDouble(object.optDouble("triplePointPressure"));
+        criticalPointHeat_K = new BigDouble(object.optDouble("criticalPointHeat"));
+        criticalPointPressure_kPa = new BigDouble(object.optDouble("criticalPointPressure"));
     }
 
     public void map()
@@ -116,55 +117,55 @@ public class ElementProperties {
 
     public boolean isBoilingPointUnderTriplePoint()
     {
-        return boilingPoint_K < triplePointHeat_K && Consts.STANDARD_PRESSURE_kPa < triplePointPressure_kPa;
+        return boilingPoint_K.compareTo(triplePointHeat_K) < 0 && Consts.STANDARD_PRESSURE_kPa.compareTo(triplePointPressure_kPa) < 0;
     }
 
     public boolean isMeltingPointUnderTriplePoint()
     {
-        return meltingPoint_K < triplePointHeat_K && Consts.STANDARD_PRESSURE_kPa < triplePointPressure_kPa;
+        return meltingPoint_K.compareTo(triplePointHeat_K) < 0 && Consts.STANDARD_PRESSURE_kPa.compareTo(triplePointPressure_kPa) < 0;
     }
 
-    public long getSpecificHeatCapacity_kj_mol_K()
+    public BigDouble getSpecificHeatCapacity_kj_mol_K()
     {
         return specificHeatCapacity_kj_mol_K;
     }
 
-    public long getMeltingPoint_K()
+    public BigDouble getMeltingPoint_K()
     {
         return meltingPoint_K;
     }
 
-    public long getBoilingPoint_K()
+    public BigDouble getBoilingPoint_K()
     {
         return boilingPoint_K;
     }
 
-    public long getFusionHeat_kj()
+    public BigDouble getFusionHeat_kj()
     {
         return fusionHeat_kj;
     }
 
-    public long getVaporizationHeat_kj()
+    public BigDouble getVaporizationHeat_kj()
     {
         return vaporizationHeat_kj;
     }
 
-    public long getTriplePointHeat_K()
+    public BigDouble getTriplePointHeat_K()
     {
         return triplePointHeat_K;
     }
 
-    public long getTriplePointPressure_kPa()
+    public BigDouble getTriplePointPressure_kPa()
     {
         return triplePointPressure_kPa;
     }
 
-    public long getCriticalPointHeat_K()
+    public BigDouble getCriticalPointHeat_K()
     {
         return criticalPointHeat_K;
     }
 
-    public long getCriticalPointPressure_kPa()
+    public BigDouble getCriticalPointPressure_kPa()
     {
         return criticalPointPressure_kPa;
     }
@@ -174,53 +175,53 @@ public class ElementProperties {
         return energy_Pressure_Diagram;
     }
 
-    public long minCriticalEnergy()
+    public BigDouble minCriticalEnergy()
     {
-        return criticalPointHeat_K * specificHeatCapacity_kj_mol_K + fusionHeat_kj;
+        return criticalPointHeat_K.mul(specificHeatCapacity_kj_mol_K, new BigDouble()).add(fusionHeat_kj);
     }
 
-    public long maxCriticalEnergy()
+    public BigDouble maxCriticalEnergy()
     {
-        return minCriticalEnergy() + vaporizationHeat_kj;
+        return minCriticalEnergy().add(vaporizationHeat_kj);
     }
 
-    public long minMeltingPointEnergy()
+    public BigDouble minMeltingPointEnergy()
     {
-        return meltingPoint_K * specificHeatCapacity_kj_mol_K;
+        return meltingPoint_K.mul(specificHeatCapacity_kj_mol_K, new BigDouble());
     }
 
-    public long maxMeltingPointEnergy()
+    public BigDouble maxMeltingPointEnergy()
     {
-        return minMeltingPointEnergy() + fusionHeat_kj;
+        return minMeltingPointEnergy().add(fusionHeat_kj);
     }
 
-    public long minBoilingEnergy()
+    public BigDouble minBoilingEnergy()
     {
-        return boilingPoint_K * specificHeatCapacity_kj_mol_K + fusionHeat_kj;
+        return boilingPoint_K.mul(specificHeatCapacity_kj_mol_K, new BigDouble()).add(fusionHeat_kj);
     }
 
-    public long maxBoilingEnergy()
+    public BigDouble maxBoilingEnergy()
     {
-        return minBoilingEnergy() + vaporizationHeat_kj;
+        return minBoilingEnergy().add(vaporizationHeat_kj);
     }
 
-    public long minTriplePointEnergy()
+    public BigDouble minTriplePointEnergy()
     {
-        return triplePointHeat_K * specificHeatCapacity_kj_mol_K;
+        return triplePointHeat_K.mul(specificHeatCapacity_kj_mol_K, new BigDouble());
     }
 
-    public long maxTriplePointVaporizationEnergy()
+    public BigDouble maxTriplePointVaporizationEnergy()
     {
-        return minTriplePointEnergy() + fusionHeat_kj + vaporizationHeat_kj;
+        return minTriplePointEnergy().add(fusionHeat_kj).add(vaporizationHeat_kj);
     }
 
-    public long maxTriplePointMeltingEnergy()
+    public BigDouble maxTriplePointMeltingEnergy()
     {
-        return minTriplePointEnergy() + fusionHeat_kj;
+        return minTriplePointEnergy().add(fusionHeat_kj);
     }
 
-    public long maxTriplePointSublimationEnergy()
+    public BigDouble maxTriplePointSublimationEnergy()
     {
-        return minTriplePointEnergy() + fusionHeat_kj + vaporizationHeat_kj;
+        return minTriplePointEnergy().add(fusionHeat_kj).add(vaporizationHeat_kj);
     }
 }

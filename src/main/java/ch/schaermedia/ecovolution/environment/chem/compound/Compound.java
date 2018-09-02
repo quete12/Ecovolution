@@ -9,6 +9,7 @@ import ch.schaermedia.ecovolution.environment.chem.AtmosphericEnity;
 import ch.schaermedia.ecovolution.environment.chem.ChemUtilities;
 import ch.schaermedia.ecovolution.environment.chem.phasediagram.PhaseDiagram_Energy_Pressure;
 import ch.schaermedia.ecovolution.environment.chem.properties.CompoundProperties;
+import ch.schaermedia.ecovolution.general.math.BigDouble;
 
 /**
  *
@@ -18,8 +19,8 @@ public class Compound extends AtmosphericEnity {
 
     private final CompoundProperties properties;
 
-    private long amount_mol_buffer;
-    private long energy_kj_buffer;
+    private BigDouble amount_mol_buffer;
+    private BigDouble energy_kj_buffer;
     private Phase phase = Phase.SOLID;
 
     private boolean phaseChanged = false;
@@ -35,32 +36,32 @@ public class Compound extends AtmosphericEnity {
         this.phase = phase;
     }
 
-    public long splitTo(Compound other, double percentage)
+    public BigDouble splitTo(Compound other, BigDouble percentage)
     {
-        if (percentage < 0)
+        if (percentage.isNegative())
         {
             throw new RuntimeException("Negative percentage split!!");
         }
-        long amountDiff = (long) (amount_mol * percentage);
-        amount_mol_buffer -= amountDiff;
-        long energyDiff = (long) (energy_kj * percentage);
-        energy_kj_buffer -= energyDiff;
+        BigDouble amountDiff = amount_mol.mul(percentage, new BigDouble());
+        amount_mol_buffer.sub(amountDiff);
+        BigDouble energyDiff = energy_kj.mul(percentage, new BigDouble());
+        energy_kj_buffer.sub(energyDiff);
         other.add(amountDiff, energyDiff);
         return amountDiff;
     }
 
-    public void add(long amount_mol, long energy_kj)
+    public void add(BigDouble amount_mol, BigDouble energy_kj)
     {
-        amount_mol_buffer += amount_mol;
-        energy_kj_buffer += energy_kj;
+        amount_mol_buffer.add(amount_mol);
+        energy_kj_buffer.add(energy_kj);
     }
 
     @Override
-    public void updateStats(long externalPressure_kPa, long totalVolume_L)
+    public void updateStats(BigDouble externalPressure_kPa, BigDouble totalVolume_L)
     {
         importBuffers();
-        heatCapacity_kj_K = amount_mol * properties.getSpecificHeatCapacity_kj_mol_K();
-        if (amount_mol > 0)
+        amount_mol.mul(properties.getSpecificHeatCapacity_kj_mol_K(), heatCapacity_kj_K);
+        if (amount_mol.isPositive())
         {
             updateThermodynamicStats(externalPressure_kPa, totalVolume_L);
         }
@@ -68,27 +69,27 @@ public class Compound extends AtmosphericEnity {
 
     public void importBuffers()
     {
-        amount_mol += amount_mol_buffer;
-        energy_kj += energy_kj_buffer;
-        amount_mol_buffer = 0;
-        energy_kj_buffer = 0;
+        amount_mol.add(amount_mol_buffer);
+        energy_kj.add(energy_kj_buffer);
+        amount_mol_buffer.clear();
+        energy_kj_buffer.clear();
     }
 
-    private void updateThermodynamicStats(long externalPressure_kPa, long totalVolume_L)
+    private void updateThermodynamicStats(BigDouble externalPressure_kPa, BigDouble totalVolume_L)
     {
         PhaseDiagram_Energy_Pressure diag = properties.getEnergy_Pressure_Diagram();
-        long energyPerMol = (long) ((double) energy_kj / (double) amount_mol);
+        BigDouble energyPerMol = energy_kj.div(amount_mol, new BigDouble());
         Phase phaseAt = diag.getPhaseAt(energyPerMol, externalPressure_kPa);
         phaseChanged = phaseAt.idx != phase.idx;
         phase = phaseAt;
         temperature_k = diag.getTemperature_K_at(energyPerMol, externalPressure_kPa, phase);
-        if (temperature_k < 0)
+        if (temperature_k.isNegative())
         {
             throw new RuntimeException("Negative temperature with: " + this + " temperature: " + temperature_k);
         }
-        volume_L = ChemUtilities.volume_L(externalPressure_kPa, amount_mol, temperature_k);
-        pressure_kPa = ChemUtilities.pressure_kPa(totalVolume_L, amount_mol, temperature_k);
-        if (pressure_kPa < 0)
+        ChemUtilities.volume_L(externalPressure_kPa, amount_mol, temperature_k, volume_L);
+        ChemUtilities.pressure_kPa(totalVolume_L, amount_mol, temperature_k, pressure_kPa);
+        if (pressure_kPa.isNegative())
         {
             throw new RuntimeException("negative Pressure! Calculated from volume: " + totalVolume_L + " moles: " + amount_mol + " temperature: " + temperature_k + " phase: " + phase);
         }

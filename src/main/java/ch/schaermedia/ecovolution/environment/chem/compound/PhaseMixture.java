@@ -8,6 +8,7 @@ package ch.schaermedia.ecovolution.environment.chem.compound;
 import ch.schaermedia.ecovolution.environment.chem.AtmosphericEnity;
 import ch.schaermedia.ecovolution.environment.chem.properties.CompoundProperties;
 import ch.schaermedia.ecovolution.environment.world.World;
+import ch.schaermedia.ecovolution.general.math.BigDouble;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,12 +35,12 @@ public class PhaseMixture extends AtmosphericEnity {
         phaseChanged = new ArrayList();
     }
 
-    public void spreadToHigher(double percentage)
+    public void spreadToHigher(BigDouble percentage)
     {
         spreadTo(higher, percentage);
     }
 
-    public void spreadToLower(double percentage)
+    public void spreadToLower(BigDouble percentage)
     {
         spreadTo(lower, percentage);
     }
@@ -52,18 +53,18 @@ public class PhaseMixture extends AtmosphericEnity {
         });
     }
 
-    private long spreadTo(PhaseMixture spreadTo, double percentage)
+    private BigDouble spreadTo(PhaseMixture spreadTo, BigDouble percentage)
     {
         if (spreadTo == null)
         {
-            return 0;
+            return new BigDouble();
         }
-        long totalSpread = 0;
+        BigDouble totalSpread = new BigDouble();
         for (Map.Entry<String, Compound> entry : composition.entrySet())
         {
             Compound other = spreadTo.getCompound(entry.getKey());
             Compound compound = entry.getValue();
-            totalSpread += compound.splitTo(other, percentage);
+            totalSpread.add(compound.splitTo(other, percentage));
         }
         return totalSpread;
     }
@@ -114,7 +115,7 @@ public class PhaseMixture extends AtmosphericEnity {
     }
 
     @Override
-    public void updateStats(long externalPressure_kPa, long totalVolume_L)
+    public void updateStats(BigDouble externalPressure_kPa, BigDouble totalVolume_L)
     {
         clearStats();
         phaseChanged.clear();
@@ -122,7 +123,6 @@ public class PhaseMixture extends AtmosphericEnity {
         {
             return;
         }
-        long temperatureSum = 0;
         for (Compound compound : composition.values())
         {
             compound.updateStats(externalPressure_kPa, totalVolume_L);
@@ -130,15 +130,15 @@ public class PhaseMixture extends AtmosphericEnity {
             {
                 phaseChanged.add(compound);
             }
-            amount_mol += compound.getAmount_mol();
-            energy_kj += compound.getEnergy_kj();
-            pressure_kPa += compound.getPressure_kPa();
-            volume_L += compound.getVolume_L();
-            heatCapacity_kj_K += compound.getHeatCapacity_kj_K();
-            temperatureSum += compound.getTemperature_k();
+            amount_mol.add(compound.getAmount_mol());
+            energy_kj.add(compound.getEnergy_kj());
+            pressure_kPa.add(compound.getPressure_kPa());
+            volume_L.add(compound.getVolume_L());
+            heatCapacity_kj_K.add(compound.getHeatCapacity_kj_K());
+            temperature_k.add(compound.getTemperature_k());
         }
-        temperature_k = temperatureSum / composition.size();
-        if (pressure_kPa < 0)
+        temperature_k.div(new BigDouble(composition.size(), 0));
+        if (pressure_kPa.isNegative())
         {
             throw new RuntimeException("negative Pressure!");
         }
@@ -163,17 +163,17 @@ public class PhaseMixture extends AtmosphericEnity {
         getCompound(compound.getCode()).add(compound.getAmount_mol(), compound.getEnergy_kj());
     }
 
-    public long addEnergy(long energy_kj)
+    public BigDouble addEnergy(BigDouble energy_kj)
     {
-        long added = 0;
+        BigDouble added = new BigDouble();
         for (Compound compound : composition.values())
         {
-            double percentage = (double) compound.getHeatCapacity_kj_K() / (double) heatCapacity_kj_K;
-            long energyToAdd = (long) (energy_kj * percentage);
-            compound.add(0, energyToAdd);
-            added += energyToAdd;
+            BigDouble percentage = compound.getHeatCapacity_kj_K().div(heatCapacity_kj_K, new BigDouble());
+            BigDouble energyToAdd = energy_kj.mul(percentage, new BigDouble());
+            compound.add(new BigDouble(), energyToAdd);
+            added.add(energyToAdd);
         }
-        return energy_kj - added;
+        return energy_kj.sub(added, added);
     }
 
 }

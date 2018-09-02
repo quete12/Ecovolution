@@ -5,6 +5,8 @@
  */
 package ch.schaermedia.ecovolution.environment.world;
 
+import ch.schaermedia.ecovolution.general.math.BigDouble;
+
 /**
  *
  * @author Quentin
@@ -20,7 +22,7 @@ public class World {
     public static final int NEIGHBOUR_RANGE = 4;
     private static final int NEIGHBOUR_SQARE_SIDE = 2 * NEIGHBOUR_RANGE + 1;
     public static final int NEIGHBOUR_SQUARED = NEIGHBOUR_SQARE_SIDE * NEIGHBOUR_SQARE_SIDE;
-    public static final double HORIZONTAL_SPREAD_PERCENTAGE = 1.0 / (double) NEIGHBOUR_SQUARED;
+    public static final BigDouble HORIZONTAL_SPREAD_PERCENTAGE = BigDouble.ONE.div(new BigDouble(NEIGHBOUR_SQUARED, 0));
 
     private Tile[][] grid;
     private final int width;
@@ -29,7 +31,7 @@ public class World {
 
     private UpdateState state;
 
-    public World(int width, int height,TileGenerator generator)
+    public World(int width, int height, TileGenerator generator)
     {
         this.width = width;
         this.height = height;
