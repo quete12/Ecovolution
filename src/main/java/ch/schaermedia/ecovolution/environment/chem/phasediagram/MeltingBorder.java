@@ -7,6 +7,7 @@
 package ch.schaermedia.ecovolution.environment.chem.phasediagram;
 
 import ch.schaermedia.ecovolution.environment.chem.properties.ElementProperties;
+import ch.schaermedia.ecovolution.general.math.BigDouble;
 import ch.schaermedia.ecovolution.general.math.Consts;
 import ch.schaermedia.ecovolution.general.math.Function;
 import ch.schaermedia.ecovolution.general.math.LinearFunction;
@@ -34,21 +35,21 @@ public class MeltingBorder extends PhaseBorder {
                 properties.minMeltingPointEnergy(),
                 Consts.STANDARD_PRESSURE_kPa);
 
-        long highPressure = properties.getCriticalPointPressure_kPa();
-        long meltingEnergyAtHighPressure = meltingMin.x(highPressure);
+        BigDouble highPressure = properties.getCriticalPointPressure_kPa();
+        BigDouble meltingEnergyAtHighPressure = meltingMin.x(highPressure);
         meltingMax = new LinearFunction(
                 properties.maxTriplePointMeltingEnergy(),
                 properties.getTriplePointPressure_kPa(),
-                meltingEnergyAtHighPressure+properties.getFusionHeat_kj(),
+                meltingEnergyAtHighPressure.add(properties.getFusionHeat_kj(), new BigDouble()),
                 highPressure);
     }
 
-    public boolean isMelted(long energy_kj_mol, long pressure_kPa)
+    public boolean isMelted(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
         return meltingMax.isPointRight(energy_kj_mol, pressure_kPa);
     }
 
-    public boolean isMelting(long energy_kj_mol, long pressure_kPa)
+    public boolean isMelting(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
         if (isMelted(energy_kj_mol, pressure_kPa))
         {
@@ -58,7 +59,7 @@ public class MeltingBorder extends PhaseBorder {
     }
 
     @Override
-    public long getMinEnergy_kj_mol(long pressure_kPa)
+    public BigDouble getMinEnergy_kj_mol(BigDouble pressure_kPa)
     {
         return meltingMin.x(pressure_kPa);
     }

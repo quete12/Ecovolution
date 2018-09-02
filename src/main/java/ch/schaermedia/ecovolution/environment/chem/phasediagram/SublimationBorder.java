@@ -6,6 +6,7 @@
 package ch.schaermedia.ecovolution.environment.chem.phasediagram;
 
 import ch.schaermedia.ecovolution.environment.chem.properties.ElementProperties;
+import ch.schaermedia.ecovolution.general.math.BigDouble;
 import ch.schaermedia.ecovolution.general.math.Consts;
 import ch.schaermedia.ecovolution.general.math.LinearFunction;
 
@@ -43,13 +44,13 @@ public class SublimationBorder extends PhaseBorder {
     private void initBordersZeroToTriple(ElementProperties properties)
     {
         sublimationMin[0] = new LinearFunction(
-                0,
-                0,
+                BigDouble.ZERO,
+                BigDouble.ZERO,
                 properties.minTriplePointEnergy(),
                 properties.getTriplePointPressure_kPa());
         sublimationMax[0] = new LinearFunction(
-                properties.getFusionHeat_kj() + properties.getVaporizationHeat_kj(),
-                0,
+                properties.getFusionHeat_kj().add(properties.getVaporizationHeat_kj(),new BigDouble()),
+                BigDouble.ZERO,
                 properties.maxTriplePointSublimationEnergy(),
                 properties.getTriplePointPressure_kPa());
 
@@ -58,13 +59,13 @@ public class SublimationBorder extends PhaseBorder {
     private void initBordersZeroToBoiling(ElementProperties properties)
     {
         sublimationMin[0] = new LinearFunction(
-                0,
-                0,
-                properties.minBoilingEnergy() - properties.getFusionHeat_kj(),
+                BigDouble.ZERO,
+                BigDouble.ZERO,
+                properties.minBoilingEnergy().sub(properties.getFusionHeat_kj(),new BigDouble()),
                 Consts.STANDARD_PRESSURE_kPa);
         sublimationMax[0] = new LinearFunction(
-                properties.getFusionHeat_kj() + properties.getVaporizationHeat_kj(),
-                0,
+                properties.getFusionHeat_kj().add(properties.getVaporizationHeat_kj(),new BigDouble()),
+                BigDouble.ZERO,
                 properties.maxBoilingEnergy(),
                 Consts.STANDARD_PRESSURE_kPa);
     }
@@ -72,7 +73,7 @@ public class SublimationBorder extends PhaseBorder {
     private void initBordersBoilingToTriple(ElementProperties properties)
     {
         sublimationMin[1] = new LinearFunction(
-                properties.minBoilingEnergy() - properties.getFusionHeat_kj(),
+                properties.minBoilingEnergy().sub(properties.getFusionHeat_kj(),new BigDouble()),
                 Consts.STANDARD_PRESSURE_kPa,
                 properties.minTriplePointEnergy(),
                 properties.getTriplePointPressure_kPa());
@@ -83,7 +84,7 @@ public class SublimationBorder extends PhaseBorder {
                 properties.getTriplePointPressure_kPa());
     }
 
-    public boolean isSublimated(long energy_kj_mol, long pressure_kPa)
+    public boolean isSublimated(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
         if (!hasDualFunction)
         {
@@ -101,7 +102,7 @@ public class SublimationBorder extends PhaseBorder {
         }
     }
 
-    public boolean isSublimating(long energy_kj_mol, long pressure_kPa)
+    public boolean isSublimating(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
         if (isSublimated(energy_kj_mol, pressure_kPa))
         {
@@ -124,7 +125,7 @@ public class SublimationBorder extends PhaseBorder {
     }
 
     @Override
-    public long getMinEnergy_kj_mol(long pressure_kPa)
+    public BigDouble getMinEnergy_kj_mol(BigDouble pressure_kPa)
     {
         if (!hasDualFunction)
         {
@@ -132,10 +133,10 @@ public class SublimationBorder extends PhaseBorder {
         }
         if (isSteepFirst(sublimationMin))
         {
-            return Math.max(sublimationMin[0].x(pressure_kPa), sublimationMin[1].x(pressure_kPa));
+            return BigDouble.max(sublimationMin[0].x(pressure_kPa), sublimationMin[1].x(pressure_kPa));
         } else
         {
-            return Math.min(sublimationMin[0].x(pressure_kPa), sublimationMin[1].x(pressure_kPa));
+            return BigDouble.min(sublimationMin[0].x(pressure_kPa), sublimationMin[1].x(pressure_kPa));
         }
     }
 }

@@ -17,6 +17,7 @@ public class BigDouble implements Comparable<BigDouble> {
 
     public static final BigDouble ONE = new BigDouble(1.0).setImmutable();
     public static final BigDouble NEG_ONE = new BigDouble(-1.0).setImmutable();
+    public static final BigDouble ZERO = new BigDouble().setImmutable();
 
     private long value;
     private long fraction;
@@ -36,6 +37,11 @@ public class BigDouble implements Comparable<BigDouble> {
         {
             fraction *= -1;
         }
+    }
+
+    public BigDouble(BigDouble toCopy){
+        this.value = toCopy.getValue();
+        this.fraction = toCopy.getFraction();
     }
 
     private BigDouble setImmutable()
@@ -296,7 +302,8 @@ public class BigDouble implements Comparable<BigDouble> {
         return this.value == 0 && this.fraction == 0;
     }
 
-    public boolean isNotZero(){
+    public boolean isNotZero()
+    {
         return this.value != 0 || this.fraction != 0;
     }
 
@@ -304,6 +311,30 @@ public class BigDouble implements Comparable<BigDouble> {
     {
         this.value = 0;
         this.fraction = 0;
+    }
+
+    public static BigDouble max(BigDouble a, BigDouble b)
+    {
+        int compare = a.compareTo(b);
+        if (compare >= 0)
+        {
+            return a;
+        } else
+        {
+            return b;
+        }
+    }
+
+    public static BigDouble min(BigDouble a, BigDouble b)
+    {
+        int compare = a.compareTo(b);
+        if (compare <= 0)
+        {
+            return a;
+        } else
+        {
+            return b;
+        }
     }
 
     @Override

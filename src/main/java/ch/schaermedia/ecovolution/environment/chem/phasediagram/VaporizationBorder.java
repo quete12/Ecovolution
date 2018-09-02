@@ -6,6 +6,7 @@
 package ch.schaermedia.ecovolution.environment.chem.phasediagram;
 
 import ch.schaermedia.ecovolution.environment.chem.properties.ElementProperties;
+import ch.schaermedia.ecovolution.general.math.BigDouble;
 import ch.schaermedia.ecovolution.general.math.Consts;
 import ch.schaermedia.ecovolution.general.math.LinearFunction;
 
@@ -13,7 +14,7 @@ import ch.schaermedia.ecovolution.general.math.LinearFunction;
  *
  * @author Quentin
  */
-public class VaporizationBorder extends PhaseBorder{
+public class VaporizationBorder extends PhaseBorder {
 
     private LinearFunction[] vaporizationMin;
     private LinearFunction[] vaporizationMax;
@@ -82,7 +83,7 @@ public class VaporizationBorder extends PhaseBorder{
                 properties.getCriticalPointPressure_kPa());
     }
 
-    public boolean isVaporized(long energy_kj_mol, long pressure_kPa)
+    public boolean isVaporized(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
         if (!hasDualFunction)
         {
@@ -100,7 +101,7 @@ public class VaporizationBorder extends PhaseBorder{
         }
     }
 
-    public boolean isVaporizing(long energy_kj_mol, long pressure_kPa)
+    public boolean isVaporizing(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
         if (isVaporized(energy_kj_mol, pressure_kPa))
         {
@@ -123,15 +124,18 @@ public class VaporizationBorder extends PhaseBorder{
     }
 
     @Override
-    public long getMinEnergy_kj_mol(long pressure_kPa)
+    public BigDouble getMinEnergy_kj_mol(BigDouble pressure_kPa)
     {
-        if(!hasDualFunction){
+        if (!hasDualFunction)
+        {
             return vaporizationMin[0].x(pressure_kPa);
         }
-        if(isSteepFirst(vaporizationMin)){
-            return Math.max(vaporizationMin[0].x(pressure_kPa), vaporizationMin[1].x(pressure_kPa));
-        }else{
-            return Math.min(vaporizationMin[0].x(pressure_kPa), vaporizationMin[1].x(pressure_kPa));
+        if (isSteepFirst(vaporizationMin))
+        {
+            return BigDouble.max(vaporizationMin[0].x(pressure_kPa), vaporizationMin[1].x(pressure_kPa));
+        } else
+        {
+            return BigDouble.min(vaporizationMin[0].x(pressure_kPa), vaporizationMin[1].x(pressure_kPa));
         }
     }
 }

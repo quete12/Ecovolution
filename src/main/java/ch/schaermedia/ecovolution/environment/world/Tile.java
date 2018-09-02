@@ -6,6 +6,7 @@
 package ch.schaermedia.ecovolution.environment.world;
 
 import ch.schaermedia.ecovolution.environment.chem.compound.LayerMixture;
+import ch.schaermedia.ecovolution.general.math.BigDouble;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import java.util.List;
 public class Tile {
 
     public static final long SIZE = 50;
-    public static final long LAYER_VOLUME_L = Tile.SIZE * Tile.SIZE * Tile.SIZE;
+    public static final BigDouble LAYER_VOLUME_L = new BigDouble(Tile.SIZE * Tile.SIZE * Tile.SIZE, 0);
     private final int xIdx;
     private final int yIdx;
 
@@ -54,13 +55,13 @@ public class Tile {
 
     public void spreadToHigher()
     {
-        layers.stream().filter((layer) -> layer.hasHigher()).filter((layer) -> layer.getAmount_mol() > 0).forEachOrdered((layer) ->
+        layers.stream().filter((layer) -> layer.hasHigher()).filter((layer) -> layer.getAmount_mol().isPositive()).forEachOrdered((layer) ->
         {
-            long molesOverVolume = layer.molesOverVolume();
-            if (molesOverVolume > 0)
+            BigDouble molesOverVolume = layer.molesOverVolume();
+            if (molesOverVolume.isPositive())
             {
                 LayerMixture higherLayer = layer.getHigher();
-                if (layer.getPressure_kPa() > higherLayer.getPressure_kPa())
+                if (layer.getPressure_kPa().compareTo(higherLayer.getPressure_kPa()) > 0)
                 {
                     layer.spreadToHigher(molesOverVolume);
                 }
@@ -70,11 +71,11 @@ public class Tile {
 
     public void spreadToLower()
     {
-        layers.stream().filter((layer) -> layer.hasLower()).filter((layer) -> layer.getAmount_mol() > 0).forEachOrdered((layer) ->
+        layers.stream().filter((layer) -> layer.hasLower()).filter((layer) -> layer.getAmount_mol().isPositive()).forEachOrdered((layer) ->
         {
             LayerMixture lower = layer.getLower();
-            long molesUnderVolume = lower.molesUnderVolume();
-            if (molesUnderVolume > 0)
+            BigDouble molesUnderVolume = lower.molesUnderVolume();
+            if (molesUnderVolume.isPositive())
             {
                 layer.spreadToLower(molesUnderVolume);
             }

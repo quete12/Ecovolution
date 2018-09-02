@@ -7,6 +7,7 @@ package ch.schaermedia.ecovolution.environment.chem.phasediagram;
 
 import ch.schaermedia.ecovolution.environment.chem.compound.Phase;
 import ch.schaermedia.ecovolution.environment.chem.properties.ElementProperties;
+import ch.schaermedia.ecovolution.general.math.BigDouble;
 
 /**
  *
@@ -30,7 +31,7 @@ public class PhaseDiagram_Energy_Pressure {
         criticalBorder = new CriticalBorder(properties);
     }
 
-    public Phase getPhaseAt(long energy_kj_mol, long pressure_kPa)
+    public Phase getPhaseAt(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
         if (isSupercriticalFluid(energy_kj_mol, pressure_kPa))
         {
@@ -51,7 +52,7 @@ public class PhaseDiagram_Energy_Pressure {
         throw new AssertionError("Invalid Conditions for element: " + properties.getCode() + " e= " + energy_kj_mol + "kj/mol and p= " + pressure_kPa + "kPa");
     }
 
-    private boolean isSolid(long energy_kj_mol, long pressure_kPa)
+    private boolean isSolid(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
         if (criticalBorder.isCritical(energy_kj_mol, pressure_kPa))
         {
@@ -64,7 +65,7 @@ public class PhaseDiagram_Energy_Pressure {
         return !sublimationBorder.isSublimated(energy_kj_mol, pressure_kPa);
     }
 
-    private boolean isLiquid(long energy_kj_mol, long pressure_kPa)
+    private boolean isLiquid(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
         if (criticalBorder.isCritical(energy_kj_mol, pressure_kPa))
         {
@@ -77,13 +78,13 @@ public class PhaseDiagram_Energy_Pressure {
         return meltingBorder.isMelted(energy_kj_mol, pressure_kPa);
     }
 
-    private boolean isGas(long energy_kj_mol, long pressure_kPa)
+    private boolean isGas(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
         if (criticalBorder.isCritical(energy_kj_mol, pressure_kPa))
         {
             return false;
         }
-        if (energy_kj_mol < properties.maxTriplePointSublimationEnergy()) //below triplePoint is considered sublimating
+        if (energy_kj_mol.compareTo(properties.maxTriplePointSublimationEnergy()) < 0) //below triplePoint is considered sublimating
         {
             return sublimationBorder.isSublimated(energy_kj_mol, pressure_kPa);
         } else
@@ -92,17 +93,17 @@ public class PhaseDiagram_Energy_Pressure {
         }
     }
 
-    private boolean isSupercriticalFluid(long energy_kj_mol, long pressure_kPa)
+    private boolean isSupercriticalFluid(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
         return criticalBorder.isCritical(energy_kj_mol, pressure_kPa);
     }
 
-    public long getTemperature_K_at(long energy_kj_mol, long pressure_kPa)
+    public BigDouble getTemperature_K_at(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
         return getTemperature_K_at(energy_kj_mol, pressure_kPa, getPhaseAt(energy_kj_mol, pressure_kPa));
     }
 
-    public long getTemperature_K_at(long energy_kj_mol, long pressure_kPa, Phase phase)
+    public BigDouble getTemperature_K_at(BigDouble energy_kj_mol, BigDouble pressure_kPa, Phase phase)
     {
         switch (phase)
         {
@@ -119,47 +120,47 @@ public class PhaseDiagram_Energy_Pressure {
         }
     }
 
-    private long getTemperature_K_ofSupercriticalFluid(long energy_kj_mol, long pressure_kPa)
+    private BigDouble getTemperature_K_ofSupercriticalFluid(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
-        long energyForCalculation = energy_kj_mol;
-        energyForCalculation -= properties.getFusionHeat_kj();
-        energyForCalculation -= properties.getVaporizationHeat_kj();
-        return energyForCalculation / properties.getSpecificHeatCapacity_kj_mol_K();
+        BigDouble energyForCalculation = new BigDouble(energy_kj_mol);
+        energyForCalculation.sub(properties.getFusionHeat_kj());
+        energyForCalculation.sub(properties.getVaporizationHeat_kj());
+        return energyForCalculation.div(properties.getSpecificHeatCapacity_kj_mol_K());
     }
 
-    private long getTemperature_K_ofGas(long energy_kj_mol, long pressure_kPa)
+    private BigDouble getTemperature_K_ofGas(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
-        long energyForCalculation = energy_kj_mol;
-        energyForCalculation -= properties.getFusionHeat_kj();
-        energyForCalculation -= properties.getVaporizationHeat_kj();
-        return energyForCalculation / properties.getSpecificHeatCapacity_kj_mol_K();
+        BigDouble energyForCalculation = new BigDouble(energy_kj_mol);
+        energyForCalculation.sub(properties.getFusionHeat_kj());
+        energyForCalculation.sub(properties.getVaporizationHeat_kj());
+        return energyForCalculation.div(properties.getSpecificHeatCapacity_kj_mol_K());
     }
 
-    private long getTemperature_K_ofLiquid(long energy_kj_mol, long pressure_kPa)
+    private BigDouble getTemperature_K_ofLiquid(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
         boolean isVaporizing = vaporizationBorder.isVaporizing(energy_kj_mol, pressure_kPa);
-        long energyForCalculation;
+        BigDouble energyForCalculation;
         if (isVaporizing)
         {
             energyForCalculation = vaporizationBorder.getMinEnergy_kj_mol(pressure_kPa);
         } else
         {
-            energyForCalculation = energy_kj_mol;
+            energyForCalculation = new BigDouble(energy_kj_mol);
         }
-        energyForCalculation -= properties.getFusionHeat_kj();
-        return energyForCalculation / properties.getSpecificHeatCapacity_kj_mol_K();
+        energyForCalculation.sub(properties.getFusionHeat_kj());
+        return energyForCalculation.div(properties.getSpecificHeatCapacity_kj_mol_K());
     }
 
-    private long getTemperature_K_ofSolid(long energy_kj_mol, long pressure_kPa)
+    private BigDouble getTemperature_K_ofSolid(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
         boolean isMelting = meltingBorder.isMelting(energy_kj_mol, pressure_kPa);
         boolean isSublimating = sublimationBorder.isSublimating(energy_kj_mol, pressure_kPa);
-        long energyForCalculation;
+        BigDouble energyForCalculation;
         if (isMelting && isSublimating)
         {
             // this is an edge case at the triple point
             // I assume that the melting slope is allways steeper than sublimation
-            energyForCalculation = Math.min(
+            energyForCalculation = BigDouble.min(
                     meltingBorder.getMinEnergy_kj_mol(pressure_kPa),
                     sublimationBorder.getMinEnergy_kj_mol(pressure_kPa));
         } else if (isMelting)
@@ -170,8 +171,8 @@ public class PhaseDiagram_Energy_Pressure {
             energyForCalculation = sublimationBorder.getMinEnergy_kj_mol(pressure_kPa);
         } else
         {
-            energyForCalculation = energy_kj_mol;
+            energyForCalculation = new BigDouble(energy_kj_mol);
         }
-        return energyForCalculation / properties.getSpecificHeatCapacity_kj_mol_K();
+        return energyForCalculation.div(properties.getSpecificHeatCapacity_kj_mol_K());
     }
 }

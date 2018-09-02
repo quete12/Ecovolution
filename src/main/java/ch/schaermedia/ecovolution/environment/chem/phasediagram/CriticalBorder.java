@@ -6,14 +6,15 @@
 package ch.schaermedia.ecovolution.environment.chem.phasediagram;
 
 import ch.schaermedia.ecovolution.environment.chem.properties.ElementProperties;
+import ch.schaermedia.ecovolution.general.math.BigDouble;
 
 /**
  *
  * @author Quentin
  */
 public class CriticalBorder extends PhaseBorder{
-    private final long criticalEnergy_kj_mol;
-    private final long criticalPressure_kPa;
+    private final BigDouble criticalEnergy_kj_mol;
+    private final BigDouble criticalPressure_kPa;
 
     public CriticalBorder(ElementProperties properties)
     {
@@ -22,14 +23,14 @@ public class CriticalBorder extends PhaseBorder{
         criticalEnergy_kj_mol = properties.maxCriticalEnergy();
     }
 
-    public boolean isCritical(long energy_kj_mol, long pressure_kPa)
+    public boolean isCritical(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
-        return pressure_kPa > criticalPressure_kPa
-                && energy_kj_mol > criticalEnergy_kj_mol;
+        return pressure_kPa.compareTo(criticalPressure_kPa)>0
+                && energy_kj_mol.compareTo(criticalEnergy_kj_mol)>0;
     }
 
     @Override
-    public long getMinEnergy_kj_mol(long pressure_kPa)
+    public BigDouble getMinEnergy_kj_mol(BigDouble pressure_kPa)
     {
         return criticalEnergy_kj_mol;
     }

@@ -11,65 +11,64 @@ package ch.schaermedia.ecovolution.general.math;
  */
 public class LinearFunction implements Function {
 
-    private final double varA;
-    private final double varB;
+    private final BigDouble varA;
+    private final BigDouble varB;
 
-    public LinearFunction(long p1x, long p1y, long p2x, long p2y)
+    public LinearFunction(BigDouble p1x, BigDouble p1y, BigDouble p2x, BigDouble p2y)
     {
         this.varA = findVarA(p1x, p1y, p2x, p2y);
         this.varB = findVarB(varA, p2x, p2y);
     }
 
-    public LinearFunction(long varA, long varB)
+    public LinearFunction(BigDouble varA, BigDouble varB)
     {
         this.varA = varA;
         this.varB = varB;
     }
 
-    public long y(long x)
+    public BigDouble y(BigDouble x)
     {
-        return (long) (varA * x + varB);
+        return varA.mul(x, new BigDouble()).add(varB);
     }
 
-    public long x(long y)
+    public BigDouble x(BigDouble y)
     {
-        return (long) ((y - varB) / varA);
+        return y.sub(varB, new BigDouble()).div(varA);
     }
 
-    public boolean isPointLeft(long px, long py)
+    public boolean isPointLeft(BigDouble px, BigDouble py)
     {
-        if (varA > 0)
+        if (varA.isPositive())
         {
-            return y(px) < py;
+            return y(px).compareTo(py) < 0;
         } else
         {
-            return y(px) > py;
+            return y(px).compareTo(py) > 0;
         }
     }
 
-    public boolean isPointOnOrOver(long px, long py)
+    public boolean isPointOnOrOver(BigDouble px, BigDouble py)
     {
-        if (varA > 0)
+        if (varA.isPositive())
         {
-            return y(px) <= py;
+            return y(px).compareTo(py) <= 0;
         } else
         {
-            return y(px) >= py;
+            return y(px).compareTo(py) >= 0;
         }
     }
 
-    private double findVarB(double varA, long px, long py)
+    private BigDouble findVarB(BigDouble varA, BigDouble px, BigDouble py)
     {
-        return py - (varA * px);
+        return py.sub(varA.mul(px, new BigDouble()), new BigDouble());
     }
 
-    private double findVarA(long p1X, long p1Y, long p2X, long p2Y)
+    private BigDouble findVarA(BigDouble p1X, BigDouble p1Y, BigDouble p2X, BigDouble p2Y)
     {
         try
         {
-            return (double)(p2Y - p1Y) / (double)(p2X - p1X);
-        }
-        catch (Exception ex)
+            return p2Y.sub(p1Y, new BigDouble()).div(p2X.sub(p1X, new BigDouble()));
+        } catch (Exception ex)
         {
             System.out.println("p1: " + p1X + "|" + p1Y + " p2: " + p2X + "|" + p2Y);
             throw ex;
@@ -85,15 +84,15 @@ public class LinearFunction implements Function {
     @Override
     public boolean isPositive()
     {
-        return varA > 0;
+        return varA.isPositive();
     }
 
-    public double getVarA()
+    public BigDouble getVarA()
     {
         return varA;
     }
 
-    public double getVarB()
+    public BigDouble getVarB()
     {
         return varB;
     }
@@ -101,6 +100,6 @@ public class LinearFunction implements Function {
     @Override
     public boolean isNegative()
     {
-        return varA < 0;
+        return varA.isNegative();
     }
 }
