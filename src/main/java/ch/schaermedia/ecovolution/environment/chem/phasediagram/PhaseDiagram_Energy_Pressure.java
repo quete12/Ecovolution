@@ -75,6 +75,7 @@ public class PhaseDiagram_Energy_Pressure {
         {
             return false;
         }
+        System.out.println("Energy per mol: " + energy_kj_mol.toDoubleString() + " pressure: " + pressure_kPa.toDoubleString());
         return meltingBorder.isMelted(energy_kj_mol, pressure_kPa);
     }
 
@@ -147,7 +148,11 @@ public class PhaseDiagram_Energy_Pressure {
         {
             energyForCalculation = new BigDouble(energy_kj_mol);
         }
+        System.out.println("isVaporizing: " + isVaporizing);
+        System.out.println("Energy: " + energy_kj_mol.toDoubleString());
+        System.out.println("Energy for Liquid calc: " + energyForCalculation.toDoubleString());
         energyForCalculation.sub(properties.getFusionHeat_kj());
+        System.out.println("Energy for Liquid calc: " + energyForCalculation.toDoubleString());
         return energyForCalculation.div(properties.getSpecificHeatCapacity_kj_mol_K());
     }
 

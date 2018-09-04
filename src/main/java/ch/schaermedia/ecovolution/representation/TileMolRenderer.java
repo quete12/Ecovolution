@@ -7,6 +7,7 @@ package ch.schaermedia.ecovolution.representation;
 
 import ch.schaermedia.ecovolution.environment.chem.compound.LayerMixture;
 import ch.schaermedia.ecovolution.environment.world.Tile;
+import ch.schaermedia.ecovolution.general.math.BigDouble;
 import processing.core.PGraphics;
 
 /**
@@ -32,19 +33,19 @@ public class TileMolRenderer implements TileRenderer {
     private void prepareForLayerRendering(PGraphics g, Tile tile)
     {
         LayerMixture layerMix = tile.getLayer(layer);
-        long moles = layerMix.getAmount_mol();
-        long molLimit = 10000000;
+        BigDouble moles = layerMix.getAmount_mol();
+        BigDouble molLimit = new BigDouble(10000000, 0);
         int fill;
-        if (moles == 0)
+        if (moles.isZero())
         {
             fill = 0;
-        } else if (moles > molLimit)
+        } else if (moles.compareTo(molLimit) > 0)
         {
-            float percentage = (float) (((double) moles / (double) molLimit) - 1.0);
+            float percentage = (float) ((moles.toDouble() / molLimit.toDouble()) - 1.0);
             fill = g.lerpColor(g.color(255), g.color(255, 0, 0), percentage);
         } else
         {
-            float percentage = (float) ((double) moles / (double) molLimit);
+            float percentage = (float) (moles.toDouble() / molLimit.toDouble());
             fill = g.lerpColor(g.color(0, 0, 255), g.color(255), percentage);
         }
         g.fill(fill);

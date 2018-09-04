@@ -14,7 +14,7 @@ import ch.schaermedia.ecovolution.environment.world.DefaultWorldGen;
 import ch.schaermedia.ecovolution.environment.world.Tile;
 import ch.schaermedia.ecovolution.environment.world.World;
 import ch.schaermedia.ecovolution.general.AtmosphericUpdater;
-import ch.schaermedia.ecovolution.general.math.Consts;
+import ch.schaermedia.ecovolution.general.math.BigDouble;
 import ch.schaermedia.ecovolution.representation.TileMolRenderer;
 import ch.schaermedia.ecovolution.representation.TilePressureRenderer;
 import ch.schaermedia.ecovolution.representation.TileVolumeRenderer;
@@ -76,14 +76,14 @@ public class Sim extends PApplet {
         long renderDuration = System.currentTimeMillis() - renderStart;
         popMatrix();
         LayerMixture layer = world.getGrid()[0][0].getLayer(0);
-        long unadded = layer.addEnergy(Consts.toLong(1000));
+        BigDouble unadded = layer.addEnergy(new BigDouble(1000, 0));
 
         fill(0);
         text("FPS: " + frameRate, 1200, 100);
         text("Rendering: " + renderDuration, 1200, 150);
         text("Not added: " + unadded, 1200, 200);
-        text("Temp At [0][0][0]: " + Consts.toDouble(layer.getTemperature_k()) +" K", 1200, 250);
-        text("Pressure At [0][0][0]: " + Consts.toDouble(layer.getPressure_kPa()) + " kPa", 1200, 300);
+        text("Temp At [0][0][0]: " + layer.getTemperature_k().toDouble() + " K", 1200, 250);
+        text("Pressure At [0][0][0]: " + layer.getPressure_kPa().toDouble() + " kPa", 1200, 300);
 
         if (!atmosUpdater.isRunning())
         {
@@ -106,8 +106,7 @@ public class Sim extends PApplet {
         try
         {
             ChemUtilities.readElements("res/Chemics.json");
-        }
-        catch (FileNotFoundException ex)
+        } catch (FileNotFoundException ex)
         {
             Logger.getLogger(Sim.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -173,9 +172,9 @@ public class Sim extends PApplet {
         LayerMixture layer = tile.getLayer(0);
         PhaseMixture solids = layer.getMixtureForPhase(Phase.SOLID);
         Compound water = solids.getCompound("H2O");
-        water.add(1000 * Consts.PRESCISION, 500 * Consts.PRESCISION);
+        water.add(new BigDouble(1000, 0), new BigDouble(500, 0));
         Compound o2 = solids.getCompound("CO2");
-        o2.add(2000 * Consts.PRESCISION, 500 * Consts.PRESCISION);
+        o2.add(new BigDouble(2000, 0), new BigDouble(500, 0));
     }
 
     private void threadSetup()

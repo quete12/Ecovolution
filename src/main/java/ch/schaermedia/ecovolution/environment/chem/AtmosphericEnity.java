@@ -12,18 +12,20 @@ import ch.schaermedia.ecovolution.general.math.BigDouble;
  * @author Quentin
  */
 public abstract class AtmosphericEnity {
-    protected BigDouble amount_mol;
-    protected BigDouble energy_kj;
 
-    protected BigDouble temperature_k;
-    protected BigDouble pressure_kPa;
-    protected BigDouble volume_L;
+    protected BigDouble amount_mol = new BigDouble();
+    protected BigDouble energy_kj = new BigDouble();
 
-    protected BigDouble heatCapacity_kj_K;
+    protected BigDouble temperature_k = new BigDouble();
+    protected BigDouble pressure_kPa = new BigDouble();
+    protected BigDouble volume_L = new BigDouble();
+
+    protected BigDouble heatCapacity_kj_K = new BigDouble();
 
     public abstract void updateStats(BigDouble externalPressure_kPa, BigDouble totalVolume_L);
 
-    protected void clearStats(){
+    protected void clearStats()
+    {
         amount_mol.clear();
         energy_kj.clear();
         temperature_k.clear();

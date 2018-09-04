@@ -40,12 +40,13 @@ public class MeltingBorder extends PhaseBorder {
         meltingMax = new LinearFunction(
                 properties.maxTriplePointMeltingEnergy(),
                 properties.getTriplePointPressure_kPa(),
-                meltingEnergyAtHighPressure.add(properties.getFusionHeat_kj(), new BigDouble()),
+                meltingEnergyAtHighPressure.add(properties.getFusionHeat_kj()),
                 highPressure);
     }
 
     public boolean isMelted(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
+        System.out.println("Melting x: " + meltingMax.x(pressure_kPa) + " y: " + meltingMax.y(energy_kj_mol));
         return meltingMax.isPointRight(energy_kj_mol, pressure_kPa);
     }
 

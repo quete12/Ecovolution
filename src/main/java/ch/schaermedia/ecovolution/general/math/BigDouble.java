@@ -33,15 +33,26 @@ public class BigDouble implements Comparable<BigDouble> {
     {
         this.value = (long) doubleVal;
         this.fraction = (long) ((doubleVal - this.value) * PRESCISION);
+        cleanFractionNegation();
+    }
+
+    protected void cleanFractionNegation()
+    {
         if (value < 0 && fraction > 0)
+        {
+            fraction *= -1;
+        }
+        if (value > 0 && fraction < 0)
         {
             fraction *= -1;
         }
     }
 
-    public BigDouble(BigDouble toCopy){
+    public BigDouble(BigDouble toCopy)
+    {
         this.value = toCopy.getValue();
         this.fraction = toCopy.getFraction();
+        cleanFractionNegation();
     }
 
     private BigDouble setImmutable()
@@ -65,6 +76,11 @@ public class BigDouble implements Comparable<BigDouble> {
             frac -= PRESCISION;
             val += 1;
         }
+        if (frac <= PRESCISION)
+        {
+            frac += PRESCISION;
+            val -= 1;
+        }
         val += this.value + value;
         if (immutable && result == this)
         {
@@ -72,6 +88,7 @@ public class BigDouble implements Comparable<BigDouble> {
         }
         result.setFraction(frac);
         result.setValue(val);
+        result.cleanFractionNegation();
         return result;
     }
 
@@ -87,7 +104,7 @@ public class BigDouble implements Comparable<BigDouble> {
 
     public BigDouble add(BigDouble other, BigDouble result)
     {
-        return add(value, fraction, result);
+        return add(other.getValue(), other.getFraction(), result);
     }
 
     @Override
@@ -111,6 +128,33 @@ public class BigDouble implements Comparable<BigDouble> {
         }
     }
 
+    public String toDoubleString()
+    {
+        String frac;
+        String val;
+        if (fraction < 0)
+        {
+            frac = Long.toString(fraction * -1);
+            if (value >= 0)
+            {
+                val = Long.toString(value * -1);
+            } else
+            {
+                val = Long.toString(value);
+            }
+        } else
+        {
+            frac = Long.toString(fraction);
+            val = Long.toString(value);
+        }
+        return val + "." + frac;
+    }
+
+    public double toDouble()
+    {
+        return new Double(toDoubleString());
+    }
+
     public BigDouble sub(long value, long fraction, BigDouble result)
     {
         long frac = this.fraction - fraction;
@@ -127,6 +171,7 @@ public class BigDouble implements Comparable<BigDouble> {
         }
         result.setFraction(frac);
         result.setValue(val);
+        result.cleanFractionNegation();
         return result;
     }
 
@@ -142,7 +187,7 @@ public class BigDouble implements Comparable<BigDouble> {
 
     public BigDouble sub(BigDouble other, BigDouble result)
     {
-        return sub(value, fraction, result);
+        return sub(other.getValue(), other.getFraction(), result);
     }
 
     public BigDouble mul(long value, long fraction, BigDouble result)
@@ -156,8 +201,7 @@ public class BigDouble implements Comparable<BigDouble> {
         long fracC = c - (valC * PRESCISION);
         long d = this.fraction * fraction / PRESCISION;
 
-        System.out.println("a: " + a + " valB: " + valB + " fracB: " + fracB + " valC: " + valC + " fracC: " + fracC + " d: " + d);
-
+        //System.out.println("a: " + a + " valB: " + valB + " fracB: " + fracB + " valC: " + valC + " fracC: " + fracC + " d: " + d);
         long frac = fracB + fracC + d;
         long val = a + valB + valC;
         if (frac < 0)
@@ -181,6 +225,7 @@ public class BigDouble implements Comparable<BigDouble> {
         }
         result.setFraction(frac);
         result.setValue(val);
+        result.cleanFractionNegation();
         return result;
     }
 
@@ -196,7 +241,7 @@ public class BigDouble implements Comparable<BigDouble> {
 
     public BigDouble mul(BigDouble other, BigDouble result)
     {
-        return mul(value, fraction, result);
+        return mul(other.getValue(), other.getFraction(), result);
     }
 
     public BigDouble div(long value, long fraction, BigDouble result)
@@ -211,6 +256,7 @@ public class BigDouble implements Comparable<BigDouble> {
         bigMyValue = bigMyValue.multiply(bigPrescision);
         BigInteger bigMyFraction = new BigInteger(Long.toString(this.fraction));
         bigMyValue = bigMyValue.add(bigMyFraction);
+        //System.out.println("Dividing: " + bigMyValue + " by " + bigOtherValue);
 
         BigInteger bigRes = bigMyValue.multiply(bigPrescision).divide(bigOtherValue);
         long res = bigRes.longValue();
@@ -223,6 +269,7 @@ public class BigDouble implements Comparable<BigDouble> {
         }
         result.setFraction(frac);
         result.setValue(val);
+        result.cleanFractionNegation();
         return result;
     }
 
@@ -238,7 +285,7 @@ public class BigDouble implements Comparable<BigDouble> {
 
     public BigDouble div(BigDouble other, BigDouble result)
     {
-        return div(value, fraction, result);
+        return div(other.getValue(), other.getFraction(), result);
     }
 
     public void limitHigh(BigDouble limit)

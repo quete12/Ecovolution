@@ -27,6 +27,8 @@ public class PhaseMixture extends AtmosphericEnity {
     private List<PhaseMixture> neighbours;
     private List<Compound> phaseChanged;
 
+    private BigDouble heatCapacityCopy;
+
     public PhaseMixture(int phase)
     {
         this.phase = phase;
@@ -138,6 +140,7 @@ public class PhaseMixture extends AtmosphericEnity {
             temperature_k.add(compound.getTemperature_k());
         }
         temperature_k.div(new BigDouble(composition.size(), 0));
+        heatCapacityCopy = new BigDouble(heatCapacity_kj_K);
         if (pressure_kPa.isNegative())
         {
             throw new RuntimeException("negative Pressure!");
@@ -165,10 +168,14 @@ public class PhaseMixture extends AtmosphericEnity {
 
     public BigDouble addEnergy(BigDouble energy_kj)
     {
+        if (heatCapacityCopy == null)
+        {
+            return new BigDouble(energy_kj);
+        }
         BigDouble added = new BigDouble();
         for (Compound compound : composition.values())
         {
-            BigDouble percentage = compound.getHeatCapacity_kj_K().div(heatCapacity_kj_K, new BigDouble());
+            BigDouble percentage = compound.getHeatCapacity_kj_K().div(heatCapacityCopy, new BigDouble());
             BigDouble energyToAdd = energy_kj.mul(percentage, new BigDouble());
             compound.add(new BigDouble(), energyToAdd);
             added.add(energyToAdd);

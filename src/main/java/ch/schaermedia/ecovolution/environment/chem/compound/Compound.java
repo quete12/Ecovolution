@@ -19,8 +19,8 @@ public class Compound extends AtmosphericEnity {
 
     private final CompoundProperties properties;
 
-    private BigDouble amount_mol_buffer;
-    private BigDouble energy_kj_buffer;
+    private BigDouble amount_mol_buffer = new BigDouble();
+    private BigDouble energy_kj_buffer = new BigDouble();
     private Phase phase = Phase.SOLID;
 
     private boolean phaseChanged = false;
@@ -79,6 +79,7 @@ public class Compound extends AtmosphericEnity {
     {
         PhaseDiagram_Energy_Pressure diag = properties.getEnergy_Pressure_Diagram();
         BigDouble energyPerMol = energy_kj.div(amount_mol, new BigDouble());
+        System.out.println("Energy per mol: " + energyPerMol.toDoubleString() + " external Pressure: " + externalPressure_kPa + " total Volume: " + totalVolume_L);
         Phase phaseAt = diag.getPhaseAt(energyPerMol, externalPressure_kPa);
         phaseChanged = phaseAt.idx != phase.idx;
         phase = phaseAt;
