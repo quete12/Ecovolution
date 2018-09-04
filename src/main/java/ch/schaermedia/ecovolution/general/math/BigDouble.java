@@ -55,16 +55,17 @@ public class BigDouble implements Comparable<BigDouble> {
         cleanFractionNegation();
     }
 
-    private BigDouble setImmutable()
-    {
-        immutable = true;
-        return this;
-    }
-
     public BigDouble(long value, long fraction)
     {
         this.value = value;
         this.fraction = fraction;
+        cleanFractionNegation();
+    }
+
+    private BigDouble setImmutable()
+    {
+        immutable = true;
+        return this;
     }
 
     public BigDouble add(long value, long fraction, BigDouble result)
@@ -76,7 +77,7 @@ public class BigDouble implements Comparable<BigDouble> {
             frac -= PRESCISION;
             val += 1;
         }
-        if (frac <= PRESCISION)
+        if (frac <= -PRESCISION)
         {
             frac += PRESCISION;
             val -= 1;
@@ -159,10 +160,15 @@ public class BigDouble implements Comparable<BigDouble> {
     {
         long frac = this.fraction - fraction;
         long val = 0;
-        if (frac < 0)
+        if (frac < -PRESCISION)
         {
             frac += PRESCISION;
             val -= 1;
+        }
+        if (frac > PRESCISION)
+        {
+            frac -= PRESCISION;
+            val += 1;
         }
         val += this.value - value;
         if (immutable && result == this)
@@ -388,6 +394,21 @@ public class BigDouble implements Comparable<BigDouble> {
     public String toString()
     {
         return "BigDouble{" + "value=" + value + ", fraction=" + fraction + '}';
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof BigDouble))
+        {
+            return false;
+        }
+        BigDouble other = (BigDouble) obj;
+        if (this.compareTo(other) == 0)
+        {
+            return true;
+        }
+        return false;
     }
 
 }

@@ -49,6 +49,9 @@ public class PhaseDiagram_Energy_PressureTest {
         System.out.println("E per Mol: " + energyPerMol);
         Phase phaseAt = diag.getPhaseAt(energyPerMol, externalPressure);
         System.out.println("Phase: " + phaseAt);
+        co2.updateStats(externalPressure, totalVolume);
+        System.out.println("Compound: " + co2);
+
     }
 
 }
