@@ -60,9 +60,9 @@ public class Compound extends AtmosphericEnity {
     public void updateStats(BigDouble externalPressure_kPa, BigDouble totalVolume_L)
     {
         importBuffers();
-        amount_mol.mul(properties.getSpecificHeatCapacity_kj_mol_K(), heatCapacity_kj_K);
         if (amount_mol.isPositive())
         {
+            amount_mol.mul(properties.getSpecificHeatCapacity_kj_mol_K(), heatCapacity_kj_K);
             updateThermodynamicStats(externalPressure_kPa, totalVolume_L);
         }
     }

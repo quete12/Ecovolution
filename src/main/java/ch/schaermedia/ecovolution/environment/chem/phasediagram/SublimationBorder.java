@@ -61,7 +61,7 @@ public class SublimationBorder extends PhaseBorder {
         sublimationMin[0] = new LinearFunction(
                 BigDouble.ZERO,
                 BigDouble.ZERO,
-                properties.minBoilingEnergy().sub(properties.getFusionHeat_kj(),new BigDouble()),
+                properties.minBoilingEnergy(),
                 Consts.STANDARD_PRESSURE_kPa);
         sublimationMax[0] = new LinearFunction(
                 properties.getFusionHeat_kj().add(properties.getVaporizationHeat_kj(),new BigDouble()),
@@ -73,7 +73,7 @@ public class SublimationBorder extends PhaseBorder {
     private void initBordersBoilingToTriple(ElementProperties properties)
     {
         sublimationMin[1] = new LinearFunction(
-                properties.minBoilingEnergy().sub(properties.getFusionHeat_kj(),new BigDouble()),
+                properties.minBoilingEnergy(),
                 Consts.STANDARD_PRESSURE_kPa,
                 properties.minTriplePointEnergy(),
                 properties.getTriplePointPressure_kPa());
@@ -138,5 +138,15 @@ public class SublimationBorder extends PhaseBorder {
         {
             return BigDouble.min(sublimationMin[0].x(pressure_kPa), sublimationMin[1].x(pressure_kPa));
         }
+    }
+
+    public LinearFunction[] getSublimationMin()
+    {
+        return sublimationMin;
+    }
+
+    public LinearFunction[] getSublimationMax()
+    {
+        return sublimationMax;
     }
 }

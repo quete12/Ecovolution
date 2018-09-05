@@ -60,7 +60,7 @@ public class VaporizationBorder extends PhaseBorder {
         vaporizationMin[0] = new LinearFunction(
                 properties.minBoilingEnergy(),
                 Consts.STANDARD_PRESSURE_kPa,
-                properties.minTriplePointEnergy(),
+                properties.minTriplePointEnergy().add(properties.getFusionHeat_kj(), new BigDouble()),
                 properties.getTriplePointPressure_kPa());
         vaporizationMax[0] = new LinearFunction(
                 properties.maxBoilingEnergy(),
@@ -72,7 +72,7 @@ public class VaporizationBorder extends PhaseBorder {
     private void initVaporizationBordersTripleToCritical(ElementProperties properties)
     {
         vaporizationMin[0] = new LinearFunction(
-                properties.minTriplePointEnergy(),
+                properties.minTriplePointEnergy().add(properties.getFusionHeat_kj(), new BigDouble()),
                 properties.getTriplePointPressure_kPa(),
                 properties.minCriticalEnergy(),
                 properties.getCriticalPointPressure_kPa());
@@ -137,5 +137,15 @@ public class VaporizationBorder extends PhaseBorder {
         {
             return BigDouble.min(vaporizationMin[0].x(pressure_kPa), vaporizationMin[1].x(pressure_kPa));
         }
+    }
+
+    public LinearFunction[] getVaporizationMin()
+    {
+        return vaporizationMin;
+    }
+
+    public LinearFunction[] getVaporizationMax()
+    {
+        return vaporizationMax;
     }
 }

@@ -18,32 +18,18 @@ public interface Function {
     public boolean isPositive();
 
     public boolean isNegative();
-//
-//    default public boolean isPointOnOrLeft(long x, long y)
-//    {
-//        long fx = x(y);
-//        return x <= fx;
-//    }
-//
 
     default public boolean isPointLeft(BigDouble x, BigDouble y)
     {
         BigDouble fx = x(y);
         return x.compareTo(fx) < 0;
     }
-//
-//    default public boolean isPointOnOrRight(long x, long y)
-//    {
-//        long fx = x(y);
-//        return x >= fx;
-//    }
 
     default public boolean isPointRight(BigDouble x, BigDouble y)
     {
         BigDouble fx = x(y);
         return x.compareTo(fx) > 0;
     }
-//
 
     default public boolean isPointOnOrOver(BigDouble x, BigDouble y)
     {

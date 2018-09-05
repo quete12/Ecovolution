@@ -12,6 +12,6 @@ package ch.schaermedia.ecovolution.general.math;
 public class Consts {
 
     public static final BigDouble STANDARD_PRESSURE_kPa = new BigDouble(101.325);
-    public static final BigDouble GAS_CONSTANT_L_kPa_K = new BigDouble(8.3144598);
+    public static final BigDouble GAS_CONSTANT_L_kPa_K = new BigDouble(8,314459);
     public static final BigDouble CELSIUS_TO_KELVIN_CONVERSION = new BigDouble(273.15);
 }

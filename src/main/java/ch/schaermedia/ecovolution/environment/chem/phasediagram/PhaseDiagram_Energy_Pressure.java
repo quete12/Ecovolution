@@ -180,4 +180,24 @@ public class PhaseDiagram_Energy_Pressure {
         }
         return energyForCalculation.div(properties.getSpecificHeatCapacity_kj_mol_K());
     }
+
+    public SublimationBorder getSublimationBorder()
+    {
+        return sublimationBorder;
+    }
+
+    public MeltingBorder getMeltingBorder()
+    {
+        return meltingBorder;
+    }
+
+    public VaporizationBorder getVaporizationBorder()
+    {
+        return vaporizationBorder;
+    }
+
+    public CriticalBorder getCriticalBorder()
+    {
+        return criticalBorder;
+    }
 }

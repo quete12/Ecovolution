@@ -13,7 +13,8 @@ import java.math.BigInteger;
  */
 public class BigDouble implements Comparable<BigDouble> {
 
-    private static final long PRESCISION = 1000000;
+    private static final long PRESCISION = 1000000000;
+    private static final String PRESCISION_STRING = Long.toString(PRESCISION);
 
     public static final BigDouble ONE = new BigDouble(1.0).setImmutable();
     public static final BigDouble NEG_ONE = new BigDouble(-1.0).setImmutable();
@@ -28,11 +29,25 @@ public class BigDouble implements Comparable<BigDouble> {
         this.value = 0;
         this.fraction = 0;
     }
+//
+//    public BigDouble(String string)
+//    {
+//        if (string == null || string.isEmpty())
+//        {
+//            this.value = 0;
+//            this.fraction = 0;
+//            return;
+//        }
+//        if (!string.matches("(-?\\d{1,}\\.\\d*)|(-?\\d{1,})"))
+//        {
+//            throw new NumberFormatException("String did not match pattern! input: " + string);
+//        }
+//    }
 
     public BigDouble(double doubleVal)
     {
         this.value = (long) doubleVal;
-        this.fraction = (long) ((doubleVal - this.value) * PRESCISION);
+        this.fraction = Math.round((doubleVal - this.value) * PRESCISION);
         cleanFractionNegation();
     }
 
@@ -147,6 +162,10 @@ public class BigDouble implements Comparable<BigDouble> {
         {
             frac = Long.toString(fraction);
             val = Long.toString(value);
+        }
+        while (frac.length() < PRESCISION_STRING.length() - 1)
+        {
+            frac = "0" + frac;
         }
         return val + "." + frac;
     }
@@ -264,7 +283,7 @@ public class BigDouble implements Comparable<BigDouble> {
         bigMyValue = bigMyValue.add(bigMyFraction);
         //System.out.println("Dividing: " + bigMyValue + " by " + bigOtherValue);
 
-        BigInteger bigRes = bigMyValue.multiply(bigPrescision).divide(bigOtherValue);
+        BigInteger bigRes = (bigMyValue.multiply(bigPrescision)).divide(bigOtherValue);
         long res = bigRes.longValue();
         long val = res / PRESCISION;
         long frac = res - (val * PRESCISION);

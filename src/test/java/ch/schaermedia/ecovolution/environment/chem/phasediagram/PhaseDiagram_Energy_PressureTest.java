@@ -8,9 +8,9 @@ package ch.schaermedia.ecovolution.environment.chem.phasediagram;
 import ch.schaermedia.ecovolution.Sim;
 import ch.schaermedia.ecovolution.environment.chem.ChemUtilities;
 import ch.schaermedia.ecovolution.environment.chem.compound.Compound;
-import ch.schaermedia.ecovolution.environment.chem.compound.Phase;
 import ch.schaermedia.ecovolution.environment.chem.properties.CompoundProperties;
 import ch.schaermedia.ecovolution.general.math.BigDouble;
+import ch.schaermedia.ecovolution.general.math.LinearFunction;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,30 +27,37 @@ public class PhaseDiagram_Energy_PressureTest {
         try
         {
             ChemUtilities.readElements("res/Chemics.json");
-        } catch (FileNotFoundException ex)
+        }
+        catch (FileNotFoundException ex)
         {
             Logger.getLogger(Sim.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Test
-    public void testNegTempCO2()
+    public void test()
     {
-        CompoundProperties co2Prop = CompoundProperties.getPropertiesFromCode("CO2");
-        Compound co2 = new Compound(co2Prop);
-        co2.add(new BigDouble(2000, 0), new BigDouble(31705, 458000));
-        co2.importBuffers();
-        PhaseDiagram_Energy_Pressure diag = co2Prop.getEnergy_Pressure_Diagram();
+        CompoundProperties properties = CompoundProperties.getPropertiesFromCode("H2O");
+        Compound compound = new Compound(properties);
+        compound.add(new BigDouble(1, 298250000), new BigDouble(59, 725998000));
+        compound.importBuffers();
+        PhaseDiagram_Energy_Pressure diag = properties.getEnergy_Pressure_Diagram();
 
-        BigDouble externalPressure = new BigDouble(8, 264011);
+        BigDouble externalPressure = new BigDouble(0, 0);
         BigDouble totalVolume = new BigDouble(125000, 0);
 
-        BigDouble energyPerMol = co2.getEnergy_kj().div(co2.getAmount_mol(), new BigDouble());
+        BigDouble energyPerMol = compound.getEnergy_kj().div(compound.getAmount_mol(), new BigDouble());
         System.out.println("E per Mol: " + energyPerMol);
-        Phase phaseAt = diag.getPhaseAt(energyPerMol, externalPressure);
-        System.out.println("Phase: " + phaseAt);
-        co2.updateStats(externalPressure, totalVolume);
-        System.out.println("Compound: " + co2);
+
+        LinearFunction[] vaporizationMax = diag.getSublimationBorder().getSublimationMax();
+        LinearFunction sublMax = vaporizationMax[0];
+        System.out.println("x at y=0.0 is: " + sublMax.x(new BigDouble(0.0)));
+        System.out.println("y at x=0.0 is: " + sublMax.y(new BigDouble(0.0)));
+        System.out.println("y at x="+energyPerMol+" is: " + sublMax.y(energyPerMol));
+//
+//        System.out.println("Phase: " + phaseAt);
+//        compound.updateStats(externalPressure, totalVolume);
+//        System.out.println("Compound: " + compound);
 
     }
 

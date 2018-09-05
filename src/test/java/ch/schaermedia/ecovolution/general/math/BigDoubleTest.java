@@ -44,7 +44,7 @@ public class BigDoubleTest {
     {
         System.out.println("toDoubleString");
         BigDouble instance = new BigDouble(2.5);
-        String expResult = "2.500000";
+        String expResult = "2.500000000";
         String result = instance.toDoubleString();
         assertEquals(expResult, result);
     }
@@ -57,7 +57,7 @@ public class BigDoubleTest {
     {
         System.out.println("toDoubleString");
         BigDouble instance = new BigDouble(-2.5);
-        String expResult = "-2.500000";
+        String expResult = "-2.500000000";
         String result = instance.toDoubleString();
         assertEquals(expResult, result);
     }
@@ -238,7 +238,7 @@ public class BigDoubleTest {
         System.out.println("div");
         BigDouble instance = new BigDouble(3.6);
         BigDouble other = new BigDouble(2.5);
-        BigDouble expResult = new BigDouble(1,440000);
+        BigDouble expResult = new BigDouble(1, 440000000);
         BigDouble result = instance.div(other);
         assertEquals(expResult, result);
     }
@@ -252,7 +252,7 @@ public class BigDoubleTest {
         System.out.println("div");
         BigDouble instance = new BigDouble(-3.6);
         BigDouble other = new BigDouble(-2.5);
-        BigDouble expResult = new BigDouble(1,440000);
+        BigDouble expResult = new BigDouble(1, 440000000);
         BigDouble result = instance.div(other);
         assertEquals(expResult, result);
     }
@@ -266,7 +266,7 @@ public class BigDoubleTest {
         System.out.println("div");
         BigDouble instance = new BigDouble(-3.6);
         BigDouble other = new BigDouble(2.5);
-        BigDouble expResult = new BigDouble(-1,440000);
+        BigDouble expResult = new BigDouble(-1, 440000000);
         BigDouble result = instance.div(other);
         assertEquals(expResult, result);
     }
@@ -412,6 +412,16 @@ public class BigDoubleTest {
         BigDouble b = new BigDouble(-5.6);
         BigDouble expResult = b;
         BigDouble result = BigDouble.min(a, b);
+        assertEquals(expResult, result);
+    }
+
+    @Test
+    public void testToDoubleString_SmallFractions()
+    {
+        System.out.println("toDoubleString");
+        BigDouble instance = new BigDouble(0, 1);
+        String expResult = "0.000000001";
+        String result = instance.toDoubleString();
         assertEquals(expResult, result);
     }
 
