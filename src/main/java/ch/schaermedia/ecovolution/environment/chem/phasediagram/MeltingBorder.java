@@ -46,7 +46,6 @@ public class MeltingBorder extends PhaseBorder {
 
     public boolean isMelted(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
-        System.out.println("Melting x: " + meltingMax.x(pressure_kPa) + " y: " + meltingMax.y(energy_kj_mol));
         return meltingMax.isPointRight(energy_kj_mol, pressure_kPa);
     }
 

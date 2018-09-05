@@ -33,6 +33,11 @@ public class PhaseDiagram_Energy_Pressure {
 
     public Phase getPhaseAt(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
+        if (pressure_kPa.isZero())
+        {
+            //if there's no pressure all compounds are assumed to be solid
+            return Phase.SOLID;
+        }
         if (isSupercriticalFluid(energy_kj_mol, pressure_kPa))
         {
             return Phase.SUPERCRITICAL_FLUID;
@@ -75,7 +80,6 @@ public class PhaseDiagram_Energy_Pressure {
         {
             return false;
         }
-        System.out.println("Energy per mol: " + energy_kj_mol.toDoubleString() + " pressure: " + pressure_kPa.toDoubleString());
         return meltingBorder.isMelted(energy_kj_mol, pressure_kPa);
     }
 
@@ -148,18 +152,23 @@ public class PhaseDiagram_Energy_Pressure {
         {
             energyForCalculation = new BigDouble(energy_kj_mol);
         }
-        System.out.println("isVaporizing: " + isVaporizing);
-        System.out.println("Energy: " + energy_kj_mol.toDoubleString());
-        System.out.println("Energy for Liquid calc: " + energyForCalculation.toDoubleString());
         energyForCalculation.sub(properties.getFusionHeat_kj());
-        System.out.println("Energy for Liquid calc: " + energyForCalculation.toDoubleString());
         return energyForCalculation.div(properties.getSpecificHeatCapacity_kj_mol_K());
     }
 
     private BigDouble getTemperature_K_ofSolid(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
-        boolean isMelting = meltingBorder.isMelting(energy_kj_mol, pressure_kPa);
-        boolean isSublimating = sublimationBorder.isSublimating(energy_kj_mol, pressure_kPa);
+        boolean isMelting;
+        boolean isSublimating;
+        if (pressure_kPa.isZero())
+        {
+            isMelting = false;
+            isSublimating = false;
+        } else
+        {
+            isMelting = meltingBorder.isMelting(energy_kj_mol, pressure_kPa);
+            isSublimating = sublimationBorder.isSublimating(energy_kj_mol, pressure_kPa);
+        }
         BigDouble energyForCalculation;
         if (isMelting && isSublimating)
         {

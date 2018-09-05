@@ -84,6 +84,9 @@ public class LayerMixture extends AtmosphericEnity {
         {
             return;
         }
+        if(gases.getAmount_mol().isNegative()){
+            throw new RuntimeException("Negative amount of Gases!!");
+        }
         BigDouble percentage = amount_mol.div(gases.getAmount_mol(), new BigDouble());
         percentage.limitHigh(BigDouble.ONE);
         gases.spreadToLower(percentage);
@@ -114,7 +117,7 @@ public class LayerMixture extends AtmosphericEnity {
 
     public void update()
     {
-        updateStats(pressure_kPa, layerVolume_L);
+        updateStats(new BigDouble(pressure_kPa), layerVolume_L);
         updateCompoundPhases();
         rainAndHail();
     }
@@ -134,12 +137,10 @@ public class LayerMixture extends AtmosphericEnity {
         }
         if (phaseChanged == null)
         {
-            System.out.println("Escapeing phasechange!");
             return;
         }
         for (Compound compound : phaseChanged)
         {
-            System.out.println("Performing Phasechange! " + compound);
             phases[compound.getPhase().idx].add(compound);
         }
     }

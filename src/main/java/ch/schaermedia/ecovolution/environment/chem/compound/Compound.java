@@ -40,7 +40,7 @@ public class Compound extends AtmosphericEnity {
     {
         if (percentage.isNegative())
         {
-            throw new RuntimeException("Negative percentage split!!");
+            throw new RuntimeException("Negative percentage split!!\nFrom: " + this + " \nTo: " + other + "\nPercentage: " + percentage.toDoubleString());
         }
         BigDouble amountDiff = amount_mol.mul(percentage, new BigDouble());
         amount_mol_buffer.sub(amountDiff);
@@ -79,14 +79,16 @@ public class Compound extends AtmosphericEnity {
     {
         PhaseDiagram_Energy_Pressure diag = properties.getEnergy_Pressure_Diagram();
         BigDouble energyPerMol = energy_kj.div(amount_mol, new BigDouble());
-        System.out.println("Energy per mol: " + energyPerMol.toDoubleString() + " external Pressure: " + externalPressure_kPa + " total Volume: " + totalVolume_L);
         Phase phaseAt = diag.getPhaseAt(energyPerMol, externalPressure_kPa);
         phaseChanged = phaseAt.idx != phase.idx;
         phase = phaseAt;
         temperature_k = diag.getTemperature_K_at(energyPerMol, externalPressure_kPa, phase);
         if (temperature_k.isNegative())
         {
-            throw new RuntimeException("Negative temperature with: " + this + " temperature: " + temperature_k);
+            throw new RuntimeException("Negative temperature with: " + this
+                    + "\ntemperature: " + temperature_k
+                    +"\nexternamPressure: " + externalPressure_kPa.toDoubleString()
+                    +"\ntotalVolume: " + totalVolume_L.toDoubleString());
         }
         ChemUtilities.volume_L(externalPressure_kPa, amount_mol, temperature_k, volume_L);
         ChemUtilities.pressure_kPa(totalVolume_L, amount_mol, temperature_k, pressure_kPa);

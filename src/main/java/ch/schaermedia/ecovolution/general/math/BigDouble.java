@@ -29,20 +29,6 @@ public class BigDouble implements Comparable<BigDouble> {
         this.value = 0;
         this.fraction = 0;
     }
-//
-//    public BigDouble(String string)
-//    {
-//        if (string == null || string.isEmpty())
-//        {
-//            this.value = 0;
-//            this.fraction = 0;
-//            return;
-//        }
-//        if (!string.matches("(-?\\d{1,}\\.\\d*)|(-?\\d{1,})"))
-//        {
-//            throw new NumberFormatException("String did not match pattern! input: " + string);
-//        }
-//    }
 
     public BigDouble(double doubleVal)
     {
@@ -284,9 +270,10 @@ public class BigDouble implements Comparable<BigDouble> {
         //System.out.println("Dividing: " + bigMyValue + " by " + bigOtherValue);
 
         BigInteger bigRes = (bigMyValue.multiply(bigPrescision)).divide(bigOtherValue);
-        long res = bigRes.longValue();
-        long val = res / PRESCISION;
-        long frac = res - (val * PRESCISION);
+        BigInteger bigVal = bigRes.divide(bigPrescision);
+        BigInteger bigFrac = bigRes.subtract(bigVal.multiply(bigPrescision));
+        long val = bigVal.longValue();
+        long frac =bigFrac.longValue();
 
         if (immutable && result == this)
         {
@@ -407,6 +394,13 @@ public class BigDouble implements Comparable<BigDouble> {
         {
             return b;
         }
+    }
+
+    public BigDouble abs(){
+        if(isNegative()){
+            return mul(NEG_ONE,new BigDouble());
+        }
+        return new BigDouble(this);
     }
 
     @Override

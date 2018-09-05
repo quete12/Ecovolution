@@ -75,15 +75,22 @@ public class Sim extends PApplet {
 //        image(renderer.getGraphics(), Tile.SIZE, Tile.SIZE);
         long renderDuration = System.currentTimeMillis() - renderStart;
         popMatrix();
-        LayerMixture layer = world.getGrid()[0][0].getLayer(0);
-        BigDouble unadded = layer.addEnergy(new BigDouble(1000, 0));
+        Tile tile = world.getGrid()[0][0];
+        LayerMixture layer = tile.getLayer(0);
+        BigDouble unadded = new BigDouble();
+        try{
+            unadded = layer.addEnergy(new BigDouble(1000, 0));
+        }catch(ArithmeticException ex){
+        }
 
         fill(0);
         text("FPS: " + frameRate, 1200, 100);
         text("Rendering: " + renderDuration, 1200, 150);
-        text("Not added: " + unadded, 1200, 200);
-        text("Temp At [0][0][0]: " + layer.getTemperature_k().toDouble() + " K", 1200, 250);
+        text("Not added: " + unadded.toDoubleString(), 1200, 200);
+        text("Temp At [0][0][0]: " + layer.getTemperature_k().toDouble()+ " K", 1200, 250);
         text("Pressure At [0][0][0]: " + layer.getPressure_kPa().toDouble() + " kPa", 1200, 300);
+        text("Moles At [0][0][0]: " + layer.getAmount_mol().toDouble() + " mol", 1200, 350);
+
 
         if (!atmosUpdater.isRunning())
         {
@@ -172,9 +179,9 @@ public class Sim extends PApplet {
         LayerMixture layer = tile.getLayer(0);
         PhaseMixture solids = layer.getMixtureForPhase(Phase.SOLID);
         Compound water = solids.getCompound("H2O");
-        water.add(new BigDouble(1000, 0), new BigDouble(500, 0));
+        water.add(new BigDouble(100000, 0), new BigDouble(500, 0));
         Compound o2 = solids.getCompound("CO2");
-        o2.add(new BigDouble(2000, 0), new BigDouble(500, 0));
+        o2.add(new BigDouble(200000, 0), new BigDouble(500, 0));
     }
 
     private void threadSetup()
