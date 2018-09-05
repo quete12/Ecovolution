@@ -21,6 +21,7 @@ public class AtmosphericUpdater implements Runnable {
     private int msPerCycle;
     private boolean keepAlive = true;
     private boolean running = false;
+    private long cycleTime = 0;
 
     public AtmosphericUpdater(World world)
     {
@@ -38,10 +39,10 @@ public class AtmosphericUpdater implements Runnable {
         {
             long start = System.currentTimeMillis();
             world.update();
-            long elapsed = System.currentTimeMillis() - start;
-            if (elapsed < msPerCycle)
+            cycleTime = System.currentTimeMillis() - start;
+            if (cycleTime < msPerCycle)
             {
-                long diff = msPerCycle - elapsed;
+                long diff = msPerCycle - cycleTime;
                 try
                 {
                     Thread.sleep(diff);
@@ -63,6 +64,11 @@ public class AtmosphericUpdater implements Runnable {
     public boolean isRunning()
     {
         return running;
+    }
+
+    public long getCycleTime()
+    {
+        return cycleTime;
     }
 
 }

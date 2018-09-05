@@ -14,10 +14,27 @@ public class LinearFunction implements Function {
     private final BigDouble varA;
     private final BigDouble varB;
 
+    private BigDouble minX = null;
+    private BigDouble maxX = null;
+    private BigDouble minY = null;
+    private BigDouble maxY = null;
+
     public LinearFunction(BigDouble p1x, BigDouble p1y, BigDouble p2x, BigDouble p2y)
     {
         this.varA = findVarA(p1x, p1y, p2x, p2y);
         this.varB = findVarB(varA, p2x, p2y);
+    }
+
+    public LinearFunction(BigDouble p1x, BigDouble p1y, BigDouble p2x, BigDouble p2y, boolean isLimiting)
+    {
+        this(p1x, p1y, p2x, p2y);
+        if (isLimiting)
+        {
+            this.minX = p1x;
+            this.maxX = p2x;
+            this.minY = p1y;
+            this.maxY = p2y;
+        }
     }
 
     public LinearFunction(BigDouble varA, BigDouble varB)
@@ -38,6 +55,10 @@ public class LinearFunction implements Function {
 
     public boolean isPointLeft(BigDouble px, BigDouble py)
     {
+        if (!isWithinLimits(px, py))
+        {
+            return false;
+        }
         if (varA.isPositive())
         {
             return y(px).compareTo(py) < 0;
@@ -49,6 +70,10 @@ public class LinearFunction implements Function {
 
     public boolean isPointOnOrOver(BigDouble px, BigDouble py)
     {
+        if (!isWithinLimits(px, py))
+        {
+            return false;
+        }
         if (varA.isPositive())
         {
             return y(px).compareTo(py) <= 0;
@@ -68,7 +93,8 @@ public class LinearFunction implements Function {
         try
         {
             return p2Y.sub(p1Y, new BigDouble()).div(p2X.sub(p1X, new BigDouble()));
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             System.out.println("p1: " + p1X + "|" + p1Y + " p2: " + p2X + "|" + p2Y);
             throw ex;
@@ -101,5 +127,51 @@ public class LinearFunction implements Function {
     public boolean isNegative()
     {
         return varA.isNegative();
+    }
+
+    @Override
+    public void limitMinX(BigDouble minX)
+    {
+        this.minX = minX;
+    }
+
+    @Override
+    public void limitMaxX(BigDouble maxX)
+    {
+        this.maxX = maxX;
+    }
+
+    @Override
+    public void limitMinY(BigDouble minY)
+    {
+        this.minY = minY;
+    }
+
+    @Override
+    public void limitMaxY(BigDouble maxY)
+    {
+        this.maxY = maxY;
+    }
+
+    @Override
+    public boolean isWithinLimits(BigDouble x, BigDouble y)
+    {
+        if (minX != null && minX.compareTo(x) > 0)
+        {
+            return false;
+        }
+        if (maxX != null && maxX.compareTo(x) < 0)
+        {
+            return false;
+        }
+        if (minY != null && minY.compareTo(y) > 0)
+        {
+            return false;
+        }
+        if (maxY != null && maxY.compareTo(y) < 0)
+        {
+            return false;
+        }
+        return true;
     }
 }

@@ -47,12 +47,14 @@ public class SublimationBorder extends PhaseBorder {
                 BigDouble.ZERO,
                 BigDouble.ZERO,
                 properties.minTriplePointEnergy(),
-                properties.getTriplePointPressure_kPa());
+                properties.getTriplePointPressure_kPa(),
+                true);
         sublimationMax[0] = new LinearFunction(
-                properties.getFusionHeat_kj().add(properties.getVaporizationHeat_kj(),new BigDouble()),
+                properties.getFusionHeat_kj().add(properties.getVaporizationHeat_kj(), new BigDouble()),
                 BigDouble.ZERO,
                 properties.maxTriplePointSublimationEnergy(),
-                properties.getTriplePointPressure_kPa());
+                properties.getTriplePointPressure_kPa(),
+                true);
 
     }
 
@@ -62,12 +64,14 @@ public class SublimationBorder extends PhaseBorder {
                 BigDouble.ZERO,
                 BigDouble.ZERO,
                 properties.minBoilingEnergy(),
-                Consts.STANDARD_PRESSURE_kPa);
+                Consts.STANDARD_PRESSURE_kPa,
+                true);
         sublimationMax[0] = new LinearFunction(
-                properties.getFusionHeat_kj().add(properties.getVaporizationHeat_kj(),new BigDouble()),
+                properties.getFusionHeat_kj().add(properties.getVaporizationHeat_kj(), new BigDouble()),
                 BigDouble.ZERO,
                 properties.maxBoilingEnergy(),
-                Consts.STANDARD_PRESSURE_kPa);
+                Consts.STANDARD_PRESSURE_kPa,
+                true);
     }
 
     private void initBordersBoilingToTriple(ElementProperties properties)
@@ -76,12 +80,14 @@ public class SublimationBorder extends PhaseBorder {
                 properties.minBoilingEnergy(),
                 Consts.STANDARD_PRESSURE_kPa,
                 properties.minTriplePointEnergy(),
-                properties.getTriplePointPressure_kPa());
+                properties.getTriplePointPressure_kPa(),
+                true);
         sublimationMax[1] = new LinearFunction(
                 properties.maxBoilingEnergy(),
                 Consts.STANDARD_PRESSURE_kPa,
                 properties.maxTriplePointSublimationEnergy(),
-                properties.getTriplePointPressure_kPa());
+                properties.getTriplePointPressure_kPa(),
+                true);
     }
 
     public boolean isSublimated(BigDouble energy_kj_mol, BigDouble pressure_kPa)

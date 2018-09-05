@@ -71,6 +71,10 @@ public class LayerMixture extends AtmosphericEnity {
 
     public void spreadHorizontal()
     {
+        if (phases[Phase.SOLID.idx].getPressure_kPa().compareTo(Consts.STANDARD_PRESSURE_kPa.mul(10, 0)) > 0)
+        {
+            phases[Phase.SOLID.idx].spreadHorizontal();
+        }
         phases[Phase.LIQUID.idx].spreadHorizontal();
         phases[Phase.GAS.idx].spreadHorizontal();
         phases[Phase.SUPERCRITICAL_FLUID.idx].spreadHorizontal();
@@ -84,7 +88,8 @@ public class LayerMixture extends AtmosphericEnity {
         {
             return;
         }
-        if(gases.getAmount_mol().isNegative()){
+        if (gases.getAmount_mol().isNegative())
+        {
             throw new RuntimeException("Negative amount of Gases!!");
         }
         BigDouble percentage = amount_mol.div(gases.getAmount_mol(), new BigDouble());

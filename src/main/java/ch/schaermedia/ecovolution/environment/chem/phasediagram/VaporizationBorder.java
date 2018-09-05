@@ -47,12 +47,14 @@ public class VaporizationBorder extends PhaseBorder {
                 properties.minBoilingEnergy(),
                 Consts.STANDARD_PRESSURE_kPa,
                 properties.minCriticalEnergy(),
-                properties.getCriticalPointPressure_kPa());
+                properties.getCriticalPointPressure_kPa(),
+                true);
         vaporizationMax[1] = new LinearFunction(
                 properties.maxBoilingEnergy(),
                 Consts.STANDARD_PRESSURE_kPa,
                 properties.maxCriticalEnergy(),
-                properties.getCriticalPointPressure_kPa());
+                properties.getCriticalPointPressure_kPa(),
+                true);
     }
 
     private void initVaporizationBordersTripleToBoiling(ElementProperties properties)
@@ -61,12 +63,14 @@ public class VaporizationBorder extends PhaseBorder {
                 properties.minBoilingEnergy(),
                 Consts.STANDARD_PRESSURE_kPa,
                 properties.minTriplePointEnergy().add(properties.getFusionHeat_kj(), new BigDouble()),
-                properties.getTriplePointPressure_kPa());
+                properties.getTriplePointPressure_kPa(),
+                true);
         vaporizationMax[0] = new LinearFunction(
                 properties.maxBoilingEnergy(),
                 Consts.STANDARD_PRESSURE_kPa,
                 properties.maxTriplePointVaporizationEnergy(),
-                properties.getTriplePointPressure_kPa());
+                properties.getTriplePointPressure_kPa(),
+                true);
     }
 
     private void initVaporizationBordersTripleToCritical(ElementProperties properties)
@@ -75,12 +79,14 @@ public class VaporizationBorder extends PhaseBorder {
                 properties.minTriplePointEnergy().add(properties.getFusionHeat_kj(), new BigDouble()),
                 properties.getTriplePointPressure_kPa(),
                 properties.minCriticalEnergy(),
-                properties.getCriticalPointPressure_kPa());
+                properties.getCriticalPointPressure_kPa(),
+                true);
         vaporizationMax[0] = new LinearFunction(
                 properties.maxTriplePointVaporizationEnergy(),
                 properties.getTriplePointPressure_kPa(),
                 properties.maxCriticalEnergy(),
-                properties.getCriticalPointPressure_kPa());
+                properties.getCriticalPointPressure_kPa(),
+                true);
     }
 
     public boolean isVaporized(BigDouble energy_kj_mol, BigDouble pressure_kPa)

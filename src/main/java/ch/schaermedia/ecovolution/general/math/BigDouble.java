@@ -63,7 +63,7 @@ public class BigDouble implements Comparable<BigDouble> {
         cleanFractionNegation();
     }
 
-    private BigDouble setImmutable()
+    public BigDouble setImmutable()
     {
         immutable = true;
         return this;

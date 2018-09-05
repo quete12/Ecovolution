@@ -19,7 +19,7 @@ public class World {
     }
 
     public static final int NUMBER_OF_LAYERS = 3;
-    public static final int NEIGHBOUR_RANGE = 4;
+    public static final int NEIGHBOUR_RANGE = 3;
     private static final int NEIGHBOUR_SQARE_SIDE = 2 * NEIGHBOUR_RANGE + 1;
     public static final int NEIGHBOUR_SQUARED = NEIGHBOUR_SQARE_SIDE * NEIGHBOUR_SQARE_SIDE;
     public static final BigDouble HORIZONTAL_SPREAD_PERCENTAGE = BigDouble.ONE.div(new BigDouble(NEIGHBOUR_SQUARED, 0));
@@ -148,14 +148,19 @@ public class World {
         for (int xoffs = -NEIGHBOUR_RANGE; xoffs <= NEIGHBOUR_RANGE; xoffs++)
         {
             int mx = x + xoffs;
-            if (mx < 0 || mx >= width || xoffs == 0)
+            if (mx < 0 || mx >= width)
             {
                 continue;
             }
             for (int yoffs = -NEIGHBOUR_RANGE; yoffs <= NEIGHBOUR_RANGE; yoffs++)
             {
+                if (xoffs == 0 && yoffs == 0)
+                {
+                    //Exclude itself from neighbours
+                    continue;
+                }
                 int my = y + yoffs;
-                if (my < 0 || my >= height || yoffs == 0)
+                if (my < 0 || my >= height)
                 {
                     continue;
                 }

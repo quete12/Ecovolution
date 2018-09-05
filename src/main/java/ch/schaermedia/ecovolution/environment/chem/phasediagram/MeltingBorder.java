@@ -34,7 +34,6 @@ public class MeltingBorder extends PhaseBorder {
                 properties.getTriplePointPressure_kPa(),
                 properties.minMeltingPointEnergy(),
                 Consts.STANDARD_PRESSURE_kPa);
-
         BigDouble highPressure = properties.getCriticalPointPressure_kPa();
         BigDouble meltingEnergyAtHighPressure = meltingMin.x(highPressure);
         meltingMax = new LinearFunction(
@@ -42,6 +41,42 @@ public class MeltingBorder extends PhaseBorder {
                 properties.getTriplePointPressure_kPa(),
                 meltingEnergyAtHighPressure.add(properties.getFusionHeat_kj()),
                 highPressure);
+
+        if (meltingMin.isPositive() && meltingMax.isPositive())
+        {
+            if (properties.isMeltingPointUnderTriplePoint())
+            {
+                meltingMin.limitMinX(properties.minMeltingPointEnergy());
+                meltingMin.limitMinY(Consts.STANDARD_PRESSURE_kPa);
+                meltingMax.limitMinX(properties.maxMeltingPointEnergy());
+                meltingMax.limitMinY(Consts.STANDARD_PRESSURE_kPa);
+            } else
+            {
+                meltingMin.limitMinX(properties.minTriplePointEnergy());
+                meltingMin.limitMinY(properties.getTriplePointPressure_kPa());
+                meltingMax.limitMinX(properties.maxTriplePointMeltingEnergy());
+                meltingMax.limitMinY(properties.getTriplePointPressure_kPa());
+            }
+        } else
+        {
+            if (properties.isMeltingPointUnderTriplePoint())
+            {
+                meltingMin.limitMinX(BigDouble.ZERO);
+                meltingMax.limitMinX(BigDouble.ZERO);
+                meltingMin.limitMaxX(properties.minMeltingPointEnergy());
+                meltingMin.limitMinY(Consts.STANDARD_PRESSURE_kPa);
+                meltingMax.limitMaxX(properties.maxMeltingPointEnergy());
+                meltingMax.limitMinY(Consts.STANDARD_PRESSURE_kPa);
+            } else
+            {
+                meltingMin.limitMinX(BigDouble.ZERO);
+                meltingMax.limitMinX(BigDouble.ZERO);
+                meltingMin.limitMaxX(properties.minTriplePointEnergy());
+                meltingMin.limitMinY(properties.getTriplePointPressure_kPa());
+                meltingMax.limitMaxX(properties.maxTriplePointMeltingEnergy());
+                meltingMax.limitMinY(properties.getTriplePointPressure_kPa());
+            }
+        }
     }
 
     public boolean isMelted(BigDouble energy_kj_mol, BigDouble pressure_kPa)

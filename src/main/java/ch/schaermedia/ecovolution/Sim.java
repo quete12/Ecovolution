@@ -85,11 +85,11 @@ public class Sim extends PApplet {
 
         fill(0);
         text("FPS: " + frameRate, 1200, 100);
-        text("Rendering: " + renderDuration, 1200, 150);
-        text("Not added: " + unadded.toDoubleString(), 1200, 200);
-        text("Temp At [0][0][0]: " + layer.getTemperature_k().toDouble()+ " K", 1200, 250);
-        text("Pressure At [0][0][0]: " + layer.getPressure_kPa().toDouble() + " kPa", 1200, 300);
-        text("Moles At [0][0][0]: " + layer.getAmount_mol().toDouble() + " mol", 1200, 350);
+        text("Rendercycle time: " + renderDuration, 1200, 150);
+        text("Updatecycle time: " + atmosUpdater.getCycleTime(), 1200, 200);
+        text("Not added: " + unadded.toDoubleString(), 1200, 250);
+        text("Temp At [0][0][0]: " + layer.getTemperature_k().toDouble()+ " K", 1200, 300);
+        text("Pressure At [0][0][0]: " + layer.getPressure_kPa().toDouble() + " kPa", 1200, 350);
 
 
         if (!atmosUpdater.isRunning())
