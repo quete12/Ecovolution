@@ -77,20 +77,13 @@ public class Sim extends PApplet {
         popMatrix();
         Tile tile = world.getGrid()[0][0];
         LayerMixture layer = tile.getLayer(0);
-        BigDouble unadded = new BigDouble();
-        try{
-            unadded = layer.addEnergy(new BigDouble(1000, 0));
-        }catch(ArithmeticException ex){
-        }
-
+            layer.addEnergy(new BigDouble(1000, 0));
         fill(0);
         text("FPS: " + frameRate, 1200, 100);
         text("Rendercycle time: " + renderDuration, 1200, 150);
         text("Updatecycle time: " + atmosUpdater.getCycleTime(), 1200, 200);
-        text("Not added: " + unadded.toDoubleString(), 1200, 250);
         text("Temp At [0][0][0]: " + layer.getTemperature_k().toDouble()+ " K", 1200, 300);
         text("Pressure At [0][0][0]: " + layer.getPressure_kPa().toDouble() + " kPa", 1200, 350);
-
 
         if (!atmosUpdater.isRunning())
         {

@@ -23,7 +23,7 @@ public class LayerMixture extends AtmosphericEnity {
     private LayerMixture higher;
     private LayerMixture lower;
 
-    private BigDouble heatCapacityCopy;
+    private BigDouble energyBuffer_kj = new BigDouble();
 
     private final int layerIdx;
 
@@ -107,6 +107,9 @@ public class LayerMixture extends AtmosphericEnity {
         }
         BigDouble percentage = amount_mol.div(gases.getAmount_mol(), new BigDouble());
         percentage.limitHigh(BigDouble.ONE);
+        if(percentage.isNegative()){
+            return;
+        }
         gases.spreadToHigher(percentage);
     }
 
@@ -203,29 +206,34 @@ public class LayerMixture extends AtmosphericEnity {
             heatCapacity_kj_K.add(phaseMix.getHeatCapacity_kj_K());
             temperature_k.add(phaseMix.getTemperature_k());
         }
-        heatCapacityCopy = new BigDouble(heatCapacity_kj_K);
         temperature_k.div(new BigDouble(phases.length, 0));
         if (pressure_kPa.isNegative())
         {
             throw new RuntimeException("negative Pressure!");
         }
+        addEnergy();
     }
 
-    public BigDouble addEnergy(BigDouble energy_kj)
+    private void addEnergy()
     {
-        if (heatCapacityCopy == null)
+        if (heatCapacity_kj_K.isZero())
         {
-            return new BigDouble(energy_kj);
+            return;
         }
         BigDouble added = new BigDouble();
         for (PhaseMixture phase : phases)
         {
-            BigDouble percentage = phase.getHeatCapacity_kj_K().div(heatCapacityCopy, new BigDouble());
-            BigDouble energyToAdd = energy_kj.mul(percentage, new BigDouble());
+            BigDouble percentage = phase.getHeatCapacity_kj_K().div(heatCapacity_kj_K, new BigDouble());
+            BigDouble energyToAdd = energyBuffer_kj.mul(percentage, new BigDouble());
             added.sub(phase.addEnergy(energyToAdd));
             added.add(energyToAdd);
         }
-        return energy_kj.sub(added, added);
+        energyBuffer_kj.sub(added);
+    }
+
+    public void addEnergy(BigDouble energy_kj)
+    {
+        this.energyBuffer_kj.add(energy_kj);
     }
 
     public LayerMixture getHigher()
