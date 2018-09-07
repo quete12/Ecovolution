@@ -82,15 +82,15 @@ public class LayerMixture extends AtmosphericEnity {
     {
         //Only gases can be spread
         PhaseMixture gases = phases[Phase.GAS.idx];
-        if (gases.amount_mol[internal].isZero())
+        if (gases.amount_mol.isZero())
         {
             return;
         }
-        if (gases.amount_mol[internal].isNegative())
+        if (gases.amount_mol.isNegative())
         {
             throw new RuntimeException("Negative amount of Gases!!");
         }
-        BigDouble percentage = amount_mol.div(gases.amount_mol[internal], new BigDouble());
+        BigDouble percentage = amount_mol.div(gases.amount_mol, new BigDouble());
         percentage.limitHigh(BigDouble.ONE);
         gases.spreadToLower(percentage);
     }
@@ -99,11 +99,11 @@ public class LayerMixture extends AtmosphericEnity {
     {
         //Only allow gases to expand upwards
         PhaseMixture gases = phases[Phase.GAS.idx];
-        if (gases.amount_mol[internal].isZero())
+        if (gases.amount_mol.isZero())
         {
             return;
         }
-        BigDouble percentage = amount_mol.div(gases.amount_mol[internal], new BigDouble());
+        BigDouble percentage = amount_mol.div(gases.amount_mol, new BigDouble());
         percentage.limitHigh(BigDouble.ONE);
         if (percentage.isNegative())
         {
@@ -196,10 +196,11 @@ public class LayerMixture extends AtmosphericEnity {
     public void updateStats(BigDouble externalPressure_kPa, BigDouble totalVolume_L)
     {
         clearStats();
+        addEnergy();
         for (PhaseMixture phaseMix : phases)
         {
             phaseMix.updateStats(externalPressure_kPa, totalVolume_L);
-            amount_mol[internal].add(phaseMix.getAmount_mol());
+            amount_mol.add(phaseMix.getAmount_mol());
             pressure_kPa[internal].add(phaseMix.getPressure_kPa());
             volume_L[internal].add(phaseMix.getVolume_L());
             heatCapacity_kj_K[internal].add(phaseMix.getHeatCapacity_kj_K());
@@ -210,7 +211,6 @@ public class LayerMixture extends AtmosphericEnity {
         {
             throw new RuntimeException("negative Pressure!");
         }
-        addEnergy();
     }
 
     private void addEnergy()
@@ -236,7 +236,7 @@ public class LayerMixture extends AtmosphericEnity {
     }
 
     public BigDouble[] getPhasePercentages(){
-        BigDouble amountCopy = new BigDouble(getAmount_mol());
+        BigDouble amountCopy = getAmount_mol();
         if(amountCopy.isZero()){
             return null;
         }

@@ -42,7 +42,7 @@ public class Compound extends AtmosphericEnity {
         {
             throw new RuntimeException("Negative percentage split!!\nFrom: " + this + " \nTo: " + other + "\nPercentage: " + percentage.toDoubleString());
         }
-        BigDouble amountDiff = amount_mol[internal].mul(percentage, new BigDouble());
+        BigDouble amountDiff = amount_mol.mul(percentage, new BigDouble());
         amount_mol_buffer.sub(amountDiff);
         BigDouble energyDiff = energy_kj.mul(percentage, new BigDouble());
         energy_kj_buffer.sub(energyDiff);
@@ -60,16 +60,17 @@ public class Compound extends AtmosphericEnity {
     public void updateStats(BigDouble externalPressure_kPa, BigDouble totalVolume_L)
     {
         importBuffers();
-        if (amount_mol[internal].isPositive())
+        if (amount_mol.isPositive())
         {
-            amount_mol[internal].mul(properties.getSpecificHeatCapacity_kj_mol_K(), heatCapacity_kj_K[internal]);
+            amount_mol.mul(properties.getSpecificHeatCapacity_kj_mol_K(), heatCapacity_kj_K[internal]);
             updateThermodynamicStats(externalPressure_kPa, totalVolume_L);
         }
+        swap();
     }
 
     public void importBuffers()
     {
-        amount_mol[internal].add(amount_mol_buffer);
+        amount_mol.add(amount_mol_buffer);
         energy_kj.add(energy_kj_buffer);
         amount_mol_buffer.clear();
         energy_kj_buffer.clear();
@@ -78,7 +79,7 @@ public class Compound extends AtmosphericEnity {
     private void updateThermodynamicStats(BigDouble externalPressure_kPa, BigDouble totalVolume_L)
     {
         PhaseDiagram_Energy_Pressure diag = properties.getEnergy_Pressure_Diagram();
-        BigDouble energyPerMol = energy_kj.div(amount_mol[internal], new BigDouble());
+        BigDouble energyPerMol = energy_kj.div(amount_mol, new BigDouble());
         Phase phaseAt = diag.getPhaseAt(energyPerMol, externalPressure_kPa);
         phaseChanged = phaseAt.idx != phase.idx;
         phase = phaseAt;
@@ -90,13 +91,12 @@ public class Compound extends AtmosphericEnity {
                     +"\nexternamPressure: " + externalPressure_kPa.toDoubleString()
                     +"\ntotalVolume: " + totalVolume_L.toDoubleString());
         }
-        ChemUtilities.volume_L(externalPressure_kPa, amount_mol[internal], temperature_k[internal], volume_L[internal]);
-        ChemUtilities.pressure_kPa(totalVolume_L, amount_mol[internal], temperature_k[internal], pressure_kPa[internal]);
+        ChemUtilities.volume_L(externalPressure_kPa, amount_mol, temperature_k[internal], volume_L[internal]);
+        ChemUtilities.pressure_kPa(totalVolume_L, amount_mol, temperature_k[internal], pressure_kPa[internal]);
         if (pressure_kPa[internal].isNegative())
         {
-            throw new RuntimeException("negative Pressure! Calculated from volume: " + totalVolume_L + " moles: " + amount_mol[internal] + " temperature: " + temperature_k[internal] + " phase: " + phase);
+            throw new RuntimeException("negative Pressure! Calculated from volume: " + totalVolume_L + " moles: " + amount_mol + " temperature: " + temperature_k[internal] + " phase: " + phase);
         }
-        swap();
     }
 
     public boolean hasPhaseChanged()

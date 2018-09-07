@@ -15,7 +15,8 @@ public abstract class AtmosphericEnity {
 
     private static final int SWAPSIZE = 2;
 
-    protected final BigDouble[] amount_mol = new BigDouble[SWAPSIZE];
+    protected final BigDouble amount_mol = new BigDouble();
+    protected final BigDouble amount_mol_external = new BigDouble();
     protected final BigDouble[] temperature_k = new BigDouble[SWAPSIZE];
     protected final BigDouble[] pressure_kPa = new BigDouble[SWAPSIZE];
     protected final BigDouble[] volume_L = new BigDouble[SWAPSIZE];
@@ -28,7 +29,6 @@ public abstract class AtmosphericEnity {
     {
         for (int i = 0; i < SWAPSIZE; i++)
         {
-            amount_mol[i] = new BigDouble();
             temperature_k[i] = new BigDouble();
             pressure_kPa[i] = new BigDouble();
             volume_L[i] = new BigDouble();
@@ -40,7 +40,7 @@ public abstract class AtmosphericEnity {
 
     protected void clearStats()
     {
-        amount_mol[internal].clear();
+        amount_mol.clear();
         temperature_k[internal].clear();
         pressure_kPa[internal].clear();
         volume_L[internal].clear();
@@ -49,6 +49,7 @@ public abstract class AtmosphericEnity {
 
     protected void swap()
     {
+        amount_mol_external.set(amount_mol);
         if (internal == 0)
         {
             internal = 1;
@@ -62,7 +63,7 @@ public abstract class AtmosphericEnity {
 
     public BigDouble getAmount_mol()
     {
-        return amount_mol[external];
+        return amount_mol_external;
     }
 
     public BigDouble getTemperature_k()

@@ -5,7 +5,9 @@
  */
 package ch.schaermedia.ecovolution;
 
+import ch.schaermedia.ecovolution.chemics.ChemUtilities;
 import ch.schaermedia.ecovolution.threads.RenderThread;
+import java.io.FileNotFoundException;
 import processing.core.PApplet;
 
 /**
@@ -17,8 +19,9 @@ public class Ecovolution {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws FileNotFoundException
     {
+        ChemUtilities.readElements("res/Chemics.json");
         PApplet.main(RenderThread.class, args);
     }
 

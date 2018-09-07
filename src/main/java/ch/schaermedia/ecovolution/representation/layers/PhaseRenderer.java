@@ -42,6 +42,7 @@ public class PhaseRenderer extends WorldOverlayRenderer {
         {
             g.fill(0);
         }
+        g.noStroke();
         g.rect(tile.getxIdx() * Tile.SIZE, tile.getyIdx() * Tile.SIZE, Tile.SIZE, Tile.SIZE);
     }
 

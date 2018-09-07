@@ -128,7 +128,7 @@ public class PhaseMixture extends AtmosphericEnity {
             {
                 phaseChanged.add(compound);
             }
-            amount_mol[internal].add(compound.getAmount_mol());
+            amount_mol.add(compound.getAmount_mol());
             pressure_kPa[internal].add(compound.getPressure_kPa());
             volume_L[internal].add(compound.getVolume_L());
             heatCapacity_kj_K[internal].add(compound.getHeatCapacity_kj_K());

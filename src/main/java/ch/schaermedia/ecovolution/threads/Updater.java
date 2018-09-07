@@ -14,13 +14,12 @@ import java.util.logging.Logger;
  */
 public abstract class Updater implements Runnable {
 
-    private int ups = 30;
     private long targetCycleTime;
     private long cycletime;
     private long duration;
 
     private boolean shutdown = false;
-    private boolean running;
+    private boolean running = false;
 
     public Updater()
     {

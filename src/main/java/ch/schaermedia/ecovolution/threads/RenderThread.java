@@ -5,6 +5,8 @@
  */
 package ch.schaermedia.ecovolution.threads;
 
+import ch.schaermedia.ecovolution.chemics.atmospherics.LayerMixture;
+import ch.schaermedia.ecovolution.math.BigDouble;
 import ch.schaermedia.ecovolution.representation.layers.PhaseRenderer;
 import ch.schaermedia.ecovolution.world.DefaultWorldGen;
 import ch.schaermedia.ecovolution.world.Tile;
@@ -48,21 +50,34 @@ public class RenderThread extends PApplet {
     public void draw()
     {
         background(255);
+        pushMatrix();
+        scale(0.5f);
+        renderWorld();
+
+        popMatrix();
+        LayerMixture layer1010 = world.getGrid()[10][10].getLayer(0);
+        layer1010.addEnergy(new BigDouble(1000,0));
+
+        fill(0);
+        text("Temperature at 10|10: " + layer1010.getTemperature_k().toDoubleString()+ " K",1200,100);
+        text("Pressure at 10|10: " + layer1010.getPressure_kPa().toDoubleString() + " kPa",1200,150);
+        startUpdatersIfNotRunning();
+    }
+
+    private void renderWorld(){
         PGraphics phaseOverlay = phaseRenderer.render();
         image(phaseOverlay, 0, 0);
-
-        startUpdatersIfNotRunning();
     }
 
     private void startUpdatersIfNotRunning()
     {
-        if (!entityUpdater.isRunning())
-        {
-            new Thread(entityUpdater).start();
-        }
         if (!atmosUpdater.isRunning())
         {
             new Thread(atmosUpdater).start();
+        }
+        if (!entityUpdater.isRunning())
+        {
+            new Thread(entityUpdater).start();
         }
     }
 

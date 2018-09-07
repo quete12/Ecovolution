@@ -28,10 +28,6 @@ public abstract class PhaseBorder {
         {
             throw new IllegalArgumentException("isSteepFirst excepts an array with length 2!");
         }
-//        if (functions[0].isNegative() || functions[1].isNegative())
-//        {
-//            throw new IllegalArgumentException("isSteepFirst only works with positive functions!");
-//        }
         return functions[0].getVarA().abs().compareTo(functions[1].getVarA().abs()) > 0;
     }
 }
