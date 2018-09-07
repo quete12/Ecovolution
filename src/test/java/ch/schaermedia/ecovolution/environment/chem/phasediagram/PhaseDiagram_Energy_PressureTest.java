@@ -47,7 +47,7 @@ public class PhaseDiagram_Energy_PressureTest {
         BigDouble externalPressure = new BigDouble(0, 0);
         BigDouble totalVolume = new BigDouble(125000, 0);
 
-        BigDouble energyPerMol = compound.getEnergy_kj().div(compound.getAmount_mol(), new BigDouble());
+        BigDouble energyPerMol = compound.getEnergy_kj().div(compound.amount_mol(), new BigDouble());
         System.out.println("E per Mol: " + energyPerMol);
 
         LinearFunction[] vaporizationMax = diag.getSublimationBorder().getSublimationMax();

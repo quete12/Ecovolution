@@ -33,7 +33,7 @@ public class TileMolRenderer implements TileRenderer {
     private void prepareForLayerRendering(PGraphics g, Tile tile)
     {
         LayerMixture layerMix = tile.getLayer(layer);
-        BigDouble moles = layerMix.getAmount_mol();
+        BigDouble moles = layerMix.amount_mol();
         BigDouble molLimit = new BigDouble(10000000, 0);
         int fill;
         if (moles.isZero())

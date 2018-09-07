@@ -34,7 +34,7 @@ public class TileVolumeRenderer implements TileRenderer {
     private void prepareForLayerRendering(PGraphics g, Tile tile)
     {
         LayerMixture layerMix = tile.getLayer(layer);
-        BigDouble volume_L = layerMix.getVolume_L();
+        BigDouble volume_L = layerMix.volume_L();
         int fill;
         if (volume_L.isZero())
         {

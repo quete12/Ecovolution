@@ -34,7 +34,7 @@ public class TilePressureRenderer implements TileRenderer {
     private void prepareForLayerRendering(PGraphics g, Tile tile)
     {
         LayerMixture layerMix = tile.getLayer(layer);
-        BigDouble pressure_kPa = layerMix.getPressure_kPa();
+        BigDouble pressure_kPa = layerMix.pressure_kPa();
         int fill;
         if (pressure_kPa.isZero())
         {

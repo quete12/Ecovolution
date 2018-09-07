@@ -13,60 +13,75 @@ import ch.schaermedia.ecovolution.math.BigDouble;
  */
 public abstract class AtmosphericEnity {
 
-    protected BigDouble[] amount_mol = new BigDouble[2];
-    protected BigDouble[] temperature_k = new BigDouble[2];
-    protected BigDouble[] pressure_kPa = new BigDouble[2];
-    protected BigDouble[] volume_L = new BigDouble[2];
-    protected BigDouble[] heatCapacity_kj_K = new BigDouble[2];
+    private static final int SWAPSIZE = 2;
 
-    private int internal = 0;
+    protected final BigDouble[] amount_mol = new BigDouble[SWAPSIZE];
+    protected final BigDouble[] temperature_k = new BigDouble[SWAPSIZE];
+    protected final BigDouble[] pressure_kPa = new BigDouble[SWAPSIZE];
+    protected final BigDouble[] volume_L = new BigDouble[SWAPSIZE];
+    protected final BigDouble[] heatCapacity_kj_K = new BigDouble[SWAPSIZE];
+
+    protected int internal = 0;
     private int external = 1;
+
+    public AtmosphericEnity()
+    {
+        for (int i = 0; i < SWAPSIZE; i++)
+        {
+            amount_mol[i] = new BigDouble();
+            temperature_k[i] = new BigDouble();
+            pressure_kPa[i] = new BigDouble();
+            volume_L[i] = new BigDouble();
+            heatCapacity_kj_K[i] = new BigDouble();
+        }
+    }
 
     public abstract void updateStats(BigDouble externalPressure_kPa, BigDouble totalVolume_L);
 
     protected void clearStats()
     {
-        amount_mol.clear();
-        temperature_k.clear();
-        pressure_kPa.clear();
-        volume_L.clear();
-        heatCapacity_kj_K.clear();
+        amount_mol[internal].clear();
+        temperature_k[internal].clear();
+        pressure_kPa[internal].clear();
+        volume_L[internal].clear();
+        heatCapacity_kj_K[internal].clear();
     }
 
-    protected void swap(){
-
-
-        if(internal == 0){
+    protected void swap()
+    {
+        if (internal == 0)
+        {
             internal = 1;
             external = 0;
-        }else{
+        } else
+        {
             internal = 0;
             external = 1;
         }
     }
 
-    BigDouble getAmount_mol()
+    public BigDouble getAmount_mol()
     {
-        return amount_mol[internal];
+        return amount_mol[external];
     }
 
-    BigDouble getTemperature_k()
+    public BigDouble getTemperature_k()
     {
-        return temperature_k[internal];
+        return temperature_k[external];
     }
 
-    BigDouble getPressure_kPa()
+    public BigDouble getPressure_kPa()
     {
-        return pressure_kPa[internal];
+        return pressure_kPa[external];
     }
 
-    BigDouble getVolume_L()
+    public BigDouble getVolume_L()
     {
-        return volume_L[internal];
+        return volume_L[external];
     }
 
-    BigDouble getHeatCapacity_kj_K()
+    public BigDouble getHeatCapacity_kj_K()
     {
-        return heatCapacity_kj_K[internal];
+        return heatCapacity_kj_K[external];
     }
 }

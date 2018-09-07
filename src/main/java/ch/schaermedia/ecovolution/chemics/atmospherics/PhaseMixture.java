@@ -128,17 +128,18 @@ public class PhaseMixture extends AtmosphericEnity {
             {
                 phaseChanged.add(compound);
             }
-            amount_mol.add(compound.getAmount_mol());
-            pressure_kPa.add(compound.getPressure_kPa());
-            volume_L.add(compound.getVolume_L());
-            heatCapacity_kj_K.add(compound.getHeatCapacity_kj_K());
-            temperature_k.add(compound.getTemperature_k());
+            amount_mol[internal].add(compound.getAmount_mol());
+            pressure_kPa[internal].add(compound.getPressure_kPa());
+            volume_L[internal].add(compound.getVolume_L());
+            heatCapacity_kj_K[internal].add(compound.getHeatCapacity_kj_K());
+            temperature_k[internal].add(compound.getTemperature_k());
         }
-        temperature_k.div(new BigDouble(composition.size(), 0));
-        if (pressure_kPa.isNegative())
+        temperature_k[internal].div(new BigDouble(composition.size(), 0));
+        if (pressure_kPa[internal].isNegative())
         {
             throw new RuntimeException("negative Pressure!");
         }
+        swap();
     }
 
     private void removeCompound(Compound comp)
@@ -162,13 +163,13 @@ public class PhaseMixture extends AtmosphericEnity {
 
     public BigDouble addEnergy(BigDouble energy_kj)
     {
-        if(heatCapacity_kj_K.isZero()){
+        if(getHeatCapacity_kj_K().isZero()){
             return new BigDouble();
         }
         BigDouble added = new BigDouble();
         for (Compound compound : composition.values())
         {
-            BigDouble percentage = compound.getHeatCapacity_kj_K().div(heatCapacity_kj_K, new BigDouble());
+            BigDouble percentage = compound.getHeatCapacity_kj_K().div(getHeatCapacity_kj_K(), new BigDouble());
             BigDouble energyToAdd = energy_kj.mul(percentage, new BigDouble());
             compound.add(new BigDouble(), energyToAdd);
             added.add(energyToAdd);
