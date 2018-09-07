@@ -21,7 +21,7 @@ public class World {
     public static final int NUMBER_OF_LAYERS = 3;
     public static final int NEIGHBOUR_RANGE = 3;
     private static final int NEIGHBOUR_SQARE_SIDE = 2 * NEIGHBOUR_RANGE + 1;
-    public static final int NEIGHBOUR_SQUARED = NEIGHBOUR_SQARE_SIDE * NEIGHBOUR_SQARE_SIDE;
+    private static final int NEIGHBOUR_SQUARED = NEIGHBOUR_SQARE_SIDE * NEIGHBOUR_SQARE_SIDE;
     public static final BigDouble HORIZONTAL_SPREAD_PERCENTAGE = BigDouble.ONE.div(new BigDouble(NEIGHBOUR_SQUARED, 0));
 
     private Tile[][] grid;
@@ -40,7 +40,7 @@ public class World {
         initGrid();
     }
 
-    public void update()
+    public void updateAtmospherics()
     {
         spreadAndUpdateTiles();
     }

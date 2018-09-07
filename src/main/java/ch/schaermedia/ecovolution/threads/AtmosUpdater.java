@@ -5,15 +5,25 @@
  */
 package ch.schaermedia.ecovolution.threads;
 
+import ch.schaermedia.ecovolution.world.World;
+
 /**
  *
  * @author Quentin
  */
 public class AtmosUpdater extends Updater{
 
+    private final World world;
+
+    public AtmosUpdater(World world)
+    {
+        this.world = world;
+    }
+
     @Override
     protected void update()
     {
+        world.updateAtmospherics();
     }
 
 }

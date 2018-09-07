@@ -5,7 +5,12 @@
  */
 package ch.schaermedia.ecovolution.threads;
 
+import ch.schaermedia.ecovolution.representation.layers.PhaseRenderer;
+import ch.schaermedia.ecovolution.world.DefaultWorldGen;
+import ch.schaermedia.ecovolution.world.Tile;
+import ch.schaermedia.ecovolution.world.World;
 import processing.core.PApplet;
+import processing.core.PGraphics;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 
@@ -16,6 +21,8 @@ import processing.event.MouseEvent;
 public class RenderThread extends PApplet {
 
     private static final int FRAMERATE = 60;
+    private static final int WORLDWIDTH = 30;
+    private static final int WORLDLENGTH = 30;
 
     @Override
     public void keyPressed(KeyEvent event)
@@ -40,7 +47,15 @@ public class RenderThread extends PApplet {
     @Override
     public void draw()
     {
+        background(255);
+        PGraphics phaseOverlay = phaseRenderer.render();
+        image(phaseOverlay, 0, 0);
 
+        startUpdatersIfNotRunning();
+    }
+
+    private void startUpdatersIfNotRunning()
+    {
         if (!entityUpdater.isRunning())
         {
             new Thread(entityUpdater).start();
@@ -58,6 +73,7 @@ public class RenderThread extends PApplet {
         setupWorld();
         setupEntities();
         setupUpdateThreads();
+        setupRenderers();
     }
 
     private void setupWindow()
@@ -67,9 +83,11 @@ public class RenderThread extends PApplet {
         surface.setFrameRate(FRAMERATE);
     }
 
+    private World world;
+
     private void setupWorld()
     {
-
+        world = new World(WORLDWIDTH, WORLDLENGTH, new DefaultWorldGen(this));
     }
 
     private void setupEntities()
@@ -83,7 +101,21 @@ public class RenderThread extends PApplet {
     private void setupUpdateThreads()
     {
         entityUpdater = new EntityUpdater();
-        atmosUpdater = new AtmosUpdater();
+        atmosUpdater = new AtmosUpdater(world);
+    }
+
+    private PhaseRenderer phaseRenderer;
+
+    private void setupRenderers()
+    {
+        phaseRenderer = new PhaseRenderer(
+                createGraphics(
+                        (int) Tile.SIZE * world.getWidth(),
+                        (int) Tile.SIZE * world.getHeight(),
+                        P2D
+                ),
+                world,
+                0);
     }
 
     @Override
