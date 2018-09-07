@@ -3,16 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ch.schaermedia.old.ecovolution.representation;
-
-import ch.schaermedia.ecovolution.world.Tile;
-import processing.core.PGraphics;
+package ch.schaermedia.ecovolution.world;
 
 /**
  *
  * @author Quentin
  */
-public interface TileRenderer {
-
-    public void render(PGraphics g, Tile tile);
+public interface TileGenerator {
+    public Tile generate(int x, int y, int numLayers);
 }

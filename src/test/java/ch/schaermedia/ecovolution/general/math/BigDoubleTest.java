@@ -5,7 +5,7 @@
  */
 package ch.schaermedia.ecovolution.general.math;
 
-import ch.schaermedia.old.ecovolution.general.math.BigDouble;
+import ch.schaermedia.ecovolution.math.BigDouble;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 

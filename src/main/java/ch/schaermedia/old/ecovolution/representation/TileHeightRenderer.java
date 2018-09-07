@@ -5,7 +5,7 @@
  */
 package ch.schaermedia.old.ecovolution.representation;
 
-import ch.schaermedia.old.ecovolution.environment.world.Tile;
+import ch.schaermedia.ecovolution.world.Tile;
 import processing.core.PGraphics;
 
 /**

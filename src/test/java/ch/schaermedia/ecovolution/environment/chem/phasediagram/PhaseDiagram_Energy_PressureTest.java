@@ -5,13 +5,13 @@
  */
 package ch.schaermedia.ecovolution.environment.chem.phasediagram;
 
-import ch.schaermedia.old.ecovolution.environment.chem.phasediagram.PhaseDiagram_Energy_Pressure;
+import ch.schaermedia.ecovolution.chemics.phasediagram.PhaseDiagram_Energy_Pressure;
 import ch.schaermedia.old.ecovolution.Sim;
-import ch.schaermedia.old.ecovolution.environment.chem.ChemUtilities;
-import ch.schaermedia.old.ecovolution.environment.chem.compound.Compound;
+import ch.schaermedia.ecovolution.chemics.ChemUtilities;
+import ch.schaermedia.ecovolution.chemics.atmospherics.Compound;
 import ch.schaermedia.old.ecovolution.environment.chem.properties.CompoundProperties;
-import ch.schaermedia.old.ecovolution.general.math.BigDouble;
-import ch.schaermedia.old.ecovolution.general.math.LinearFunction;
+import ch.schaermedia.ecovolution.math.BigDouble;
+import ch.schaermedia.ecovolution.math.LinearFunction;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

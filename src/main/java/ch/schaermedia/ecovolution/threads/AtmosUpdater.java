@@ -3,16 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ch.schaermedia.old.ecovolution.representation;
-
-import ch.schaermedia.ecovolution.world.Tile;
-import processing.core.PGraphics;
+package ch.schaermedia.ecovolution.threads;
 
 /**
  *
  * @author Quentin
  */
-public interface TileRenderer {
+public class AtmosUpdater extends Updater{
 
-    public void render(PGraphics g, Tile tile);
+    @Override
+    protected void update()
+    {
+    }
+
 }

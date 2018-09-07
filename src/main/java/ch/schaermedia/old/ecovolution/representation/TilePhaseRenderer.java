@@ -5,10 +5,10 @@
  */
 package ch.schaermedia.old.ecovolution.representation;
 
-import ch.schaermedia.old.ecovolution.environment.chem.compound.LayerMixture;
-import ch.schaermedia.old.ecovolution.environment.chem.compound.Phase;
-import ch.schaermedia.old.ecovolution.environment.world.Tile;
-import ch.schaermedia.old.ecovolution.general.math.BigDouble;
+import ch.schaermedia.ecovolution.chemics.atmospherics.LayerMixture;
+import ch.schaermedia.ecovolution.chemics.atmospherics.Phase;
+import ch.schaermedia.ecovolution.world.Tile;
+import ch.schaermedia.ecovolution.math.BigDouble;
 import processing.core.PGraphics;
 
 /**

@@ -5,16 +5,16 @@
  */
 package ch.schaermedia.old.ecovolution;
 
-import ch.schaermedia.old.ecovolution.environment.chem.ChemUtilities;
-import ch.schaermedia.old.ecovolution.environment.chem.compound.Compound;
-import ch.schaermedia.old.ecovolution.environment.chem.compound.LayerMixture;
-import ch.schaermedia.old.ecovolution.environment.chem.compound.Phase;
-import ch.schaermedia.old.ecovolution.environment.chem.compound.PhaseMixture;
-import ch.schaermedia.old.ecovolution.environment.world.DefaultWorldGen;
-import ch.schaermedia.old.ecovolution.environment.world.Tile;
-import ch.schaermedia.old.ecovolution.environment.world.World;
+import ch.schaermedia.ecovolution.chemics.ChemUtilities;
+import ch.schaermedia.ecovolution.chemics.atmospherics.Compound;
+import ch.schaermedia.ecovolution.chemics.atmospherics.LayerMixture;
+import ch.schaermedia.ecovolution.chemics.atmospherics.Phase;
+import ch.schaermedia.ecovolution.chemics.atmospherics.PhaseMixture;
+import ch.schaermedia.ecovolution.world.DefaultWorldGen;
+import ch.schaermedia.ecovolution.world.Tile;
+import ch.schaermedia.ecovolution.world.World;
 import ch.schaermedia.old.ecovolution.general.AtmosphericUpdater;
-import ch.schaermedia.old.ecovolution.general.math.BigDouble;
+import ch.schaermedia.ecovolution.math.BigDouble;
 import ch.schaermedia.old.ecovolution.representation.TilePhaseRenderer;
 import ch.schaermedia.old.ecovolution.representation.TilePressureRenderer;
 import ch.schaermedia.old.ecovolution.representation.TileVolumeRenderer;
