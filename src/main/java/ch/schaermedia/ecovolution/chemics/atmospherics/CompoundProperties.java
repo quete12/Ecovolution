@@ -82,15 +82,15 @@ public class CompoundProperties {
         code = object.getString("symbol");
         orderNumber = object.optInt("number");
         defaultPhase = Phase.valueOf(object.getString("phase").toUpperCase());
-        specificHeatCapacity_kj_mol_K = new BigDouble(object.getDouble("specificHeatCapacity"));
-        meltingPoint_K = new BigDouble(object.optDouble("meltingPoint"));
-        boilingPoint_K = new BigDouble(object.optDouble("boilingPoint"));
-        fusionHeat_kj = new BigDouble(object.optDouble("fusionHeat"));
-        vaporizationHeat_kj = new BigDouble(object.optDouble("vaporizationHeat"));
-        triplePointHeat_K = new BigDouble(object.optDouble("triplePointHeat"));
-        triplePointPressure_kPa = new BigDouble(object.optDouble("triplePointPressure"));
-        criticalPointHeat_K = new BigDouble(object.optDouble("criticalPointHeat"));
-        criticalPointPressure_kPa = new BigDouble(object.optDouble("criticalPointPressure"));
+        specificHeatCapacity_kj_mol_K = new BigDouble(object.getDouble("specificHeatCapacity")).setImmutable();
+        meltingPoint_K = new BigDouble(object.optDouble("meltingPoint")).setImmutable();
+        boilingPoint_K = new BigDouble(object.optDouble("boilingPoint")).setImmutable();
+        fusionHeat_kj = new BigDouble(object.optDouble("fusionHeat")).setImmutable();
+        vaporizationHeat_kj = new BigDouble(object.optDouble("vaporizationHeat")).setImmutable();
+        triplePointHeat_K = new BigDouble(object.optDouble("triplePointHeat")).setImmutable();
+        triplePointPressure_kPa = new BigDouble(object.optDouble("triplePointPressure")).setImmutable();
+        criticalPointHeat_K = new BigDouble(object.optDouble("criticalPointHeat")).setImmutable();
+        criticalPointPressure_kPa = new BigDouble(object.optDouble("criticalPointPressure")).setImmutable();
     }
 
     public void map()

@@ -5,7 +5,7 @@
  */
 package ch.schaermedia.ecovolution.math;
 
-import ch.schaermedia.ecovolution.math.BigDouble;
+import processing.core.PGraphics;
 
 /**
  *
@@ -32,10 +32,10 @@ public class LinearFunction implements Function {
         this(p1x, p1y, p2x, p2y);
         if (isLimiting)
         {
-            this.minX = p1x;
-            this.maxX = p2x;
-            this.minY = p1y;
-            this.maxY = p2y;
+            this.minX = BigDouble.min(p1x, p2x);
+            this.maxX = BigDouble.max(p1x, p2x);
+            this.minY = BigDouble.min(p1y, p2y);
+            this.maxY = BigDouble.max(p1y, p2y);
         }
     }
 
@@ -158,22 +158,79 @@ public class LinearFunction implements Function {
     @Override
     public boolean isWithinLimits(BigDouble x, BigDouble y)
     {
-        if (minX != null && minX.compareTo(x) > 0)
+        if (minX != null && minX.compareTo(x) >= 0)
         {
             return false;
         }
-        if (maxX != null && maxX.compareTo(x) < 0)
+        if (maxX != null && maxX.compareTo(x) <= 0)
         {
             return false;
         }
-        if (minY != null && minY.compareTo(y) > 0)
+        if (minY != null && minY.compareTo(y) >= 0)
         {
             return false;
         }
-        if (maxY != null && maxY.compareTo(y) < 0)
+        if (maxY != null && maxY.compareTo(y) <= 0)
         {
             return false;
         }
         return true;
+    }
+    private int timesRendered = 0;
+
+    @Override
+    public void render(PGraphics g, BigDouble maxYValue, BigDouble maxXValue)
+    {
+        BigDouble minW = new BigDouble();
+        if (minX != null)
+        {
+            minW = BigDouble.max(minW, minX);
+        }
+        BigDouble maxW = new BigDouble(maxXValue);
+        if (maxX != null)
+        {
+            maxW = BigDouble.min(maxW, maxX);
+        }
+
+        BigDouble bx1 =minW.div(maxXValue, new BigDouble()).mul(g.width, 0);
+        float x1 = (float) bx1.toDouble();
+        BigDouble by1 = y(minW).div(maxYValue).mul(g.height, 0);
+        float y1 = (float) (g.height - by1.toDouble());
+        BigDouble bx2 = maxW.div(maxXValue, new BigDouble()).mul(g.width, 0);
+        float x2 = (float) bx2.toDouble();
+        BigDouble by2 = y(maxW).div(maxYValue).mul(g.height, 0);
+        float y2 = (float) (g.height - by2.toDouble());
+
+//        if (y1 < 0)
+//        {
+//            y1 = g.height;
+//            BigDouble minH = new BigDouble();
+//            if (minY != null)
+//            {
+//                minH = BigDouble.max(minH, minY);
+//            }
+//            x1 = (float) x(minH).div(maxXValue, new BigDouble()).mul(g.width, 0).toDouble();
+//        }
+//        if (y2 < 0)
+//        {
+//            y2 = g.height;
+//            BigDouble maxH = new BigDouble();
+//            if (maxY != null)
+//            {
+//                maxH = BigDouble.min(maxH, maxY);
+//            }
+//            x1 = (float) x(maxH).div(maxXValue, new BigDouble()).mul(g.width, 0).toDouble();
+//        }
+        g.line(x1, y1, x2, y2);
+
+        g.text("x:"+bx1.toDouble()+" y:"+by1.toDouble(),x1+30,y1);
+        g.text("x:"+bx2.toDouble()+" y:"+by2.toDouble(),x2+30,y2);
+//        g.fill(255);
+//        g.textSize(40);
+//        String text="P1(" + x1 + "|" + y1 + ") P2(" + x2 + "|" + y2 + ")";
+//        g.text(text, 1200, 100 + (timesRendered % 4) * 50);
+//        System.out.println(text);
+//        g.noFill();
+//        timesRendered++;
     }
 }

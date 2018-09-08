@@ -9,6 +9,7 @@ import ch.schaermedia.ecovolution.chemics.ChemUtilities;
 import ch.schaermedia.ecovolution.chemics.atmospherics.CompoundProperties;
 import ch.schaermedia.ecovolution.math.BigDouble;
 import ch.schaermedia.ecovolution.math.LinearFunction;
+import processing.core.PGraphics;
 
 /**
  *
@@ -153,5 +154,25 @@ public class VaporizationBorder extends PhaseBorder {
     public LinearFunction[] getVaporizationMax()
     {
         return vaporizationMax;
+    }
+
+    @Override
+    public void render(PGraphics g, BigDouble maxYValue, BigDouble maxXValue)
+    {
+        if (hasDualFunction)
+        {
+            g.stroke(0, 0, 255);
+            vaporizationMin[0].render(g,maxYValue,maxXValue);
+            vaporizationMin[1].render(g, maxYValue,maxXValue);
+            g.stroke(255, 0, 0);
+            vaporizationMax[0].render(g, maxYValue,maxXValue);
+            vaporizationMax[1].render(g, maxYValue,maxXValue);
+        } else
+        {
+            g.stroke(0, 0, 255);
+            vaporizationMin[0].render(g, maxYValue,maxXValue);
+            g.stroke(255, 0, 0);
+            vaporizationMax[0].render(g, maxYValue,maxXValue);
+        }
     }
 }

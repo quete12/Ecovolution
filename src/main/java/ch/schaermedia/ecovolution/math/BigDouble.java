@@ -13,12 +13,12 @@ import java.math.BigInteger;
  */
 public class BigDouble implements Comparable<BigDouble> {
 
-    private static final long PRESCISION = 1000000000;
+    private static final long PRESCISION = 1000000000l;
     private static final String PRESCISION_STRING = Long.toString(PRESCISION);
 
     public static final BigDouble ONE = new BigDouble(1.0).setImmutable();
     public static final BigDouble NEG_ONE = new BigDouble(-1.0).setImmutable();
-    public static final BigDouble ZERO = new BigDouble().setImmutable();
+    public static final BigDouble ZERO = new BigDouble(0,0).setImmutable();
 
     private long value;
     private long fraction;

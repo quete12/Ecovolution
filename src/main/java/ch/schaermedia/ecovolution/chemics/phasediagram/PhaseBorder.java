@@ -7,12 +7,14 @@ package ch.schaermedia.ecovolution.chemics.phasediagram;
 
 import ch.schaermedia.ecovolution.math.BigDouble;
 import ch.schaermedia.ecovolution.math.LinearFunction;
+import processing.core.PGraphics;
 
 /**
  *
  * @author Quentin
  */
 public abstract class PhaseBorder {
+
     protected final boolean hasDualFunction;
 
     public PhaseBorder(boolean hasDualFunction)
@@ -22,6 +24,8 @@ public abstract class PhaseBorder {
 
     public abstract BigDouble getMinEnergy_kj_mol(BigDouble pressure_kPa);
 
+    public abstract void render(PGraphics g, BigDouble maxYValue, BigDouble maxXValue);
+
     protected boolean isSteepFirst(LinearFunction[] functions)
     {
         if (functions.length != 2)
@@ -30,4 +34,5 @@ public abstract class PhaseBorder {
         }
         return functions[0].getVarA().abs().compareTo(functions[1].getVarA().abs()) > 0;
     }
+
 }

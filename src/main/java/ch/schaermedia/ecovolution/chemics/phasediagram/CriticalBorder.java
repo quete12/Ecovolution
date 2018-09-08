@@ -7,6 +7,7 @@ package ch.schaermedia.ecovolution.chemics.phasediagram;
 
 import ch.schaermedia.ecovolution.chemics.atmospherics.CompoundProperties;
 import ch.schaermedia.ecovolution.math.BigDouble;
+import processing.core.PGraphics;
 
 /**
  *
@@ -35,5 +36,24 @@ public class CriticalBorder extends PhaseBorder{
         return criticalEnergy_kj_mol;
     }
 
+    public BigDouble getCriticalEnergy_kj_mol()
+    {
+        return criticalEnergy_kj_mol;
+    }
+
+    public BigDouble getCriticalPressure_kPa()
+    {
+        return criticalPressure_kPa;
+    }
+
+    @Override
+    public void render(PGraphics g, BigDouble maxYValue, BigDouble maxXValue)
+    {
+        float x1 = (float) criticalEnergy_kj_mol.toDouble();
+        float y1 = (float) criticalPressure_kPa.toDouble();
+        g.stroke(0);
+        g.line(x1, y1, g.width, y1);
+        g.line(x1, y1, x1, 0);
+    }
 
 }

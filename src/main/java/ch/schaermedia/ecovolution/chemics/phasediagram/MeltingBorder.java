@@ -11,6 +11,7 @@ import ch.schaermedia.ecovolution.chemics.atmospherics.CompoundProperties;
 import ch.schaermedia.ecovolution.math.BigDouble;
 import ch.schaermedia.ecovolution.math.Function;
 import ch.schaermedia.ecovolution.math.LinearFunction;
+import processing.core.PGraphics;
 
 /**
  *
@@ -42,6 +43,10 @@ public class MeltingBorder extends PhaseBorder {
                 meltingEnergyAtHighPressure.add(properties.getFusionHeat_kj()),
                 highPressure);
 
+    }
+
+    private void initLimits(CompoundProperties properties)
+    {
         if (meltingMin.isPositive() && meltingMax.isPositive())
         {
             if (properties.isMeltingPointUnderTriplePoint())
@@ -99,4 +104,12 @@ public class MeltingBorder extends PhaseBorder {
         return meltingMin.x(pressure_kPa);
     }
 
+    @Override
+    public void render(PGraphics g, BigDouble maxYValue, BigDouble maxXValue)
+    {
+        g.stroke(0, 0, 255);
+        meltingMin.render(g, maxYValue, maxXValue);
+        g.stroke(255, 0, 0);
+        meltingMax.render(g, maxYValue, maxXValue);
+    }
 }
