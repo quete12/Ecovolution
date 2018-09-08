@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ch.schaermedia.ecovolution.general.math;
+package ch.schaermedia.ecovolution.math;
 
 import ch.schaermedia.ecovolution.math.BigDouble;
 import static org.junit.Assert.assertEquals;

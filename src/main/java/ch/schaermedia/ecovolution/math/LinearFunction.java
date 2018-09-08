@@ -24,7 +24,7 @@ public class LinearFunction implements Function {
     public LinearFunction(BigDouble p1x, BigDouble p1y, BigDouble p2x, BigDouble p2y)
     {
         this.varA = findVarA(p1x, p1y, p2x, p2y);
-        this.varB = findVarB(varA, p2x, p2y);
+        this.varB = findVarB(varA, p1x, p1y);
     }
 
     public LinearFunction(BigDouble p1x, BigDouble p1y, BigDouble p2x, BigDouble p2y, boolean isLimiting)
@@ -87,14 +87,18 @@ public class LinearFunction implements Function {
 
     private BigDouble findVarB(BigDouble varA, BigDouble px, BigDouble py)
     {
-        return py.sub(varA.mul(px, new BigDouble()), new BigDouble());
+        BigDouble x = varA.mul(px, new BigDouble());
+        return py.sub(x, new BigDouble());
     }
 
     private BigDouble findVarA(BigDouble p1X, BigDouble p1Y, BigDouble p2X, BigDouble p2Y)
     {
         try
         {
-            return p2Y.sub(p1Y, new BigDouble()).div(p2X.sub(p1X, new BigDouble()));
+            BigDouble yDiff = p2Y.sub(p1Y, new BigDouble());
+            BigDouble xDiff = p2X.sub(p1X, new BigDouble());
+            System.out.println(yDiff.toDouble() + " / " + xDiff.toDouble());
+            return yDiff.div(xDiff);
         }
         catch (Exception ex)
         {
@@ -176,6 +180,18 @@ public class LinearFunction implements Function {
         }
         return true;
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof LinearFunction))
+        {
+            return false;
+        }
+        LinearFunction other = (LinearFunction) obj;
+        return other.getVarA().compareTo(varA) == 0 && other.getVarB().compareTo(varB) == 0;
+    }
+
     private int timesRendered = 0;
 
     @Override
@@ -192,7 +208,7 @@ public class LinearFunction implements Function {
             maxW = BigDouble.min(maxW, maxX);
         }
 
-        BigDouble bx1 =minW.div(maxXValue, new BigDouble()).mul(g.width, 0);
+        BigDouble bx1 = minW.div(maxXValue, new BigDouble()).mul(g.width, 0);
         float x1 = (float) bx1.toDouble();
         BigDouble by1 = y(minW).div(maxYValue).mul(g.height, 0);
         float y1 = (float) (g.height - by1.toDouble());
@@ -223,8 +239,9 @@ public class LinearFunction implements Function {
 //        }
         g.line(x1, y1, x2, y2);
 
-        g.text("x:"+bx1.toDouble()+" y:"+by1.toDouble(),x1+30,y1);
-        g.text("x:"+bx2.toDouble()+" y:"+by2.toDouble(),x2+30,y2);
+        g.fill(0);
+        g.text("x:" + bx1.toDouble() + " y:" + by1.toDouble(), x1 + 30, y1);
+        g.text("x:" + bx2.toDouble() + " y:" + by2.toDouble(), x2 + 30, y2);
 //        g.fill(255);
 //        g.textSize(40);
 //        String text="P1(" + x1 + "|" + y1 + ") P2(" + x2 + "|" + y2 + ")";

@@ -18,7 +18,7 @@ public class BigDouble implements Comparable<BigDouble> {
 
     public static final BigDouble ONE = new BigDouble(1.0).setImmutable();
     public static final BigDouble NEG_ONE = new BigDouble(-1.0).setImmutable();
-    public static final BigDouble ZERO = new BigDouble(0,0).setImmutable();
+    public static final BigDouble ZERO = new BigDouble(0, 0).setImmutable();
 
     private long value;
     private long fraction;
@@ -84,6 +84,11 @@ public class BigDouble implements Comparable<BigDouble> {
             val -= 1;
         }
         val += this.value + value;
+        if (frac < 0 && val > 0)
+        {
+            val -= 1;
+            frac += PRESCISION;
+        }
         if (immutable && result == this)
         {
             result = new BigDouble();
@@ -176,6 +181,11 @@ public class BigDouble implements Comparable<BigDouble> {
             val += 1;
         }
         val += this.value - value;
+        if (val < 0 && frac > 0)
+        {
+            val += 1;
+            frac -= PRESCISION;
+        }
         if (immutable && result == this)
         {
             result = new BigDouble();
@@ -273,7 +283,7 @@ public class BigDouble implements Comparable<BigDouble> {
         BigInteger bigVal = bigRes.divide(bigPrescision);
         BigInteger bigFrac = bigRes.subtract(bigVal.multiply(bigPrescision));
         long val = bigVal.longValue();
-        long frac =bigFrac.longValue();
+        long frac = bigFrac.longValue();
 
         if (immutable && result == this)
         {
@@ -396,9 +406,11 @@ public class BigDouble implements Comparable<BigDouble> {
         }
     }
 
-    public BigDouble abs(){
-        if(isNegative()){
-            return mul(NEG_ONE,new BigDouble());
+    public BigDouble abs()
+    {
+        if (isNegative())
+        {
+            return mul(NEG_ONE, new BigDouble());
         }
         return new BigDouble(this);
     }
