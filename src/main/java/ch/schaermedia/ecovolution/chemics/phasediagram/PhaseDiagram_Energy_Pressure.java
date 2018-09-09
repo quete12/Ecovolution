@@ -195,8 +195,8 @@ public class PhaseDiagram_Energy_Pressure {
     {
         BigDouble maxX = criticalBorder.getCriticalEnergy_kj_mol();
         BigDouble maxY = criticalBorder.getCriticalPressure_kPa();
-        sublimationBorder.render(g, maxY, maxX);
-        //meltingBorder.render(g, maxY, maxX);
+        //sublimationBorder.render(g, maxY, maxX);
+        meltingBorder.render(g, maxY, maxX);
         //vaporizationBorder.render(g, maxY, maxX);
 //        g.strokeWeight(20);
 //        g.stroke(0);

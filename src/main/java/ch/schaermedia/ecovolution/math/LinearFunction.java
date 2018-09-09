@@ -99,8 +99,7 @@ public class LinearFunction implements Function {
             BigDouble xDiff = p2X.sub(p1X, new BigDouble());
             System.out.println(yDiff.toDouble() + " / " + xDiff.toDouble());
             return yDiff.div(xDiff);
-        }
-        catch (Exception ex)
+        } catch (Exception ex)
         {
             System.out.println("p1: " + p1X + "|" + p1Y + " p2: " + p2X + "|" + p2Y);
             throw ex;
@@ -192,8 +191,6 @@ public class LinearFunction implements Function {
         return other.getVarA().compareTo(varA) == 0 && other.getVarB().compareTo(varB) == 0;
     }
 
-    private int timesRendered = 0;
-
     @Override
     public void render(PGraphics g, BigDouble maxYValue, BigDouble maxXValue)
     {
@@ -207,47 +204,47 @@ public class LinearFunction implements Function {
         {
             maxW = BigDouble.min(maxW, maxX);
         }
+        BigDouble minH = new BigDouble();
+        if (minY != null)
+        {
+            minH = BigDouble.max(minH, minY);
+        }
+        BigDouble maxH = new BigDouble(maxYValue);
+        if (maxY != null)
+        {
+            maxH = BigDouble.min(maxH, maxY);
+        }
 
-        BigDouble bx1 = minW.div(maxXValue, new BigDouble()).mul(g.width, 0);
+        BigDouble bx1 = minW.div(maxXValue, new BigDouble()).mul(10, 0);
+        BigDouble by1 = y(minW).div(maxYValue).mul(10, 0);
+        BigDouble bx2 = maxW.div(maxXValue, new BigDouble()).mul(10, 0);
+        BigDouble by2 = y(maxW).div(maxYValue).mul(10, 0);
+
+        if (bx1.isNegative())
+        {
+            bx1 = x(minH).div(maxXValue, new BigDouble()).mul(10, 0);
+        }
+        if (by1.isNegative())
+        {
+            by1 = minH.div(maxYValue, new BigDouble()).mul(10, 0);
+        }
+        if (bx2.compareTo(new BigDouble(10, 0)) > 0)
+        {
+            bx2 = x(maxH).div(maxXValue, new BigDouble()).mul(10, 0);
+        }
+        if (by2.compareTo(new BigDouble(10, 0)) > 0)
+        {
+            by2 = maxH.div(maxYValue, new BigDouble()).mul(10, 0);
+        }
         float x1 = (float) bx1.toDouble();
-        BigDouble by1 = y(minW).div(maxYValue).mul(g.height, 0);
         float y1 = (float) (g.height - by1.toDouble());
-        BigDouble bx2 = maxW.div(maxXValue, new BigDouble()).mul(g.width, 0);
         float x2 = (float) bx2.toDouble();
-        BigDouble by2 = y(maxW).div(maxYValue).mul(g.height, 0);
         float y2 = (float) (g.height - by2.toDouble());
 
-//        if (y1 < 0)
-//        {
-//            y1 = g.height;
-//            BigDouble minH = new BigDouble();
-//            if (minY != null)
-//            {
-//                minH = BigDouble.max(minH, minY);
-//            }
-//            x1 = (float) x(minH).div(maxXValue, new BigDouble()).mul(g.width, 0).toDouble();
-//        }
-//        if (y2 < 0)
-//        {
-//            y2 = g.height;
-//            BigDouble maxH = new BigDouble();
-//            if (maxY != null)
-//            {
-//                maxH = BigDouble.min(maxH, maxY);
-//            }
-//            x1 = (float) x(maxH).div(maxXValue, new BigDouble()).mul(g.width, 0).toDouble();
-//        }
         g.line(x1, y1, x2, y2);
 
         g.fill(0);
         g.text("x:" + bx1.toDouble() + " y:" + by1.toDouble(), x1 + 30, y1);
         g.text("x:" + bx2.toDouble() + " y:" + by2.toDouble(), x2 + 30, y2);
-//        g.fill(255);
-//        g.textSize(40);
-//        String text="P1(" + x1 + "|" + y1 + ") P2(" + x2 + "|" + y2 + ")";
-//        g.text(text, 1200, 100 + (timesRendered % 4) * 50);
-//        System.out.println(text);
-//        g.noFill();
-//        timesRendered++;
     }
 }

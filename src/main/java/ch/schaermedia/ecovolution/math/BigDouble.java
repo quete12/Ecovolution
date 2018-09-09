@@ -72,22 +72,16 @@ public class BigDouble implements Comparable<BigDouble> {
     public BigDouble add(long value, long fraction, BigDouble result)
     {
         long frac = this.fraction + fraction;
-        long val = 0;
-        if (frac >= PRESCISION)
+        long val = this.value + value;
+        if (frac >= PRESCISION || (frac > 0 && val < 0))
         {
             frac -= PRESCISION;
             val += 1;
         }
-        if (frac <= -PRESCISION)
+        if (frac <= -PRESCISION || (frac < 0 && val > 0))
         {
             frac += PRESCISION;
             val -= 1;
-        }
-        val += this.value + value;
-        if (frac < 0 && val > 0)
-        {
-            val -= 1;
-            frac += PRESCISION;
         }
         if (immutable && result == this)
         {
@@ -169,22 +163,16 @@ public class BigDouble implements Comparable<BigDouble> {
     public BigDouble sub(long value, long fraction, BigDouble result)
     {
         long frac = this.fraction - fraction;
-        long val = 0;
-        if (frac < -PRESCISION)
+        long val = this.value - value;
+        if (frac < -PRESCISION || (val > 0 && frac < 0))
         {
             frac += PRESCISION;
             val -= 1;
         }
-        if (frac > PRESCISION)
+        if (frac > PRESCISION || (val < 0 && frac > 0))
         {
             frac -= PRESCISION;
             val += 1;
-        }
-        val += this.value - value;
-        if (val < 0 && frac > 0)
-        {
-            val += 1;
-            frac -= PRESCISION;
         }
         if (immutable && result == this)
         {

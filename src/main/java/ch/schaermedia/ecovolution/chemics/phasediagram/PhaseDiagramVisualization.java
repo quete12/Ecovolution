@@ -49,7 +49,7 @@ public class PhaseDiagramVisualization extends PApplet{
     {
 
         background(255);
-        CompoundProperties prop = CompoundProperties.getPropertiesFromCode("CO2");
+        CompoundProperties prop = CompoundProperties.getPropertiesFromCode("H2O");
 
         diagram.beginDraw();
         diagram.noFill();
@@ -57,8 +57,6 @@ public class PhaseDiagramVisualization extends PApplet{
         diagram.strokeWeight(2);
         prop.getEnergy_Pressure_Diagram().render(diagram);
         diagram.endDraw();
-
-
 
         scale(scale);
         image(diagram, 0, 0);
@@ -77,7 +75,7 @@ public class PhaseDiagramVisualization extends PApplet{
     }
 
     private void setupDiagram(){
-        diagram = createGraphics(width, height, P2D);
+        diagram = createGraphics(10000, 10000, P2D);
     }
 
     @Override
