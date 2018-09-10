@@ -34,11 +34,11 @@ public class DefaultWorldGen implements TileGenerator {
         LayerMixture groundLayer = result.getLayer(0);
         PhaseMixture solids = groundLayer.getMixtureForPhase(Phase.SOLID);
         Compound oxigen = solids.getCompound("O2");
-        oxigen.add(new BigDouble(10000,0), new BigDouble(10000,0));
+        oxigen.add(new BigDouble(3000,0), new BigDouble(10000,0));
         Compound carbondioxid = solids.getCompound("CO2");
-        carbondioxid.add(new BigDouble(10000,0), new BigDouble(10000,0));
+        carbondioxid.add(new BigDouble(8000,0), new BigDouble(10000,0));
         Compound water = solids.getCompound("H2O");
-        water.add(new BigDouble(10000,0), new BigDouble(10000,0));
+        water.add(new BigDouble(3000,0), new BigDouble(10000,0));
         return result;
     }
 
