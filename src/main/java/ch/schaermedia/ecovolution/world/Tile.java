@@ -53,6 +53,14 @@ public class Tile {
         });
     }
 
+    public void spreadEnergy()
+    {
+        layers.forEach((layer) ->
+        {
+            layer.spreadEnergy();
+        });
+    }
+
     public void spreadToHigher()
     {
         layers.stream().filter((layer) -> layer.hasHigher()).filter((layer) -> layer.getAmount_mol().isPositive()).forEachOrdered((layer) ->

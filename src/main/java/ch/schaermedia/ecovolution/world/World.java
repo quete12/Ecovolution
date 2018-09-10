@@ -22,7 +22,7 @@ public class World {
     public static final int NEIGHBOUR_RANGE = 3;
     private static final int NEIGHBOUR_SQARE_SIDE = 2 * NEIGHBOUR_RANGE + 1;
     private static final int NEIGHBOUR_SQUARED = NEIGHBOUR_SQARE_SIDE * NEIGHBOUR_SQARE_SIDE;
-    public static final BigDouble HORIZONTAL_SPREAD_PERCENTAGE = BigDouble.ONE.div(new BigDouble(NEIGHBOUR_SQUARED, 0));
+    public static final BigDouble NEIGHBOUR_SPREAD_PERCENTAGE = BigDouble.ONE.div(new BigDouble(NEIGHBOUR_SQUARED, 0));
 
     private Tile[][] grid;
     private final int width;
@@ -73,6 +73,8 @@ public class World {
             case HORIZONTAL:
                 spreadHorizontal();
                 updateTiles();
+                spreadEnergy();
+                updateTiles();
                 break;
             default:
                 throw new AssertionError(state.name());
@@ -109,6 +111,17 @@ public class World {
             for (int y = 0; y < height; y++)
             {
                 grid[x][y].spreadHorizontal();
+            }
+        }
+    }
+
+    private void spreadEnergy()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                grid[x][y].spreadEnergy();
             }
         }
     }

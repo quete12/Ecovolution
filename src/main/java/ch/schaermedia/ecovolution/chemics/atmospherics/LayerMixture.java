@@ -7,6 +7,7 @@ package ch.schaermedia.ecovolution.chemics.atmospherics;
 
 import ch.schaermedia.ecovolution.chemics.ChemUtilities;
 import ch.schaermedia.ecovolution.math.BigDouble;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,6 +21,7 @@ public class LayerMixture extends AtmosphericEnity {
 
     private LayerMixture higher;
     private LayerMixture lower;
+    private final List<LayerMixture> neightbours = new ArrayList();
 
     private BigDouble energyBuffer_kj = new BigDouble();
 
@@ -61,6 +63,7 @@ public class LayerMixture extends AtmosphericEnity {
 
     public void addAsNeighbour(LayerMixture neighbour)
     {
+        neightbours.add(neighbour);
         for (int i = 0; i < phases.length; i++)
         {
             phases[i].addAsNeighbour(neighbour.getMixtureForPhase(i));
@@ -78,19 +81,50 @@ public class LayerMixture extends AtmosphericEnity {
         phases[Phase.SUPERCRITICAL_FLUID.idx].spreadHorizontal();
     }
 
+    private List<LayerMixture> activeNeighbours = new ArrayList();
+
+    public void spreadEnergy()
+    {
+        BigDouble energyToSpread = new BigDouble();
+        for (PhaseMixture phase : phases)
+        {
+            phase.spreadEnergy(energyToSpread);
+        }
+        for (LayerMixture neightbour : neightbours)
+        {
+            if (neightbour.getAmount_mol().isPositive())
+            {
+                activeNeighbours.add(neightbour);
+            }
+        }
+        if (activeNeighbours.isEmpty())
+        {
+            addEnergy(energyToSpread);
+            return;
+        }
+        BigDouble energyPerNeighbour = energyToSpread.div(activeNeighbours.size(), 0, new BigDouble());
+        for (LayerMixture neightbour : activeNeighbours)
+        {
+            neightbour.addEnergy(energyPerNeighbour);
+            energyToSpread.sub(energyPerNeighbour);
+        }
+        addEnergy(energyToSpread);
+        activeNeighbours.clear();
+    }
+
     public void spreadToLower(BigDouble amount_mol)
     {
         //Only gases can be spread
         PhaseMixture gases = phases[Phase.GAS.idx];
-        if (gases.amount_mol.isZero())
+        if (gases.getAmount_mol().isZero())
         {
             return;
         }
-        if (gases.amount_mol.isNegative())
+        if (gases.getAmount_mol().isNegative())
         {
             throw new RuntimeException("Negative amount of Gases!!");
         }
-        BigDouble percentage = amount_mol.div(gases.amount_mol, new BigDouble());
+        BigDouble percentage = amount_mol.div(gases.getAmount_mol(), new BigDouble());
         percentage.limitHigh(BigDouble.ONE);
         gases.spreadToLower(percentage);
     }
@@ -99,11 +133,11 @@ public class LayerMixture extends AtmosphericEnity {
     {
         //Only allow gases to expand upwards
         PhaseMixture gases = phases[Phase.GAS.idx];
-        if (gases.amount_mol.isZero())
+        if (gases.getAmount_mol().isZero())
         {
             return;
         }
-        BigDouble percentage = amount_mol.div(gases.amount_mol, new BigDouble());
+        BigDouble percentage = amount_mol.div(gases.getAmount_mol(), new BigDouble());
         percentage.limitHigh(BigDouble.ONE);
         if (percentage.isNegative())
         {
@@ -230,14 +264,29 @@ public class LayerMixture extends AtmosphericEnity {
         energyBuffer_kj.sub(added);
     }
 
+    public int numberOfActivePhases()
+    {
+        int count = 0;
+        for (PhaseMixture phase : phases)
+        {
+            if (phase.getAmount_mol().isNotZero())
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public BigDouble percentageInPhase(Phase phase)
     {
         return phases[phase.idx].getAmount_mol().div(getAmount_mol(), new BigDouble());
     }
 
-    public BigDouble[] getPhasePercentages(){
+    public BigDouble[] getPhasePercentages()
+    {
         BigDouble amountCopy = getAmount_mol();
-        if(amountCopy.isZero()){
+        if (amountCopy.isZero())
+        {
             return null;
         }
         BigDouble[] results = new BigDouble[phases.length];

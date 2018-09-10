@@ -9,7 +9,6 @@ import ch.schaermedia.ecovolution.chemics.ChemUtilities;
 import ch.schaermedia.ecovolution.chemics.atmospherics.CompoundProperties;
 import ch.schaermedia.ecovolution.math.BigDouble;
 import ch.schaermedia.ecovolution.math.LinearFunction;
-import processing.core.PGraphics;
 
 /**
  *
@@ -155,25 +154,5 @@ public class SublimationBorder extends PhaseBorder {
     public LinearFunction[] getSublimationMax()
     {
         return sublimationMax;
-    }
-
-    @Override
-    public void render(PGraphics g, BigDouble maxYValue, BigDouble maxXValue)
-    {
-        if (hasDualFunction)
-        {
-            g.stroke(0, 0, 255);
-            sublimationMin[0].render(g, maxYValue,maxXValue);
-            sublimationMin[1].render(g, maxYValue,maxXValue);
-            g.stroke(255, 0, 0);
-            sublimationMax[0].render(g, maxYValue,maxXValue);
-            sublimationMax[1].render(g, maxYValue,maxXValue);
-        } else
-        {
-            g.stroke(0, 0, 255);
-            sublimationMin[0].render(g, maxYValue,maxXValue);
-            g.stroke(255, 0, 0);
-            sublimationMax[0].render(g, maxYValue,maxXValue);
-        }
     }
 }

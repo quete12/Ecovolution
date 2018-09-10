@@ -59,6 +59,7 @@ public class RenderThread extends PApplet {
         layer1010.addEnergy(new BigDouble(1000,0));
 
         fill(0);
+        textSize(30);
         text("Temperature at 10|10: " + layer1010.getTemperature_k().toDoubleString()+ " K",1200,100);
         text("Pressure at 10|10: " + layer1010.getPressure_kPa().toDoubleString() + " kPa",1200,150);
         startUpdatersIfNotRunning();

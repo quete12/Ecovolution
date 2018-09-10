@@ -5,8 +5,6 @@
  */
 package ch.schaermedia.ecovolution.math;
 
-import processing.core.PGraphics;
-
 /**
  *
  * @author Quentin
@@ -70,6 +68,4 @@ public interface Function {
         BigDouble fy = y(x);
         return y.compareTo(fy) < 0;
     }
-
-    public void render(PGraphics g, BigDouble maxYValue, BigDouble maxXValue);
 }

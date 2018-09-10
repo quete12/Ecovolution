@@ -8,7 +8,6 @@ package ch.schaermedia.ecovolution.chemics.phasediagram;
 import ch.schaermedia.ecovolution.chemics.atmospherics.CompoundProperties;
 import ch.schaermedia.ecovolution.chemics.atmospherics.Phase;
 import ch.schaermedia.ecovolution.math.BigDouble;
-import processing.core.PGraphics;
 
 /**
  *
@@ -189,39 +188,6 @@ public class PhaseDiagram_Energy_Pressure {
             energyForCalculation = new BigDouble(energy_kj_mol);
         }
         return energyForCalculation.div(properties.getSpecificHeatCapacity_kj_mol_K());
-    }
-
-    public void render(PGraphics g)
-    {
-        BigDouble maxX = criticalBorder.getCriticalEnergy_kj_mol();
-        BigDouble maxY = criticalBorder.getCriticalPressure_kPa();
-        //sublimationBorder.render(g, maxY, maxX);
-        meltingBorder.render(g, maxY, maxX);
-        //vaporizationBorder.render(g, maxY, maxX);
-//        g.strokeWeight(20);
-//        g.stroke(0);
-//        g.fill(0);
-//        g.point(0, g.height - 0);
-//        float x = (float) properties.minMeltingPointEnergy().div(maxX, new BigDouble()).mul(g.width, 0).toDouble();
-//        float y = g.height - (float) ChemUtilities.STANDARD_PRESSURE_kPa.div(maxY, new BigDouble()).mul(g.height, 0).toDouble();
-//        g.point(x, y);
-//        //g.text("Melting|Std Pressure", x+50, y);
-//        x = (float) properties.getFusionHeat_kj().div(maxX, new BigDouble()).mul(g.width, 0).toDouble();
-//        y = g.height - 0;
-//        g.point(x, y);
-//        //g.text("Fusion|0", x+50, y);
-//        x = (float) properties.maxBoilingEnergy().div(maxX, new BigDouble()).mul(g.width, 0).toDouble();
-//        y = g.height - (float) ChemUtilities.STANDARD_PRESSURE_kPa.div(maxY, new BigDouble()).mul(g.height, 0).toDouble();
-//        g.point(x, y);
-//        //g.text("Boiling|Std Pressure", x+50, y);
-//        x = (float) properties.minTriplePointEnergy().div(maxX, new BigDouble()).mul(g.width, 0).toDouble();
-//        y = g.height - (float) properties.getTriplePointPressure_kPa().div(maxY, new BigDouble()).mul(g.height, 0).toDouble();
-//        g.point(x, y);
-//        //g.text("Min Triple Point", x+50, y);
-//        x = (float) properties.maxTriplePointSublimationEnergy().div(maxX, new BigDouble()).mul(g.width, 0).toDouble();
-//        y = g.height - (float) properties.getTriplePointPressure_kPa().div(maxY, new BigDouble()).mul(g.height, 0).toDouble();
-//        g.point(x, y);
-//        //g.text("Max Triple Point", x+50, y);
     }
 
     public SublimationBorder getSublimationBorder()

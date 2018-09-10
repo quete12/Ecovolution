@@ -15,6 +15,8 @@ import ch.schaermedia.ecovolution.math.BigDouble;
  */
 public class Compound extends AtmosphericEnity {
 
+    private static final BigDouble ENERGY_SPREAD_PERCENTAGE = new BigDouble(0.02).setImmutable();
+
     private final CompoundProperties properties;
 
     private BigDouble amount_mol_buffer = new BigDouble();
@@ -50,6 +52,20 @@ public class Compound extends AtmosphericEnity {
         return amountDiff;
     }
 
+    public void spreadEnergy(BigDouble energyToSpread)
+    {
+        BigDouble added;
+        if (amount_mol.isZero())
+        {
+            added = new BigDouble(energy_kj);
+        } else
+        {
+            added = energy_kj.mul(ENERGY_SPREAD_PERCENTAGE, new BigDouble());
+        }
+        energyToSpread.add(added);
+        energy_kj_buffer.sub(added);
+    }
+
     public void add(BigDouble amount_mol, BigDouble energy_kj)
     {
         amount_mol_buffer.add(amount_mol);
@@ -83,13 +99,13 @@ public class Compound extends AtmosphericEnity {
         Phase phaseAt = diag.getPhaseAt(energyPerMol, externalPressure_kPa);
         phaseChanged = phaseAt.idx != phase.idx;
         phase = phaseAt;
-        temperature_k[internal]=diag.getTemperature_K_at(energyPerMol, externalPressure_kPa, phase);
+        temperature_k[internal] = diag.getTemperature_K_at(energyPerMol, externalPressure_kPa, phase);
         if (temperature_k[internal].isNegative())
         {
             throw new RuntimeException("Negative temperature with: " + this
                     + "\ntemperature: " + temperature_k[internal]
-                    +"\nexternamPressure: " + externalPressure_kPa.toDoubleString()
-                    +"\ntotalVolume: " + totalVolume_L.toDoubleString());
+                    + "\nexternamPressure: " + externalPressure_kPa.toDoubleString()
+                    + "\ntotalVolume: " + totalVolume_L.toDoubleString());
         }
         ChemUtilities.volume_L(externalPressure_kPa, amount_mol, temperature_k[internal], volume_L[internal]);
         ChemUtilities.pressure_kPa(totalVolume_L, amount_mol, temperature_k[internal], pressure_kPa[internal]);

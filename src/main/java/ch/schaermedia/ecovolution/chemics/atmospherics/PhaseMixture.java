@@ -47,7 +47,7 @@ public class PhaseMixture extends AtmosphericEnity {
     {
         neighbours.forEach((neighbour) ->
         {
-            spreadTo(neighbour, World.HORIZONTAL_SPREAD_PERCENTAGE);
+            spreadTo(neighbour, World.NEIGHBOUR_SPREAD_PERCENTAGE);
         });
     }
 
@@ -158,12 +158,13 @@ public class PhaseMixture extends AtmosphericEnity {
 
     public void add(Compound compound)
     {
-        getCompound(compound.getCode()).add(compound.getAmount_mol(), compound.getEnergy_kj());
+        getCompound(compound.getCode()).add(compound.getAmount_mol(),compound.getEnergy_kj());
     }
 
     public BigDouble addEnergy(BigDouble energy_kj)
     {
-        if(getHeatCapacity_kj_K().isZero()){
+        if (getHeatCapacity_kj_K().isZero())
+        {
             return new BigDouble();
         }
         BigDouble added = new BigDouble();
@@ -171,10 +172,17 @@ public class PhaseMixture extends AtmosphericEnity {
         {
             BigDouble percentage = compound.getHeatCapacity_kj_K().div(getHeatCapacity_kj_K(), new BigDouble());
             BigDouble energyToAdd = energy_kj.mul(percentage, new BigDouble());
-            compound.add(new BigDouble(), energyToAdd);
+            compound.add(new BigDouble(),energyToAdd);
             added.add(energyToAdd);
         }
         return energy_kj.sub(added, added);
+    }
+
+    public void spreadEnergy(BigDouble energyToSpread){
+        for (Compound compound : composition.values())
+        {
+            compound.spreadEnergy(energyToSpread);
+        }
     }
 
 }

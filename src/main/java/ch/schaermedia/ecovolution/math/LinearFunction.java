@@ -5,8 +5,6 @@
  */
 package ch.schaermedia.ecovolution.math;
 
-import processing.core.PGraphics;
-
 /**
  *
  * @author Quentin
@@ -189,62 +187,5 @@ public class LinearFunction implements Function {
         }
         LinearFunction other = (LinearFunction) obj;
         return other.getVarA().compareTo(varA) == 0 && other.getVarB().compareTo(varB) == 0;
-    }
-
-    @Override
-    public void render(PGraphics g, BigDouble maxYValue, BigDouble maxXValue)
-    {
-        BigDouble minW = new BigDouble();
-        if (minX != null)
-        {
-            minW = BigDouble.max(minW, minX);
-        }
-        BigDouble maxW = new BigDouble(maxXValue);
-        if (maxX != null)
-        {
-            maxW = BigDouble.min(maxW, maxX);
-        }
-        BigDouble minH = new BigDouble();
-        if (minY != null)
-        {
-            minH = BigDouble.max(minH, minY);
-        }
-        BigDouble maxH = new BigDouble(maxYValue);
-        if (maxY != null)
-        {
-            maxH = BigDouble.min(maxH, maxY);
-        }
-
-        BigDouble bx1 = minW.div(maxXValue, new BigDouble()).mul(10, 0);
-        BigDouble by1 = y(minW).div(maxYValue).mul(10, 0);
-        BigDouble bx2 = maxW.div(maxXValue, new BigDouble()).mul(10, 0);
-        BigDouble by2 = y(maxW).div(maxYValue).mul(10, 0);
-
-        if (bx1.isNegative())
-        {
-            bx1 = x(minH).div(maxXValue, new BigDouble()).mul(10, 0);
-        }
-        if (by1.isNegative())
-        {
-            by1 = minH.div(maxYValue, new BigDouble()).mul(10, 0);
-        }
-        if (bx2.compareTo(new BigDouble(10, 0)) > 0)
-        {
-            bx2 = x(maxH).div(maxXValue, new BigDouble()).mul(10, 0);
-        }
-        if (by2.compareTo(new BigDouble(10, 0)) > 0)
-        {
-            by2 = maxH.div(maxYValue, new BigDouble()).mul(10, 0);
-        }
-        float x1 = (float) bx1.toDouble();
-        float y1 = (float) (g.height - by1.toDouble());
-        float x2 = (float) bx2.toDouble();
-        float y2 = (float) (g.height - by2.toDouble());
-
-        g.line(x1, y1, x2, y2);
-
-        g.fill(0);
-        g.text("x:" + bx1.toDouble() + " y:" + by1.toDouble(), x1 + 30, y1);
-        g.text("x:" + bx2.toDouble() + " y:" + by2.toDouble(), x2 + 30, y2);
     }
 }

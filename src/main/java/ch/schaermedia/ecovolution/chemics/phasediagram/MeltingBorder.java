@@ -11,7 +11,6 @@ import ch.schaermedia.ecovolution.chemics.atmospherics.CompoundProperties;
 import ch.schaermedia.ecovolution.math.BigDouble;
 import ch.schaermedia.ecovolution.math.Function;
 import ch.schaermedia.ecovolution.math.LinearFunction;
-import processing.core.PGraphics;
 
 /**
  *
@@ -26,6 +25,7 @@ public class MeltingBorder extends PhaseBorder {
     {
         super(false);
         initMeltingBorders(properties);
+        initLimits(properties);
     }
 
     private void initMeltingBorders(CompoundProperties properties)
@@ -102,14 +102,5 @@ public class MeltingBorder extends PhaseBorder {
     public BigDouble getMinEnergy_kj_mol(BigDouble pressure_kPa)
     {
         return meltingMin.x(pressure_kPa);
-    }
-
-    @Override
-    public void render(PGraphics g, BigDouble maxYValue, BigDouble maxXValue)
-    {
-        g.stroke(0, 0, 255);
-        meltingMin.render(g, maxYValue, maxXValue);
-        g.stroke(255, 0, 0);
-        meltingMax.render(g, maxYValue, maxXValue);
     }
 }
