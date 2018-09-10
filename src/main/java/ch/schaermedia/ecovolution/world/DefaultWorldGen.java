@@ -5,6 +5,7 @@
  */
 package ch.schaermedia.ecovolution.world;
 
+import ch.schaermedia.ecovolution.chemics.ChemUtilities;
 import ch.schaermedia.ecovolution.chemics.atmospherics.Compound;
 import ch.schaermedia.ecovolution.chemics.atmospherics.LayerMixture;
 import ch.schaermedia.ecovolution.chemics.atmospherics.Phase;
@@ -28,17 +29,20 @@ public class DefaultWorldGen implements TileGenerator {
     @Override
     public Tile generate(int x, int y, int numLayers)
     {
-        int height = (int) (applet.noise((float) (x * 0.1), (float) ((y+1000) * 0.1)) * 100);
+        int height = (int) (applet.noise((float) (x * 0.1), (float) ((y + 1000) * 0.1)) * 100);
         System.out.println("Tile[" + x + "][" + y + "] hegiht: " + height + " created");
         Tile result = new Tile(x, y, numLayers, height);
+
+        BigDouble standardTemperature = ChemUtilities.toKelvin(new BigDouble(13.5));
+
         LayerMixture groundLayer = result.getLayer(0);
         PhaseMixture solids = groundLayer.getMixtureForPhase(Phase.SOLID);
         Compound oxigen = solids.getCompound("O2");
-        oxigen.add(new BigDouble(3000,0), new BigDouble(10000,0));
+        oxigen.init(new BigDouble(3000, 0), standardTemperature, Phase.GAS);
         Compound carbondioxid = solids.getCompound("CO2");
-        carbondioxid.add(new BigDouble(8000,0), new BigDouble(10000,0));
+        carbondioxid.init(new BigDouble(8000, 0), standardTemperature, Phase.GAS);
         Compound water = solids.getCompound("H2O");
-        water.add(new BigDouble(3000,0), new BigDouble(10000,0));
+        water.init(new BigDouble(3000, 0), standardTemperature, Phase.LIQUID);
         return result;
     }
 

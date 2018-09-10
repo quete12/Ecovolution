@@ -8,6 +8,7 @@ package ch.schaermedia.ecovolution.chemics.atmospherics;
 import ch.schaermedia.ecovolution.chemics.ChemUtilities;
 import ch.schaermedia.ecovolution.chemics.phasediagram.PhaseDiagram_Energy_Pressure;
 import ch.schaermedia.ecovolution.math.BigDouble;
+import ch.schaermedia.ecovolution.world.Tile;
 
 /**
  *
@@ -36,6 +37,26 @@ public class Compound extends AtmosphericEnity {
     {
         this.properties = properties;
         this.phase = phase;
+    }
+
+    public void init(BigDouble amount, BigDouble temperature_k, Phase phase){
+        BigDouble energyForTemp = properties.getSpecificHeatCapacity_kj_mol_K().mul(temperature_k, new BigDouble());
+        switch(phase){
+            case SUPERCRITICAL_FLUID:
+            case GAS:
+                energyForTemp.add(properties.getVaporizationHeat_kj());
+                //no break to add fusion heat as well.
+            case LIQUID:
+                energyForTemp.add(properties.getFusionHeat_kj());
+                break;
+            case SOLID:
+                break;
+            default:
+                throw new AssertionError(phase.name());
+        }
+        energyForTemp.mul(amount);
+        add(amount, energyForTemp);
+        updateStats(ChemUtilities.STANDARD_PRESSURE_kPa, Tile.LAYER_VOLUME_L);
     }
 
     public BigDouble splitTo(Compound other, BigDouble percentage)

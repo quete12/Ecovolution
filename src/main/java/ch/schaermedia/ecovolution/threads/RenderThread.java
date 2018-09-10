@@ -5,7 +5,10 @@
  */
 package ch.schaermedia.ecovolution.threads;
 
+import ch.schaermedia.ecovolution.chemics.atmospherics.Compound;
 import ch.schaermedia.ecovolution.chemics.atmospherics.LayerMixture;
+import ch.schaermedia.ecovolution.chemics.atmospherics.Phase;
+import ch.schaermedia.ecovolution.chemics.atmospherics.PhaseMixture;
 import ch.schaermedia.ecovolution.math.BigDouble;
 import ch.schaermedia.ecovolution.representation.layers.PhaseRenderer;
 import ch.schaermedia.ecovolution.world.DefaultWorldGen;
@@ -34,6 +37,7 @@ public class RenderThread extends PApplet {
     @Override
     public void mouseWheel(MouseEvent event)
     {
+        scale += (event.getCount() * 0.03);
     }
 
     @Override
@@ -46,26 +50,61 @@ public class RenderThread extends PApplet {
     {
     }
 
+    private float scale = 0.75f;
+
     @Override
     public void draw()
     {
         background(255);
         pushMatrix();
-        scale(0.5f);
+        scale(scale);
         renderWorld();
 
         popMatrix();
-        LayerMixture layer1010 = world.getGrid()[10][10].getLayer(0);
-        layer1010.addEnergy(new BigDouble(1000,0));
+        int xIdx = (int) (mouseX / scale / Tile.SIZE);
+        int yIdx = (int) (mouseY / scale / Tile.SIZE);
 
-        fill(0);
-        textSize(30);
-        text("Temperature at 10|10: " + layer1010.getTemperature_k().toDoubleString()+ " K",1200,100);
-        text("Pressure at 10|10: " + layer1010.getPressure_kPa().toDoubleString() + " kPa",1200,150);
+        if (xIdx >= 0 && xIdx < world.getWidth() && yIdx >= 0 && yIdx < world.getHeight())
+        {
+
+            LayerMixture selectedLayer = world.getGrid()[xIdx][yIdx].getLayer(0);
+            //selectedLayer.addEnergy(new BigDouble(100, 0));
+            fill(0);
+            textSize(30);
+            text("Tile at: " + xIdx + " | " + yIdx, 1200, 50);
+            text("Temperature: " + selectedLayer.getTemperature_k().toDoubleString() + " K", 1200, 100);
+            text("Pressure: " + selectedLayer.getPressure_kPa().toDoubleString() + " kPa", 1200, 150);
+            BigDouble[] phasePercentages = selectedLayer.getPhasePercentages();
+            if (phasePercentages != null)
+            {
+                int offset = 0;
+                final int start = 200;
+                for (int i = 0; i < phasePercentages.length; i++)
+                {
+                    BigDouble phasePercentage = phasePercentages[i];
+                    textSize(20);
+                    offset += 10;
+                    text("% of " + Phase.fromIdx(i) + ": " + phasePercentage.toDoubleString(), 1200, start + offset);
+                    offset += 20;
+                    PhaseMixture phase = selectedLayer.getMixtureForPhase(i);
+                    phase.getCompounds();
+                    for (Compound compound : phase.getCompounds())
+                    {
+                        if (compound.getAmount_mol().isNotZero())
+                        {
+                            textSize(15);
+                            text("Amount of "+ compound.getCode() + ": " + compound.getAmount_mol().toDoubleString() + " temperature: " + compound.getTemperature_k().toDoubleString() , 1200, start + offset);
+                            offset += 20;
+                        }
+                    }
+                }
+            }
+        }
         startUpdatersIfNotRunning();
     }
 
-    private void renderWorld(){
+    private void renderWorld()
+    {
         PGraphics phaseOverlay = phaseRenderer.render();
         image(phaseOverlay, 0, 0);
     }
