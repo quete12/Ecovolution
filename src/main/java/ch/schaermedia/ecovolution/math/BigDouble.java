@@ -346,12 +346,12 @@ public class BigDouble implements Comparable<BigDouble> {
 
     public boolean isPositive()
     {
-        return this.value > 0;
+        return this.value > 0 || (this.value == 0 && this.fraction > 0);
     }
 
     public boolean isNegative()
     {
-        return this.value < 0;
+        return this.value < 0 || (this.value == 0 && this.fraction < 0);
     }
 
     public boolean isZero()

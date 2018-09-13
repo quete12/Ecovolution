@@ -43,6 +43,7 @@ public class DefaultWorldGen implements TileGenerator {
         carbondioxid.init(new BigDouble(8000, 0), standardTemperature, Phase.GAS);
         Compound water = solids.getCompound("H2O");
         water.init(new BigDouble(3000, 0), standardTemperature, Phase.LIQUID);
+        groundLayer.updateStats(ChemUtilities.STANDARD_PRESSURE_kPa, Tile.LAYER_VOLUME_L);
         return result;
     }
 

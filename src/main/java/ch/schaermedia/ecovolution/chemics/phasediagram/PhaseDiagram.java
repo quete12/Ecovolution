@@ -5,8 +5,8 @@
  */
 package ch.schaermedia.ecovolution.chemics.phasediagram;
 
+import ch.schaermedia.ecovolution.chemics.ChemUtilities;
 import ch.schaermedia.ecovolution.chemics.atmospherics.CompoundProperties;
-import ch.schaermedia.ecovolution.chemics.atmospherics.CompoundProperties.PhaseDiagramCase;
 import ch.schaermedia.ecovolution.chemics.atmospherics.Phase;
 import ch.schaermedia.ecovolution.math.BigDouble;
 
@@ -16,63 +16,137 @@ import ch.schaermedia.ecovolution.math.BigDouble;
  */
 public abstract class PhaseDiagram {
 
-    public static PhaseDiagram createPhaseDiagram(PhaseDiagramCase diagramCase, CompoundProperties properties)
+    public static PhaseDiagram createPhaseDiagram(CompoundProperties properties)
     {
         PhaseDiagram diag = null;
-        switch (diagramCase)
+        if (isCase1(properties))
         {
-            case CASE1:
-                diag = new PhaseDiagramCase1();
-                break;
-            case CASE2:
-                diag = new PhaseDiagramCase2();
-                break;
-            case CASE3:
-                diag = new PhaseDiagramCase3();
-                break;
+            diag = new PhaseDiagramCase1(properties);
+        } else if (isCase2(properties))
+        {
+            diag = new PhaseDiagramCase2(properties);
+        } else if (isCase3(properties))
+        {
+            diag = new PhaseDiagramCase3(properties);
+        } else
+        {
+            throw new RuntimeException("No mating diagram type for properties: \n" + properties);
         }
-        diag.init(properties);
+        diag.init();
         return diag;
     }
 
-    protected PhaseDiagram()
+    /**
+     * This function is used to descide what structure the phasediagram should
+     * have.
+     *
+     * @return
+     */
+    private static boolean isCase1(CompoundProperties properties)
     {
-
+        boolean hasSublimationPoint = properties.hasSublimationPoint();
+        boolean pressureResult = properties.getTriplePointPressure_kPa().compareTo(ChemUtilities.STANDARD_PRESSURE_kPa) < 0;
+        boolean temperatureResult = properties.getTriplePointHeat_K().compareTo(properties.getMeltingPoint_K()) < 0;
+        return !hasSublimationPoint && pressureResult && temperatureResult;
     }
 
-    protected void init(CompoundProperties properties)
+    private static boolean isCase2(CompoundProperties properties)
     {
-        initBorders(properties);
+        boolean hasSublimationPoint = properties.hasSublimationPoint();
+        boolean pressureResult = properties.getTriplePointPressure_kPa().compareTo(ChemUtilities.STANDARD_PRESSURE_kPa) < 0;
+        boolean temperatureResult = properties.getTriplePointHeat_K().compareTo(properties.getMeltingPoint_K()) > 0;
+        return !hasSublimationPoint && pressureResult && temperatureResult;
     }
 
-    protected abstract void initBorders(CompoundProperties properties);
-
-    public Phase getPhase(BigDouble pressure_kPa, BigDouble energy_kj_mol)
+    private static boolean isCase3(CompoundProperties properties)
     {
-        if (isSolid(pressure_kPa, energy_kj_mol))
+        boolean hasSublimationPoint = properties.hasSublimationPoint();
+        boolean pressureResult = properties.getTriplePointPressure_kPa().compareTo(ChemUtilities.STANDARD_PRESSURE_kPa) > 0;
+        boolean temperatureResult = properties.getSublimationPoint_K().compareTo(properties.getTriplePointHeat_K()) < 0;
+        return hasSublimationPoint && pressureResult && temperatureResult;
+    }
+
+    protected final CompoundProperties properties;
+    private final String diagramCase;
+
+    protected PhaseDiagram(CompoundProperties properties, String diagramCase)
+    {
+        this.properties = properties;
+        this.diagramCase = diagramCase;
+    }
+
+    protected void init()
+    {
+        initBorders();
+    }
+
+    protected abstract void initBorders();
+
+    public Phase getPhase(BigDouble energy_kj_mol, BigDouble pressure_kPa)
+    {
+        if (isSolid(energy_kj_mol, pressure_kPa))
         {
             return Phase.SOLID;
         }
-        if (isLiquid(pressure_kPa, energy_kj_mol))
+        if (isLiquid(energy_kj_mol, pressure_kPa))
         {
             return Phase.LIQUID;
         }
-        if (isGas(pressure_kPa, energy_kj_mol))
+        if (isGas(energy_kj_mol, pressure_kPa))
         {
             return Phase.GAS;
         }
-        if (isCritical(pressure_kPa, energy_kj_mol))
+        if (isCritical(energy_kj_mol, pressure_kPa))
         {
             return Phase.SUPERCRITICAL_FLUID;
         }
-        throw new RuntimeException("Could not find phase for: " + pressure_kPa + " kPa and " + energy_kj_mol + " kj");
+        throw new RuntimeException("Could not find phase for: " + pressure_kPa + " kPa and " + energy_kj_mol + " kj"
+                + "\nDiagram case: " + diagramCase + " compound: " + properties.getCode());
     }
 
-    protected abstract boolean isSolid(BigDouble pressure_kPa, BigDouble energy_kj_mol);
+    protected abstract boolean isSolid(BigDouble energy_kj_mol, BigDouble pressure_kPa);
 
-    protected abstract boolean isLiquid(BigDouble pressure_kPa, BigDouble energy_kj_mol);
+    protected abstract boolean isLiquid(BigDouble energy_kj_mol, BigDouble pressure_kPa);
 
-    protected abstract boolean isGas(BigDouble pressure_kPa, BigDouble energy_kj_mol);
+    protected abstract boolean isGas(BigDouble energy_kj_mol, BigDouble pressure_kPa);
 
-    protected abstract boolean isCritical(BigDouble pressure_kPa, BigDouble energy_kj_mol);
+    protected abstract boolean isCritical(BigDouble energy_kj_mol, BigDouble pressure_kPa);
+
+    public BigDouble getTemperature(BigDouble energy_kj_mol, BigDouble pressure_kPa)
+    {
+        return getTemperature(energy_kj_mol, pressure_kPa, getPhase(energy_kj_mol, pressure_kPa));
+    }
+
+    public BigDouble getTemperature(BigDouble energy_kj_mol, BigDouble pressure_kPa, Phase phase)
+    {
+        BigDouble energyForCalculation;
+        switch (phase)
+        {
+            case SOLID:
+                energyForCalculation = getEnergyForSolidTemp(energy_kj_mol, pressure_kPa);
+                break;
+            case LIQUID:
+                energyForCalculation = getEnergyForLiquidTemp(energy_kj_mol, pressure_kPa);
+                break;
+            case GAS:
+                energyForCalculation = getEnergyForGasTemp(energy_kj_mol, pressure_kPa);
+                break;
+            case SUPERCRITICAL_FLUID:
+                energyForCalculation = getEnergyForCriticalTemp(energy_kj_mol, pressure_kPa);
+                break;
+            default:
+                throw new AssertionError(phase.name());
+        }
+        BigDouble temperature = energyForCalculation.div(properties.getSpecificHeatCapacity_kj_mol_K());
+//        System.out.println("CalculatedTemperature: " + temperature);
+        return temperature;
+    }
+
+    protected abstract BigDouble getEnergyForSolidTemp(BigDouble energy_kj_mol, BigDouble pressure_kPa);
+
+    protected abstract BigDouble getEnergyForLiquidTemp(BigDouble energy_kj_mol, BigDouble pressure_kPa);
+
+    protected abstract BigDouble getEnergyForGasTemp(BigDouble energy_kj_mol, BigDouble pressure_kPa);
+
+    protected abstract BigDouble getEnergyForCriticalTemp(BigDouble energy_kj_mol, BigDouble pressure_kPa);
 }

@@ -6,7 +6,7 @@
 package ch.schaermedia.ecovolution.chemics.atmospherics;
 
 import ch.schaermedia.ecovolution.chemics.ChemUtilities;
-import ch.schaermedia.ecovolution.chemics.phasediagram.PhaseDiagram_Energy_Pressure;
+import ch.schaermedia.ecovolution.chemics.phasediagram.PhaseDiagram;
 import ch.schaermedia.ecovolution.math.BigDouble;
 import ch.schaermedia.ecovolution.world.Tile;
 
@@ -39,13 +39,16 @@ public class Compound extends AtmosphericEnity {
         this.phase = phase;
     }
 
-    public void init(BigDouble amount, BigDouble temperature_k, Phase phase){
+    public void init(BigDouble amount, BigDouble temperature_k, Phase phase)
+    {
         BigDouble energyForTemp = properties.getSpecificHeatCapacity_kj_mol_K().mul(temperature_k, new BigDouble());
-        switch(phase){
+        switch (phase)
+        {
             case SUPERCRITICAL_FLUID:
             case GAS:
                 energyForTemp.add(properties.getVaporizationHeat_kj());
-                //no break to add fusion heat as well.
+                energyForTemp.add(properties.getFusionHeat_kj());
+                break;
             case LIQUID:
                 energyForTemp.add(properties.getFusionHeat_kj());
                 break;
@@ -54,9 +57,10 @@ public class Compound extends AtmosphericEnity {
             default:
                 throw new AssertionError(phase.name());
         }
-        energyForTemp.mul(amount);
+        energyForTemp.add(BigDouble.ONE).mul(amount);
         add(amount, energyForTemp);
-        updateStats(ChemUtilities.STANDARD_PRESSURE_kPa, Tile.LAYER_VOLUME_L);
+        importBuffers();
+        updateThermodynamicStats(ChemUtilities.STANDARD_PRESSURE_kPa, Tile.LAYER_VOLUME_L);
     }
 
     public BigDouble splitTo(Compound other, BigDouble percentage)
@@ -115,12 +119,12 @@ public class Compound extends AtmosphericEnity {
 
     private void updateThermodynamicStats(BigDouble externalPressure_kPa, BigDouble totalVolume_L)
     {
-        PhaseDiagram_Energy_Pressure diag = properties.getEnergy_Pressure_Diagram();
+        PhaseDiagram diag = properties.getPhaseDiagram();
         BigDouble energyPerMol = energy_kj.div(amount_mol, new BigDouble());
-        Phase phaseAt = diag.getPhaseAt(energyPerMol, externalPressure_kPa);
+        Phase phaseAt = diag.getPhase(energyPerMol, externalPressure_kPa);
         phaseChanged = phaseAt.idx != phase.idx;
         phase = phaseAt;
-        temperature_k[internal] = diag.getTemperature_K_at(energyPerMol, externalPressure_kPa, phase);
+        temperature_k[internal] = diag.getTemperature(energyPerMol, externalPressure_kPa, phase);
         if (temperature_k[internal].isNegative())
         {
             throw new RuntimeException("Negative temperature with: " + this

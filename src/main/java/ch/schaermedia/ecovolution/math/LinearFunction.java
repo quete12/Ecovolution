@@ -67,6 +67,7 @@ public class LinearFunction implements Function {
             return y(px).compareTo(py) > 0;
         }
     }
+
     public boolean isPointOnOrLeft(BigDouble px, BigDouble py)
     {
         if (!isWithinLimits(px, py))
@@ -111,7 +112,8 @@ public class LinearFunction implements Function {
             BigDouble xDiff = p2X.sub(p1X, new BigDouble());
             System.out.println(yDiff.toDouble() + " / " + xDiff.toDouble());
             return yDiff.div(xDiff);
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             System.out.println("p1: " + p1X + "|" + p1Y + " p2: " + p2X + "|" + p2Y);
             throw ex;
@@ -173,23 +175,9 @@ public class LinearFunction implements Function {
     @Override
     public boolean isWithinLimits(BigDouble x, BigDouble y)
     {
-        if (minX != null && minX.compareTo(x) >= 0)
-        {
-            return false;
-        }
-        if (maxX != null && maxX.compareTo(x) <= 0)
-        {
-            return false;
-        }
-        if (minY != null && minY.compareTo(y) >= 0)
-        {
-            return false;
-        }
-        if (maxY != null && maxY.compareTo(y) <= 0)
-        {
-            return false;
-        }
-        return true;
+        boolean withinX = (minX == null || minX.compareTo(x) <= 0) && (maxX == null || maxX.compareTo(x) >= 0);
+        boolean withinY = (minY == null || minY.compareTo(y) <= 0) && (maxY == null || maxY.compareTo(y) >= 0);
+        return withinX || withinY;
     }
 
     @Override

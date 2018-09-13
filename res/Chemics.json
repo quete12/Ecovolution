@@ -66,7 +66,7 @@
             "symbol":"O2",
             "phase":"gas",
             "specificHeatCapacity":0.029378,
-            "meltingPoint":54.36,
+            "meltingPoint":54.362,
             "boilingPoint":90.188,
             "fusionHeat":0.444,
             "vaporizationHeat":6.820,
