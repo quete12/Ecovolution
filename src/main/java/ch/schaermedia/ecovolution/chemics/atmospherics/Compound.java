@@ -125,7 +125,7 @@ public class Compound extends AtmosphericEnity {
         {
             throw new RuntimeException("Negative temperature with: " + this
                     + "\ntemperature: " + temperature_k[internal]
-                    + "\nexternamPressure: " + externalPressure_kPa.toDoubleString()
+                    + "\nexternalPressure: " + externalPressure_kPa.toDoubleString()
                     + "\ntotalVolume: " + totalVolume_L.toDoubleString());
         }
         ChemUtilities.volume_L(externalPressure_kPa, amount_mol, temperature_k[internal], volume_L[internal]);

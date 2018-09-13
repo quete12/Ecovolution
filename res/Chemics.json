@@ -108,11 +108,10 @@
             "symbol":"CO2",
             "phase":"gas",
             "specificHeatCapacity":0.037135,
-            "meltingPoint":194.7,
-            "boilingPoint":194.7,
+            "sublimationPoint": 194.7,
             "fusionHeat":8.347,
             "vaporizationHeat":6.979,
-            "triplePointHeat":217,
+            "triplePointHeat":216.6,
             "triplePointPressure":517,
             "criticalPointHeat":304.25,
             "criticalPointPressure":7380

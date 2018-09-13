@@ -64,11 +64,11 @@ public class RenderThread extends PApplet {
         int xIdx = (int) (mouseX / scale / Tile.SIZE);
         int yIdx = (int) (mouseY / scale / Tile.SIZE);
 
+        world.getGrid()[5][5].getLayer(0).addEnergy(new BigDouble(100, 0));
         if (xIdx >= 0 && xIdx < world.getWidth() && yIdx >= 0 && yIdx < world.getHeight())
         {
 
             LayerMixture selectedLayer = world.getGrid()[xIdx][yIdx].getLayer(0);
-            //selectedLayer.addEnergy(new BigDouble(100, 0));
             fill(0);
             textSize(30);
             text("Tile at: " + xIdx + " | " + yIdx, 1200, 50);

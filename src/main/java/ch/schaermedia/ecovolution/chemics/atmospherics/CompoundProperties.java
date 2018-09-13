@@ -34,6 +34,7 @@ public class CompoundProperties {
 
     private BigDouble meltingPoint_K;
     private BigDouble boilingPoint_K;
+    private BigDouble sublimationPoint_K;
     private BigDouble fusionHeat_kj;
     private BigDouble vaporizationHeat_kj;
 
@@ -70,8 +71,7 @@ public class CompoundProperties {
                 && triplePointPressure_kPa.isNotZero()
                 && criticalPointHeat_K.isNotZero()
                 && criticalPointPressure_kPa.isNotZero()
-                && meltingPoint_K.isNotZero()
-                && boilingPoint_K.isNotZero()
+                && ((meltingPoint_K.isNotZero() && boilingPoint_K.isNotZero()) || sublimationPoint_K.isNotZero())
                 && fusionHeat_kj.isNotZero()
                 && vaporizationHeat_kj.isNotZero();
     }
@@ -83,8 +83,9 @@ public class CompoundProperties {
         orderNumber = object.optInt("number");
         defaultPhase = Phase.valueOf(object.getString("phase").toUpperCase());
         specificHeatCapacity_kj_mol_K = new BigDouble(object.getDouble("specificHeatCapacity")).setImmutable();
-        meltingPoint_K = new BigDouble(object.optDouble("meltingPoint")).setImmutable();
-        boilingPoint_K = new BigDouble(object.optDouble("boilingPoint")).setImmutable();
+        meltingPoint_K = new BigDouble(object.optDouble("meltingPoint", 0.0)).setImmutable();
+        boilingPoint_K = new BigDouble(object.optDouble("boilingPoint", 0.0)).setImmutable();
+        sublimationPoint_K = new BigDouble(object.optDouble("sublimationPoint", 0.0)).setImmutable();
         fusionHeat_kj = new BigDouble(object.optDouble("fusionHeat")).setImmutable();
         vaporizationHeat_kj = new BigDouble(object.optDouble("vaporizationHeat")).setImmutable();
         triplePointHeat_K = new BigDouble(object.optDouble("triplePointHeat")).setImmutable();
@@ -114,29 +115,49 @@ public class CompoundProperties {
         return code;
     }
 
-    public boolean isBoilingPointUnderTriplePoint()
+    public boolean hasMeltingPoint()
     {
-        return boilingPoint_K.compareTo(triplePointHeat_K) < 0 && ChemUtilities.STANDARD_PRESSURE_kPa.compareTo(triplePointPressure_kPa) < 0;
+        return meltingPoint_K.isNotZero();
     }
 
-    public boolean isMeltingPointUnderTriplePoint()
+    public boolean hasBoilingPoint()
     {
-        return meltingPoint_K.compareTo(triplePointHeat_K) < 0 && ChemUtilities.STANDARD_PRESSURE_kPa.compareTo(triplePointPressure_kPa) < 0;
+        return boilingPoint_K.isNotZero();
     }
 
-    public BigDouble getSpecificHeatCapacity_kj_mol_K()
+    public boolean hasSublimationPoint()
     {
-        return specificHeatCapacity_kj_mol_K;
+        return sublimationPoint_K.isNotZero();
     }
 
-    public BigDouble getMeltingPoint_K()
+    /**
+     * This function is used to descide what structure the phasediagram should
+     * have.
+     *
+     * @return
+     */
+    private boolean isCase1()
     {
-        return meltingPoint_K;
+        boolean hasSublimationPoint = hasSublimationPoint();
+        boolean pressureResult = triplePointPressure_kPa.compareTo(ChemUtilities.STANDARD_PRESSURE_kPa) < 0;
+        boolean temperatureResult = triplePointHeat_K.compareTo(meltingPoint_K) < 0;
+        return !hasSublimationPoint && pressureResult && temperatureResult;
     }
 
-    public BigDouble getBoilingPoint_K()
+    private boolean isCase2()
     {
-        return boilingPoint_K;
+        boolean hasSublimationPoint = hasSublimationPoint();
+        boolean pressureResult = triplePointPressure_kPa.compareTo(ChemUtilities.STANDARD_PRESSURE_kPa) < 0;
+        boolean temperatureResult = triplePointHeat_K.compareTo(meltingPoint_K) > 0;
+        return !hasSublimationPoint && pressureResult && temperatureResult;
+    }
+
+    private boolean isCase3()
+    {
+        boolean hasSublimationPoint = hasSublimationPoint();
+        boolean pressureResult = triplePointPressure_kPa.compareTo(ChemUtilities.STANDARD_PRESSURE_kPa) > 0;
+        boolean temperatureResult = sublimationPoint_K.compareTo(triplePointHeat_K) < 0;
+        return hasSublimationPoint && pressureResult && temperatureResult;
     }
 
     public BigDouble getFusionHeat_kj()
@@ -149,9 +170,9 @@ public class CompoundProperties {
         return vaporizationHeat_kj;
     }
 
-    public BigDouble getTriplePointHeat_K()
+    public BigDouble getSublimationHeat_kj()
     {
-        return triplePointHeat_K;
+        return fusionHeat_kj.add(vaporizationHeat_kj, new BigDouble());
     }
 
     public BigDouble getTriplePointPressure_kPa()
@@ -159,68 +180,139 @@ public class CompoundProperties {
         return triplePointPressure_kPa;
     }
 
-    public BigDouble getCriticalPointHeat_K()
-    {
-        return criticalPointHeat_K;
-    }
-
     public BigDouble getCriticalPointPressure_kPa()
     {
         return criticalPointPressure_kPa;
     }
 
-    public PhaseDiagram_Energy_Pressure getEnergy_Pressure_Diagram()
-    {
-        return energy_Pressure_Diagram;
-    }
-
-    public BigDouble minCriticalEnergy()
-    {
-        return criticalPointHeat_K.mul(specificHeatCapacity_kj_mol_K, new BigDouble()).add(fusionHeat_kj);
-    }
-
-    public BigDouble maxCriticalEnergy()
-    {
-        return minCriticalEnergy().add(vaporizationHeat_kj);
-    }
-
-    public BigDouble minMeltingPointEnergy()
-    {
-        return meltingPoint_K.mul(specificHeatCapacity_kj_mol_K, new BigDouble());
-    }
-
-    public BigDouble maxMeltingPointEnergy()
-    {
-        return minMeltingPointEnergy().add(fusionHeat_kj);
-    }
-
-    public BigDouble minBoilingEnergy()
-    {
-        return boilingPoint_K.mul(specificHeatCapacity_kj_mol_K, new BigDouble()).add(fusionHeat_kj);
-    }
-
-    public BigDouble maxBoilingEnergy()
-    {
-        return minBoilingEnergy().add(vaporizationHeat_kj);
-    }
-
-    public BigDouble minTriplePointEnergy()
+    public BigDouble minTriplePointEnergy_kj()
     {
         return triplePointHeat_K.mul(specificHeatCapacity_kj_mol_K, new BigDouble());
     }
 
-    public BigDouble maxTriplePointVaporizationEnergy()
+    public BigDouble meltingTriplePointEnergy_kj()
     {
-        return minTriplePointEnergy().add(fusionHeat_kj).add(vaporizationHeat_kj);
+        return meltingTriplePointEnergy_kj().add(fusionHeat_kj);
     }
 
-    public BigDouble maxTriplePointMeltingEnergy()
+    public BigDouble vaporizationTriplePointEnergy_kj()
     {
-        return minTriplePointEnergy().add(fusionHeat_kj);
+        return meltingTriplePointEnergy_kj().add(vaporizationHeat_kj);
     }
 
-    public BigDouble maxTriplePointSublimationEnergy()
+    public BigDouble minMeltingPointEnergy_kj()
     {
-        return minTriplePointEnergy().add(fusionHeat_kj).add(vaporizationHeat_kj);
+        return meltingPoint_K.mul(specificHeatCapacity_kj_mol_K, new BigDouble());
+    }
+
+    public BigDouble maxMeltingPointEnergy_kj()
+    {
+        return minMeltingPointEnergy_kj().add(fusionHeat_kj);
+    }
+
+    public BigDouble minBoilingPointEnergy_kj()
+    {
+        return boilingPoint_K.mul(specificHeatCapacity_kj_mol_K, new BigDouble()).add(fusionHeat_kj);
+    }
+
+    public BigDouble maxBoilingPointEnergy_kj()
+    {
+        return minBoilingPointEnergy_kj().add(vaporizationHeat_kj);
+    }
+
+    public BigDouble minCriticalPointEnergy_kj()
+    {
+        return criticalPointHeat_K.mul(specificHeatCapacity_kj_mol_K, new BigDouble()).add(fusionHeat_kj);
+    }
+
+    public BigDouble maxCriticalPointEnergy_kj()
+    {
+        return minCriticalPointEnergy_kj().add(vaporizationHeat_kj);
+    }
+
+    public BigDouble minSublimationPointEnergy_kj()
+    {
+        return sublimationPoint_K.mul(specificHeatCapacity_kj_mol_K, new BigDouble());
+    }
+
+    public BigDouble meltingSublimationPointEnergy_kj(){
+        return minSublimationPointEnergy_kj().add(fusionHeat_kj);
+    }
+    public BigDouble maxSublimationPointEnergy_kj()
+    {
+        return meltingSublimationPointEnergy_kj().add(vaporizationHeat_kj);
+    }
+
+    public static enum PhaseDiagramCase {
+        /**
+         * Conditions for Case1:
+         * <ul>
+         * <li> triplePointPressure < Standardpressure <li>
+         * meltingPointTemperature > triplePointTemperature
+         * </ul>
+         * The Idea of Case1 is to implement following connections:
+         * <ul>
+         * <li> sublimation line from 0 to triplePoint
+         * <li> melting line from triplePoint through meltingPoint
+         * <li> vaporization line from triplePoint to boilingPoint
+         * <li> vaporization line from boilingPoint to criticalPoint
+         * </ul>
+         * The Connections must implement following endpoint limits
+         * <ul>
+         * <li> sublimation 0 and triplePoint
+         * <li> melting triplePoint to infinity (temperature limited by
+         * criticalPointTemperature)
+         * <li> vaporization triplePoint and boilingPoint / boilingPoint and
+         * criticalPoint
+         * </ul>
+         *
+         */
+        CASE1,
+        /**
+         * Conditions for Case2:
+         * <ul>
+         * <li> triplePointPressure < Standardpressure <li>
+         * meltingPointTemperature < triplePointTemperature </ul> The Idea of
+         * Case2 is to implement following connections:
+         * <ul>
+         * <li> sublimation line from 0 to triplePoint
+         * <li> melting line from triplePoint through meltingPoint
+         * <li> vaporization line from triplePoint to boilingPoint
+         * <li> vaporization line from boilingPoint to criticalPoint
+         * </ul>
+         * The Connections must implement following endpoint limits
+         * <ul>
+         * <li> sublimation 0 and triplePoint
+         * <li> melting triplePoint to infinity (pressure and temperature
+         * limited by 0)
+         * <li> vaporization triplePoint and boilingPoint / boilingPoint and
+         * criticalPoint
+         * </ul>
+         *
+         */
+        CASE2,
+        /**
+         * Conditions for Case3:
+         * <ul>
+         * <li> triplePointPressure > Standardpressure
+         * <li> sublimationPointTemperature < triplePointTemperature </ul> The
+         * Idea of Case3 is to implement following connections:
+         * <ul>
+         * <li> sublimation line from 0 to sublimationPoint
+         * <li> sublimation line from sublimationPoint to triplePoint
+         * <li> melting line from triplePoint through sublimationPoint
+         * <li> vaporization line from triplePoint to criticalPoint
+         * </ul>
+         * The Connections must implement following endpoint limits
+         * <ul>
+         * <li> sublimation 0 and aublimationPoint / sublimationPoint and
+         * triplePoint
+         * <li> melting triplePoint to infinity (temperature limited by
+         * criticalPointTemperature)
+         * <li> vaporization triplePoint and criticalPoint
+         * </ul>
+         *
+         */
+        CASE3;
     }
 }

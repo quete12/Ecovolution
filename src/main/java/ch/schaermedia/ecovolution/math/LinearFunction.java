@@ -67,6 +67,20 @@ public class LinearFunction implements Function {
             return y(px).compareTo(py) > 0;
         }
     }
+    public boolean isPointOnOrLeft(BigDouble px, BigDouble py)
+    {
+        if (!isWithinLimits(px, py))
+        {
+            return false;
+        }
+        if (varA.isPositive())
+        {
+            return y(px).compareTo(py) <= 0;
+        } else
+        {
+            return y(px).compareTo(py) >= 0;
+        }
+    }
 
     public boolean isPointOnOrOver(BigDouble px, BigDouble py)
     {
