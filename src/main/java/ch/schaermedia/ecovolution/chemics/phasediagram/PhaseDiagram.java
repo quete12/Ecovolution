@@ -82,6 +82,11 @@ public abstract class PhaseDiagram {
 
     protected abstract void initBorders();
 
+    public String getDiagramCase()
+    {
+        return diagramCase;
+    }
+
     public Phase getPhase(BigDouble energy_kj_mol, BigDouble pressure_kPa)
     {
         if (isSolid(energy_kj_mol, pressure_kPa))

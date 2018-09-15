@@ -14,6 +14,8 @@ public class LinearFunction implements Function {
     private final BigDouble varA;
     private final BigDouble varB;
 
+    private String name = "";
+
     private BigDouble minX = null;
     private BigDouble maxX = null;
     private BigDouble minY = null;
@@ -37,6 +39,18 @@ public class LinearFunction implements Function {
         }
     }
 
+    public LinearFunction(String name, BigDouble p1x, BigDouble p1y, BigDouble p2x, BigDouble p2y, boolean isLimiting)
+    {
+        this(p1x, p1y, p2x, p2y, isLimiting);
+        this.name = name;
+    }
+
+    public LinearFunction(String name, BigDouble p1x, BigDouble p1y, BigDouble p2x, BigDouble p2y)
+    {
+        this(p1x, p1y, p2x, p2y);
+        this.name = name;
+    }
+
     public LinearFunction(BigDouble varA, BigDouble varB)
     {
         this.varA = varA;
@@ -53,34 +67,22 @@ public class LinearFunction implements Function {
         return y.sub(varB, new BigDouble()).div(varA);
     }
 
-    public boolean isPointLeft(BigDouble px, BigDouble py)
-    {
-        if (!isWithinLimits(px, py))
-        {
-            return false;
-        }
-        if (varA.isPositive())
-        {
-            return y(px).compareTo(py) < 0;
-        } else
-        {
-            return y(px).compareTo(py) > 0;
-        }
-    }
-
     public boolean isPointOnOrLeft(BigDouble px, BigDouble py)
     {
         if (!isWithinLimits(px, py))
         {
             return false;
         }
-        if (varA.isPositive())
+        return x(py).compareTo(px) >= 0;
+    }
+
+    public boolean isPointRight(BigDouble px, BigDouble py)
+    {
+        if (!isWithinLimits(px, py))
         {
-            return y(px).compareTo(py) <= 0;
-        } else
-        {
-            return y(px).compareTo(py) >= 0;
+            return false;
         }
+        return x(py).compareTo(px) < 0;
     }
 
     public boolean isPointOnOrOver(BigDouble px, BigDouble py)
@@ -89,13 +91,16 @@ public class LinearFunction implements Function {
         {
             return false;
         }
-        if (varA.isPositive())
+        return y(px).compareTo(py) <= 0;
+    }
+
+    public boolean isPointUnder(BigDouble px, BigDouble py)
+    {
+        if (!isWithinLimits(px, py))
         {
-            return y(px).compareTo(py) <= 0;
-        } else
-        {
-            return y(px).compareTo(py) >= 0;
+            return false;
         }
+        return y(px).compareTo(py) > 0;
     }
 
     private BigDouble findVarB(BigDouble varA, BigDouble px, BigDouble py)
@@ -110,7 +115,6 @@ public class LinearFunction implements Function {
         {
             BigDouble yDiff = p2Y.sub(p1Y, new BigDouble());
             BigDouble xDiff = p2X.sub(p1X, new BigDouble());
-            System.out.println(yDiff.toDouble() + " / " + xDiff.toDouble());
             return yDiff.div(xDiff);
         }
         catch (Exception ex)

@@ -51,6 +51,7 @@ public class RenderThread extends PApplet {
     }
 
     private float scale = 0.75f;
+    private final BigDouble HUNDRED = new BigDouble(100, 0).setImmutable();
 
     @Override
     public void draw()
@@ -65,15 +66,16 @@ public class RenderThread extends PApplet {
         int yIdx = (int) (mouseY / scale / Tile.SIZE);
 
         world.getGrid()[5][5].getLayer(0).addEnergy(new BigDouble(100, 0));
+        int xAlign = 1000;
         if (xIdx >= 0 && xIdx < world.getWidth() && yIdx >= 0 && yIdx < world.getHeight())
         {
 
             LayerMixture selectedLayer = world.getGrid()[xIdx][yIdx].getLayer(0);
             fill(0);
             textSize(30);
-            text("Tile at: " + xIdx + " | " + yIdx, 1200, 50);
-            text("Temperature: " + selectedLayer.getTemperature_k().toDoubleString() + " K", 1200, 100);
-            text("Pressure: " + selectedLayer.getPressure_kPa().toDoubleString() + " kPa", 1200, 150);
+            text("Tile at: " + xIdx + " | " + yIdx, xAlign, 50);
+            text("Temperature: " + selectedLayer.getTemperature_k().toDoubleString() + " K", xAlign, 100);
+            text("Pressure: " + selectedLayer.getPressure_kPa().toDoubleString() + " kPa", xAlign, 150);
             BigDouble[] phasePercentages = selectedLayer.getPhasePercentages();
             if (phasePercentages != null)
             {
@@ -84,7 +86,7 @@ public class RenderThread extends PApplet {
                     BigDouble phasePercentage = phasePercentages[i];
                     textSize(20);
                     offset += 10;
-                    text("% of " + Phase.fromIdx(i) + ": " + phasePercentage.toDoubleString(), 1200, start + offset);
+                    text("% of " + Phase.fromIdx(i) + ": " + phasePercentage.mul(HUNDRED).toDoubleString(), xAlign, start + offset);
                     offset += 20;
                     PhaseMixture phase = selectedLayer.getMixtureForPhase(i);
                     phase.getCompounds();
@@ -93,7 +95,7 @@ public class RenderThread extends PApplet {
                         if (compound.getAmount_mol().isNotZero())
                         {
                             textSize(15);
-                            text("Amount of "+ compound.getCode() + ": " + compound.getAmount_mol().toDoubleString() + " temperature: " + compound.getTemperature_k().toDoubleString() , 1200, start + offset);
+                            text("Amount of " + compound.getCode() + ": " + compound.getAmount_mol().toDoubleString() + " energy: " + compound.getEnergy_kj() + " temperature: " + compound.getTemperature_k().toDoubleString(), xAlign, start + offset);
                             offset += 20;
                         }
                     }

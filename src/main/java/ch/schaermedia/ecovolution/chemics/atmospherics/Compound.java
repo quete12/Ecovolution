@@ -16,7 +16,7 @@ import ch.schaermedia.ecovolution.world.Tile;
  */
 public class Compound extends AtmosphericEnity {
 
-    private static final BigDouble ENERGY_SPREAD_PERCENTAGE = new BigDouble(0.02).setImmutable();
+    private static final BigDouble ENERGY_SPREAD_PERCENTAGE = new BigDouble(0.05).setImmutable();
 
     private final CompoundProperties properties;
 
@@ -57,7 +57,7 @@ public class Compound extends AtmosphericEnity {
             default:
                 throw new AssertionError(phase.name());
         }
-        energyForTemp.add(BigDouble.ONE).mul(amount);
+        energyForTemp.mul(amount);
         add(amount, energyForTemp);
         importBuffers();
         updateThermodynamicStats(ChemUtilities.STANDARD_PRESSURE_kPa, Tile.LAYER_VOLUME_L);

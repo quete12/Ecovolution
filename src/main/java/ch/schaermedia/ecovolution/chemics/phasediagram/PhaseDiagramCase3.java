@@ -99,7 +99,7 @@ public class PhaseDiagramCase3 extends PhaseDiagram {
         boolean sublimation1 = sublimation1Max.isPointOnOrOver(energy_kj_mol, pressure_kPa);
         boolean sublimation2 = sublimation2Max.isPointOnOrOver(energy_kj_mol, pressure_kPa);
         boolean melting = meltingMax.isPointOnOrLeft(energy_kj_mol, pressure_kPa);
-        return (sublimation1 || sublimation2) && melting;
+        return sublimation1 || sublimation2 || melting;
     }
 
     protected boolean isLiquid(BigDouble energy_kj_mol, BigDouble pressure_kPa)

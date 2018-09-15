@@ -98,7 +98,7 @@ public class PhaseDiagramCase2 extends PhaseDiagram {
     {
         boolean sublimation = sublimationMax.isPointOnOrOver(energy_kj_mol, pressure_kPa);
         boolean melting = meltingMax.isPointOnOrLeft(energy_kj_mol, pressure_kPa);
-        return sublimation && melting;
+        return sublimation || melting;
     }
 
     protected boolean isLiquid(BigDouble energy_kj_mol, BigDouble pressure_kPa)
@@ -137,12 +137,14 @@ public class PhaseDiagramCase2 extends PhaseDiagram {
     private void initSublimation()
     {
         sublimationMin = new LinearFunction(
+                "sublimationMin",
                 BigDouble.ZERO,
                 BigDouble.ZERO,
                 properties.minTriplePointEnergy_kj(),
                 properties.getTriplePointPressure_kPa(),
                 true);
         sublimationMax = new LinearFunction(
+                "sublimationMax",
                 properties.getSublimationHeat_kj(),
                 BigDouble.ZERO,
                 properties.vaporizationTriplePointEnergy_kj(),
@@ -153,6 +155,7 @@ public class PhaseDiagramCase2 extends PhaseDiagram {
     private void initMelting()
     {
         meltingMin = new LinearFunction(
+                "meltingMin",
                 properties.minTriplePointEnergy_kj(),
                 properties.getTriplePointPressure_kPa(),
                 properties.minMeltingPointEnergy_kj(),
@@ -162,6 +165,7 @@ public class PhaseDiagramCase2 extends PhaseDiagram {
         meltingMin.limitMinY(properties.getTriplePointPressure_kPa());
 
         meltingMax = new LinearFunction(
+                "meltingMax",
                 properties.meltingTriplePointEnergy_kj(),
                 properties.getTriplePointPressure_kPa(),
                 properties.maxMeltingPointEnergy_kj(),
@@ -174,12 +178,14 @@ public class PhaseDiagramCase2 extends PhaseDiagram {
     private void initVaporization()
     {
         vaporization1Min = new LinearFunction(
+                "vaporization1Min",
                 properties.meltingTriplePointEnergy_kj(),
                 properties.getTriplePointPressure_kPa(),
                 properties.minBoilingPointEnergy_kj(),
                 ChemUtilities.STANDARD_PRESSURE_kPa,
                 true);
         vaporization1Max = new LinearFunction(
+                "vaporization1Max",
                 properties.vaporizationTriplePointEnergy_kj(),
                 properties.getTriplePointPressure_kPa(),
                 properties.maxBoilingPointEnergy_kj(),
@@ -187,12 +193,14 @@ public class PhaseDiagramCase2 extends PhaseDiagram {
                 true);
 
         vaporization2Min = new LinearFunction(
+                "vaporization2Min",
                 properties.minBoilingPointEnergy_kj(),
                 ChemUtilities.STANDARD_PRESSURE_kPa,
                 properties.minCriticalPointEnergy_kj(),
                 properties.getCriticalPointPressure_kPa(),
                 true);
         vaporization2Max = new LinearFunction(
+                "vaporization2Max",
                 properties.maxBoilingPointEnergy_kj(),
                 ChemUtilities.STANDARD_PRESSURE_kPa,
                 properties.maxCriticalPointEnergy_kj(),

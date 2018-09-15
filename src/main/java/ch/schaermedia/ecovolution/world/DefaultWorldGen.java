@@ -30,10 +30,10 @@ public class DefaultWorldGen implements TileGenerator {
     public Tile generate(int x, int y, int numLayers)
     {
         int height = (int) (applet.noise((float) (x * 0.1), (float) ((y + 1000) * 0.1)) * 100);
-        System.out.println("Tile[" + x + "][" + y + "] hegiht: " + height + " created");
+        //System.out.println("Tile[" + x + "][" + y + "] hegiht: " + height + " created");
         Tile result = new Tile(x, y, numLayers, height);
 
-        BigDouble standardTemperature = ChemUtilities.toKelvin(new BigDouble(13.5));
+        BigDouble standardTemperature = ChemUtilities.toKelvin(new BigDouble(15.5));
 
         LayerMixture groundLayer = result.getLayer(0);
         PhaseMixture solids = groundLayer.getMixtureForPhase(Phase.SOLID);

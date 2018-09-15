@@ -198,9 +198,11 @@ public class CompoundProperties {
         return sublimationPoint_K.mul(specificHeatCapacity_kj_mol_K, new BigDouble());
     }
 
-    public BigDouble meltingSublimationPointEnergy_kj(){
+    public BigDouble meltingSublimationPointEnergy_kj()
+    {
         return minSublimationPointEnergy_kj().add(fusionHeat_kj);
     }
+
     public BigDouble maxSublimationPointEnergy_kj()
     {
         return meltingSublimationPointEnergy_kj().add(vaporizationHeat_kj);
@@ -239,5 +241,11 @@ public class CompoundProperties {
     public PhaseDiagram getPhaseDiagram()
     {
         return phaseDiagram;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "CompoundProperties{" + "name=" + name + ", code=" + code + ", specificHeatCapacity_kj_mol_K=" + specificHeatCapacity_kj_mol_K + ",\nmeltingPoint_K=" + meltingPoint_K + ", boilingPoint_K=" + boilingPoint_K + ", sublimationPoint_K=" + sublimationPoint_K + ",\nfusionHeat_kj=" + fusionHeat_kj + ", vaporizationHeat_kj=" + vaporizationHeat_kj + ",\ntriplePointHeat_K=" + triplePointHeat_K + ", triplePointPressure_kPa=" + triplePointPressure_kPa + ",\ncriticalPointHeat_K=" + criticalPointHeat_K + ", criticalPointPressure_kPa=" + criticalPointPressure_kPa + ",\nphaseDiagram=" + phaseDiagram.getDiagramCase() + '}';
     }
 }
