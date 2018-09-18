@@ -231,16 +231,24 @@ public class LayerMixture extends AtmosphericEnity {
     {
         clearStats();
         addEnergy();
+        int nonZeroPhases = 0;
         for (PhaseMixture phaseMix : phases)
         {
             phaseMix.updateStats(externalPressure_kPa, totalVolume_L);
+            if (phaseMix.getAmount_mol().isNotZero())
+            {
+                nonZeroPhases++;
+            }
             amount_mol.add(phaseMix.getAmount_mol());
             pressure_kPa[internal].add(phaseMix.getPressure_kPa());
             volume_L[internal].add(phaseMix.getVolume_L());
             heatCapacity_kj_K[internal].add(phaseMix.getHeatCapacity_kj_K());
             temperature_k[internal].add(phaseMix.getTemperature_k());
         }
-        temperature_k[internal].div(new BigDouble(phases.length, 0));
+        if (nonZeroPhases != 0)
+        {
+            temperature_k[internal].div(new BigDouble(nonZeroPhases, 0));
+        }
         if (pressure_kPa[internal].isNegative())
         {
             throw new RuntimeException("negative Pressure!");
@@ -284,15 +292,15 @@ public class LayerMixture extends AtmosphericEnity {
 
     public BigDouble[] getPhasePercentages()
     {
-        BigDouble amountCopy = getAmount_mol();
-        if (amountCopy.isZero())
+        BigDouble amount = getAmount_mol();
+        if (amount.isZero())
         {
             return null;
         }
         BigDouble[] results = new BigDouble[phases.length];
         for (int i = 0; i < phases.length; i++)
         {
-            results[i] = phases[i].getAmount_mol().div(amountCopy, new BigDouble());
+            results[i] = phases[i].getAmount_mol().div(amount, new BigDouble());
         }
         return results;
     }

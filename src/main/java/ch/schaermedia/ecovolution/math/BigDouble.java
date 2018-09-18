@@ -318,7 +318,7 @@ public class BigDouble implements Comparable<BigDouble> {
     {
         if (immutable)
         {
-            return;
+            throw new RuntimeException("Tried to set values to an immutable BigDouble!");
         }
         this.value = val.getValue();
         this.fraction = val.getFraction();
@@ -366,6 +366,9 @@ public class BigDouble implements Comparable<BigDouble> {
 
     public void clear()
     {
+        if(immutable){
+            throw new RuntimeException("Clearing immutable BigDouble is not allowed!");
+        }
         this.value = 0;
         this.fraction = 0;
     }

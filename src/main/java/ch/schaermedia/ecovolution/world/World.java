@@ -24,6 +24,8 @@ public class World {
     private static final int NEIGHBOUR_SQUARED = NEIGHBOUR_SQARE_SIDE * NEIGHBOUR_SQARE_SIDE;
     public static final BigDouble NEIGHBOUR_SPREAD_PERCENTAGE = BigDouble.ONE.div(new BigDouble(NEIGHBOUR_SQUARED, 0));
 
+    public static String updateState = "";
+
     private Tile[][] grid;
     private final int width;
     private final int height;
@@ -65,16 +67,24 @@ public class World {
         switch (state)
         {
             case VERTICAL:
+                updateState = "Start toHigher";
                 spreadToHigher();
+                updateState = "End toHigher";
                 updateTiles();
+                updateState = "Start toLower";
                 spreadToLower();
+                updateState = "End toLower";
                 updateTiles();
                 break;
             case HORIZONTAL:
+                updateState = "Start horizontal";
                 spreadHorizontal();
+                updateState = "End horizontal";
                 updateTiles();
-                spreadEnergy();
-                updateTiles();
+//                updateState = "Start energy";
+//                spreadEnergy();
+//                updateState = "End energy";
+//                updateTiles();
                 break;
             default:
                 throw new AssertionError(state.name());

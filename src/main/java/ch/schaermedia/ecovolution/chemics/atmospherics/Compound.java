@@ -9,6 +9,7 @@ import ch.schaermedia.ecovolution.chemics.ChemUtilities;
 import ch.schaermedia.ecovolution.chemics.phasediagram.PhaseDiagram;
 import ch.schaermedia.ecovolution.math.BigDouble;
 import ch.schaermedia.ecovolution.world.Tile;
+import ch.schaermedia.ecovolution.world.World;
 
 /**
  *
@@ -16,7 +17,7 @@ import ch.schaermedia.ecovolution.world.Tile;
  */
 public class Compound extends AtmosphericEnity {
 
-    private static final BigDouble ENERGY_SPREAD_PERCENTAGE = new BigDouble(0.05).setImmutable();
+    private static final BigDouble ENERGY_SPREAD_PERCENTAGE = new BigDouble(0.02).setImmutable();
 
     private final CompoundProperties properties;
 
@@ -69,6 +70,14 @@ public class Compound extends AtmosphericEnity {
         {
             throw new RuntimeException("Negative percentage split!!\nFrom: " + this + " \nTo: " + other + "\nPercentage: " + percentage.toDoubleString());
         }
+        if (energy_kj.isNegative() || amount_mol.isNegative())
+        {
+            throw new RuntimeException("Negative energy or moles whileSplitting!"
+                    + "\n" + this
+                    + "\nLast Spread: " + World.updateState
+                    + "\nAmount: " + amount_mol + " buffer: " + amount_mol_buffer
+                    + "\nEnergy: " + energy_kj + " buffer: " + energy_kj_buffer);
+        }
         BigDouble amountDiff = amount_mol.mul(percentage, new BigDouble());
         amount_mol_buffer.sub(amountDiff);
         BigDouble energyDiff = energy_kj.mul(percentage, new BigDouble());
@@ -80,15 +89,16 @@ public class Compound extends AtmosphericEnity {
     public void spreadEnergy(BigDouble energyToSpread)
     {
         BigDouble added;
-        if (amount_mol.isZero())
-        {
-            added = new BigDouble(energy_kj);
-        } else
-        {
-            added = energy_kj.mul(ENERGY_SPREAD_PERCENTAGE, new BigDouble());
-        }
-        energyToSpread.add(added);
+//        if (amount_mol.isZero())
+//        {
+//            added = new BigDouble(energy_kj);
+//        } else
+//        {
+//            added = energy_kj.mul(ENERGY_SPREAD_PERCENTAGE, new BigDouble());
+//        }
+        added = energy_kj.mul(ENERGY_SPREAD_PERCENTAGE, new BigDouble());
         energy_kj_buffer.sub(added);
+        energyToSpread.add(added);
     }
 
     public void add(BigDouble amount_mol, BigDouble energy_kj)
@@ -113,6 +123,14 @@ public class Compound extends AtmosphericEnity {
     {
         amount_mol.add(amount_mol_buffer);
         energy_kj.add(energy_kj_buffer);
+        if (energy_kj.isNegative() || amount_mol.isNegative())
+        {
+            throw new RuntimeException("Negative energy or moles after import!"
+                    + "\n" + this
+                    + "\nLast Spread: " + World.updateState
+                    + "\nAmount: " + amount_mol + " buffer: " + amount_mol_buffer
+                    + "\nEnergy: " + energy_kj + " buffer: " + energy_kj_buffer);
+        }
         amount_mol_buffer.clear();
         energy_kj_buffer.clear();
     }

@@ -14,6 +14,7 @@ import ch.schaermedia.ecovolution.representation.layers.PhaseRenderer;
 import ch.schaermedia.ecovolution.world.DefaultWorldGen;
 import ch.schaermedia.ecovolution.world.Tile;
 import ch.schaermedia.ecovolution.world.World;
+import java.util.List;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.event.KeyEvent;
@@ -65,7 +66,7 @@ public class RenderThread extends PApplet {
         int xIdx = (int) (mouseX / scale / Tile.SIZE);
         int yIdx = (int) (mouseY / scale / Tile.SIZE);
 
-        world.getGrid()[5][5].getLayer(0).addEnergy(new BigDouble(100, 0));
+//        world.getGrid()[5][5].getLayer(0).addEnergy(new BigDouble(100, 0));
         int xAlign = 1000;
         if (xIdx >= 0 && xIdx < world.getWidth() && yIdx >= 0 && yIdx < world.getHeight())
         {
@@ -86,15 +87,21 @@ public class RenderThread extends PApplet {
                     BigDouble phasePercentage = phasePercentages[i];
                     textSize(20);
                     offset += 10;
-                    text("% of " + Phase.fromIdx(i) + ": " + phasePercentage.mul(HUNDRED).toDoubleString(), xAlign, start + offset);
-                    offset += 20;
                     PhaseMixture phase = selectedLayer.getMixtureForPhase(i);
-                    phase.getCompounds();
-                    for (Compound compound : phase.getCompounds())
+                    text("["+i+"] % of " + Phase.fromIdx(i) + ": " + phasePercentage.mul(HUNDRED).toDoubleString() + " moles: " + phase.getAmount_mol().toDoubleString(), xAlign, start + offset);
+                    offset += 20;
+                    List<Compound> compounds = phase.getCompounds();
+                    text("Number of Compounds: " + compounds.size(), xAlign, start + offset);
+                    offset += 20;
+                    for (Compound compound : compounds)
                     {
                         if (compound.getAmount_mol().isNotZero())
                         {
                             textSize(15);
+                            text("Amount of " + compound.getCode() + ": " + compound.getAmount_mol().toDoubleString() + " energy: " + compound.getEnergy_kj() + " temperature: " + compound.getTemperature_k().toDoubleString(), xAlign, start + offset);
+                            offset += 20;
+                        }else{
+                            textSize(10);
                             text("Amount of " + compound.getCode() + ": " + compound.getAmount_mol().toDoubleString() + " energy: " + compound.getEnergy_kj() + " temperature: " + compound.getTemperature_k().toDoubleString(), xAlign, start + offset);
                             offset += 20;
                         }
