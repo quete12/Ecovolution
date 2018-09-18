@@ -67,13 +67,13 @@ public class World {
         switch (state)
         {
             case VERTICAL:
-                updateState = "Start toHigher";
-                spreadToHigher();
-                updateState = "End toHigher";
-                updateTiles();
                 updateState = "Start toLower";
                 spreadToLower();
                 updateState = "End toLower";
+                updateTiles();
+                updateState = "Start toHigher";
+                spreadToHigher();
+                updateState = "End toHigher";
                 updateTiles();
                 break;
             case HORIZONTAL:

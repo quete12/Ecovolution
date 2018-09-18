@@ -150,7 +150,7 @@ public class Compound extends AtmosphericEnity {
                     + "\nexternalPressure: " + externalPressure_kPa.toDoubleString()
                     + "\ntotalVolume: " + totalVolume_L.toDoubleString());
         }
-        ChemUtilities.volume_L(externalPressure_kPa, amount_mol, temperature_k[internal], volume_L[internal]);
+        ChemUtilities.volume_L(ChemUtilities.STANDARD_PRESSURE_kPa, amount_mol, temperature_k[internal], volume_L[internal]);
         ChemUtilities.pressure_kPa(totalVolume_L, amount_mol, temperature_k[internal], pressure_kPa[internal]);
         if (pressure_kPa[internal].isNegative())
         {

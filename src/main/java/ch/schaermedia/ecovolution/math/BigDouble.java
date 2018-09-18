@@ -13,6 +13,7 @@ import java.math.BigInteger;
  */
 public class BigDouble implements Comparable<BigDouble> {
 
+//!! When Changeing the prescision value ALL usages of the constructor BigDouble(long,long) have to be adjusted to fit the new prescision !!
     private static final long PRESCISION = 1000000000l;
     private static final String PRESCISION_STRING = Long.toString(PRESCISION);
 
@@ -37,18 +38,6 @@ public class BigDouble implements Comparable<BigDouble> {
         cleanFractionNegation();
     }
 
-    protected void cleanFractionNegation()
-    {
-        if (value < 0 && fraction > 0)
-        {
-            fraction *= -1;
-        }
-        if (value > 0 && fraction < 0)
-        {
-            fraction *= -1;
-        }
-    }
-
     public BigDouble(BigDouble toCopy)
     {
         this.value = toCopy.getValue();
@@ -61,6 +50,18 @@ public class BigDouble implements Comparable<BigDouble> {
         this.value = value;
         this.fraction = fraction;
         cleanFractionNegation();
+    }
+
+    protected void cleanFractionNegation()
+    {
+        if (value < 0 && fraction > 0)
+        {
+            fraction *= -1;
+        }
+        if (value > 0 && fraction < 0)
+        {
+            fraction *= -1;
+        }
     }
 
     public BigDouble setImmutable()
@@ -366,7 +367,8 @@ public class BigDouble implements Comparable<BigDouble> {
 
     public void clear()
     {
-        if(immutable){
+        if (immutable)
+        {
             throw new RuntimeException("Clearing immutable BigDouble is not allowed!");
         }
         this.value = 0;

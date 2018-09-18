@@ -24,7 +24,7 @@ public class ChemUtilities {
 
     public static final BigDouble STANDARD_PRESSURE_kPa = new BigDouble(101.325).setImmutable();
     public static final BigDouble GAS_CONSTANT_L_kPa_K = new BigDouble(8,314459000).setImmutable();
-    public static final BigDouble CELSIUS_TO_KELVIN_CONVERSION = new BigDouble(273.15).setImmutable();
+    public static final BigDouble CELSIUS_TO_KELVIN_CONVERSION = new BigDouble(273.150).setImmutable();
 
     //<editor-fold desc="static calculations">
     /**

@@ -5,6 +5,7 @@
  */
 package ch.schaermedia.ecovolution.threads;
 
+import ch.schaermedia.ecovolution.chemics.ChemUtilities;
 import ch.schaermedia.ecovolution.chemics.atmospherics.Compound;
 import ch.schaermedia.ecovolution.chemics.atmospherics.LayerMixture;
 import ch.schaermedia.ecovolution.chemics.atmospherics.Phase;
@@ -66,16 +67,15 @@ public class RenderThread extends PApplet {
         int xIdx = (int) (mouseX / scale / Tile.SIZE);
         int yIdx = (int) (mouseY / scale / Tile.SIZE);
 
-//        world.getGrid()[5][5].getLayer(0).addEnergy(new BigDouble(100, 0));
+        world.getGrid()[5][5].getLayer(0).addEnergy(new BigDouble(100, 0));
         int xAlign = 1000;
         if (xIdx >= 0 && xIdx < world.getWidth() && yIdx >= 0 && yIdx < world.getHeight())
         {
-
             LayerMixture selectedLayer = world.getGrid()[xIdx][yIdx].getLayer(0);
             fill(0);
             textSize(30);
             text("Tile at: " + xIdx + " | " + yIdx, xAlign, 50);
-            text("Temperature: " + selectedLayer.getTemperature_k().toDoubleString() + " K", xAlign, 100);
+            text("Temperature: " + ChemUtilities.toCelsius(selectedLayer.getTemperature_k()).toDoubleString() + " C", xAlign, 100);
             text("Pressure: " + selectedLayer.getPressure_kPa().toDoubleString() + " kPa", xAlign, 150);
             BigDouble[] phasePercentages = selectedLayer.getPhasePercentages();
             if (phasePercentages != null)

@@ -142,6 +142,8 @@ public class PhaseMixture extends AtmosphericEnity {
         if (nonZeroCompounds != 0)
         {
             temperature_k[internal].div(new BigDouble(nonZeroCompounds, 0));
+        }else{
+            temperature_k[internal].clear();
         }
         if (pressure_kPa[internal].isNegative())
         {

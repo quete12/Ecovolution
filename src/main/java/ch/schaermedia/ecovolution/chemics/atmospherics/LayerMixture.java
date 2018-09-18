@@ -248,6 +248,8 @@ public class LayerMixture extends AtmosphericEnity {
         if (nonZeroPhases != 0)
         {
             temperature_k[internal].div(new BigDouble(nonZeroPhases, 0));
+        }else{
+            temperature_k[internal].clear();
         }
         if (pressure_kPa[internal].isNegative())
         {
